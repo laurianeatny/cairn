@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Cairn — Suivi de GR</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<style>
+:root{
+  --stone:#4a3728;--stone2:#7c5c48;--stone3:#b08060;
+  --moss:#2d5a27;--moss2:#4a8c42;--moss3:#7aba6e;
+  --cream:#faf7f2;--cream2:#f0ebe2;--cream3:#e0d8cc;
+  --red:#c0392b;--sand:#c8a87a;
+  --r:16px;--r2:22px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;overflow:hidden;background:var(--cream)}
+
+/* ===================== HOME SCREEN ===================== */
+#home{
+  position:absolute;inset:0;z-index:800;
+  background:var(--cream);
+  display:flex;flex-direction:column;
+  overflow-y:auto;
+}
+.home-header{
+  padding:52px 24px 28px;
+  background:var(--stone);
+  position:relative;overflow:hidden;
+}
+.home-header::after{
+  content:'';position:absolute;bottom:-30px;left:0;right:0;height:60px;
+  background:var(--cream);border-radius:50% 50% 0 0 / 30px 30px 0 0;
+}
+.cairn-logo{display:flex;align-items:center;gap:10px;margin-bottom:20px}
+.cairn-icon{font-size:28px;line-height:1}
+.cairn-wordmark{font-size:22px;font-weight:800;color:#fff;letter-spacing:-.02em}
+.cairn-tagline{font-size:12px;color:rgba(255,255,255,.55);letter-spacing:.08em;text-transform:uppercase;margin-top:1px}
+.home-title{font-size:28px;font-weight:800;color:#fff;line-height:1.15;letter-spacing:-.02em}
+.home-sub{font-size:14px;color:rgba(255,255,255,.6);margin-top:6px}
+
+.home-section{padding:32px 20px 0;font-size:11px;font-weight:700;color:var(--stone3);text-transform:uppercase;letter-spacing:.1em}
+
+.gr-card{
+  margin:12px 20px 0;
+  background:#fff;border-radius:var(--r2);
+  border:1.5px solid var(--cream3);
+  padding:16px 18px;cursor:pointer;
+  display:flex;align-items:center;gap:14px;
+  transition:transform .15s,box-shadow .15s;
+  position:relative;overflow:hidden;
+}
+.gr-card:active{transform:scale(.98)}
+.gr-card.loaded{border-color:var(--moss3)}
+.gr-card-icon{width:48px;height:48px;border-radius:14px;background:var(--cream2);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.gr-card.loaded .gr-card-icon{background:#edf7eb}
+.gr-card-body{flex:1;min-width:0}
+.gr-card-name{font-size:16px;font-weight:700;color:var(--stone)}
+.gr-card-sub{font-size:12px;color:var(--stone3);margin-top:2px}
+.gr-card-bar{height:5px;background:var(--cream3);border-radius:3px;margin-top:10px;overflow:hidden}
+.gr-card-fill{height:100%;background:linear-gradient(90deg,var(--moss2),var(--moss3));border-radius:3px;transition:width .6s ease}
+.gr-card-pct{font-size:12px;font-weight:700;color:var(--moss);margin-top:5px}
+.gr-card-arrow{font-size:18px;color:var(--cream3);flex-shrink:0}
+.gr-card.loaded .gr-card-arrow{color:var(--moss3)}
+
+.add-card{
+  margin:12px 20px 24px;
+  background:transparent;border-radius:var(--r2);
+  border:2px dashed var(--cream3);
+  padding:18px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  color:var(--stone3);font-size:14px;font-weight:600;
+  transition:border-color .15s,color .15s;
+}
+.add-card:hover{border-color:var(--moss3);color:var(--moss)}
+
+.home-footer{padding:20px 24px 40px;text-align:center;font-size:12px;color:var(--stone3);line-height:1.8}
+.home-footer a{color:var(--moss);text-decoration:none}
+
+/* ===================== MAP SCREEN ===================== */
+#mapscreen{position:absolute;inset:0;z-index:0;display:none}
+#map{position:absolute;inset:0;z-index:0}
+
+/* TOP BAR */
+#topbar{
+  position:absolute;top:12px;left:12px;right:12px;z-index:500;
+  background:rgba(250,247,242,.96);
+  border-radius:18px;padding:10px 14px;
+  display:flex;align-items:center;gap:10px;
+  box-shadow:0 2px 20px rgba(74,55,40,.15);
+  border:1px solid var(--cream3);
+}
+#btn-back{
+  width:36px;height:36px;border-radius:10px;border:none;
+  background:var(--cream2);cursor:pointer;font-size:18px;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;transition:background .15s;
+}
+#btn-back:active{background:var(--cream3)}
+#trail-info{flex:1;min-width:0}
+#trail-name{font-size:15px;font-weight:700;color:var(--stone);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#trail-sub{font-size:11px;color:var(--stone3);margin-top:1px}
+#progress-wrap{position:relative;width:50px;height:50px;flex-shrink:0}
+#progress-wrap svg{display:block;transform:rotate(-90deg)}
+#pct-label{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--moss)}
+
+/* BOTTOM PANEL */
+#panel{
+  position:absolute;bottom:0;left:0;right:0;z-index:500;
+  background:rgba(250,247,242,.97);
+  border-radius:var(--r2) var(--r2) 0 0;
+  padding:10px 16px 32px;
+  box-shadow:0 -2px 20px rgba(74,55,40,.12);
+  border-top:1px solid var(--cream3);
+}
+#drag-handle{width:32px;height:4px;background:var(--cream3);border-radius:2px;margin:0 auto 12px}
+
+#gps-status{
+  display:none;align-items:center;gap:8px;
+  padding:8px 12px;background:#edf7eb;border-radius:10px;
+  margin-bottom:10px;font-size:13px;color:var(--moss);font-weight:500;
+  border:1px solid #c5e8c0;
+}
+#gps-dot{width:8px;height:8px;border-radius:50%;background:var(--moss2);flex-shrink:0}
+#gps-dot.on{animation:blink 1.4s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3;transform:scale(1.3)}}
+
+.stats{display:flex;gap:8px;margin-bottom:10px}
+.stat{flex:1;background:var(--cream2);border-radius:12px;padding:10px 6px;text-align:center;border:1px solid var(--cream3)}
+.stat-v{font-size:19px;font-weight:800;color:var(--stone)}
+.stat-l{font-size:9px;color:var(--stone3);margin-top:2px;text-transform:uppercase;letter-spacing:.05em}
+
+.row{display:flex;gap:8px;margin-bottom:8px}
+.btn{
+  flex:1;padding:13px 8px;border-radius:14px;border:none;
+  font-size:13px;font-weight:600;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:5px;
+  transition:transform .1s,opacity .1s;
+}
+.btn:active{transform:scale(.96)}
+.btn-start{background:var(--moss);color:#fff}
+.btn-stop{background:var(--red);color:#fff}
+.btn-gray{background:var(--cream2);color:var(--stone);border:1px solid var(--cream3)}
+.btn-outline{background:transparent;color:var(--stone2);border:1.5px solid var(--cream3);font-size:12px}
+
+/* LOAD OVERLAY (first time for a GR) */
+#load-overlay{
+  display:none;position:absolute;inset:0;z-index:600;
+  background:rgba(250,247,242,.97);
+  flex-direction:column;align-items:center;justify-content:center;
+  padding:32px 28px;text-align:center;
+}
+.lo-icon{font-size:56px;margin-bottom:16px}
+.lo-title{font-size:22px;font-weight:800;color:var(--stone);letter-spacing:-.02em;margin-bottom:8px}
+.lo-sub{font-size:14px;color:var(--stone2);line-height:1.6;margin-bottom:28px;max-width:280px}
+.drop{
+  width:100%;max-width:300px;border:2.5px dashed var(--sand);border-radius:18px;
+  padding:26px 20px;background:#fff;cursor:pointer;margin-bottom:16px;
+  display:block;text-align:center;transition:all .2s;
+}
+.drop:hover,.drop:focus{border-color:var(--moss2);background:#edf7eb}
+.drop-title{font-size:15px;font-weight:700;color:var(--moss)}
+.drop-sub{font-size:12px;color:var(--stone3);margin-top:4px}
+.lo-links{font-size:12px;color:var(--stone3);line-height:2}
+.lo-links a{color:var(--moss);text-decoration:none}
+
+/* LOADING SPINNER */
+#loading{
+  display:none;position:absolute;inset:0;z-index:700;
+  background:rgba(250,247,242,.8);
+  align-items:center;justify-content:center;flex-direction:column;gap:12px;
+}
+.spin{width:36px;height:36px;border:3px solid var(--cream3);border-top-color:var(--moss2);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* TOAST */
+#toast{
+  display:none;position:absolute;bottom:185px;left:50%;transform:translateX(-50%);z-index:800;
+  background:rgba(74,55,40,.92);color:#fff;
+  padding:9px 18px;border-radius:100px;font-size:13px;font-weight:500;
+  white-space:nowrap;pointer-events:none;
+}
+
+input[type=file]{display:none}
+.leaflet-control-attribution{font-size:9px!important}
+</style>
+</head>
+<body>
+
+<!-- =================== HOME =================== -->
+<div id="home">
+  <div class="home-header">
+    <div class="cairn-logo">
+      <div class="cairn-icon">🪨</div>
+      <div>
+        <div class="cairn-wordmark">Cairn</div>
+        <div class="cairn-tagline">Suivi de sentiers GR</div>
+      </div>
+    </div>
+    <div class="home-title">Vos grandes<br>randonnées</div>
+    <div class="home-sub">Tracez votre progression km par km</div>
+  </div>
+
+  <div class="home-section">Sentiers</div>
+
+  <div class="gr-card" id="card-gr34" onclick="openTrail('gr34')">
+    <div class="gr-card-icon">🌊</div>
+    <div class="gr-card-body">
+      <div class="gr-card-name">GR34 — Bretagne</div>
+      <div class="gr-card-sub">Côte bretonne · ~2 000 km</div>
+      <div class="gr-card-bar"><div class="gr-card-fill" id="fill-gr34" style="width:0%"></div></div>
+      <div class="gr-card-pct" id="pct-gr34">Tracé non chargé</div>
+    </div>
+    <div class="gr-card-arrow" id="arrow-gr34">›</div>
+  </div>
+
+  <div class="gr-card" id="card-gr10" onclick="openTrail('gr10')">
+    <div class="gr-card-icon">⛰️</div>
+    <div class="gr-card-body">
+      <div class="gr-card-name">GR10 — Pyrénées</div>
+      <div class="gr-card-sub">Méditerranée → Atlantique · ~900 km</div>
+      <div class="gr-card-bar"><div class="gr-card-fill" id="fill-gr10" style="width:0%"></div></div>
+      <div class="gr-card-pct" id="pct-gr10">Tracé non chargé</div>
+    </div>
+    <div class="gr-card-arrow" id="arrow-gr10">›</div>
+  </div>
+
+  <div class="gr-card" id="card-gr20" onclick="openTrail('gr20')">
+    <div class="gr-card-icon">🌿</div>
+    <div class="gr-card-body">
+      <div class="gr-card-name">GR20 — Corse</div>
+      <div class="gr-card-sub">Nord–Sud · ~180 km</div>
+      <div class="gr-card-bar"><div class="gr-card-fill" id="fill-gr20" style="width:0%"></div></div>
+      <div class="gr-card-pct" id="pct-gr20">Tracé non chargé</div>
+    </div>
+    <div class="gr-card-arrow" id="arrow-gr20">›</div>
+  </div>
+
+  <div class="gr-card" id="card-custom" onclick="openTrail('custom')">
+    <div class="gr-card-icon">🗺️</div>
+    <div class="gr-card-body">
+      <div class="gr-card-name">Autre GR</div>
+      <div class="gr-card-sub">Chargez n'importe quel tracé GPX</div>
+      <div class="gr-card-bar"><div class="gr-card-fill" id="fill-custom" style="width:0%"></div></div>
+      <div class="gr-card-pct" id="pct-custom">Tracé non chargé</div>
+    </div>
+    <div class="gr-card-arrow" id="arrow-custom">›</div>
+  </div>
+
+  <div class="home-footer">
+    Fichiers GPX gratuits sur
+    <a href="https://www.visorando.com" target="_blank">visorando.com</a> ·
+    <a href="https://www.openrunner.com" target="_blank">openrunner.com</a><br>
+    Strava : activité → ··· → Exporter GPX
+  </div>
+</div>
+
+<!-- =================== MAP SCREEN =================== -->
+<div id="mapscreen">
+  <div id="map"></div>
+
+  <div id="topbar">
+    <button id="btn-back" onclick="goHome()" title="Retour à l'accueil">←</button>
+    <div id="trail-info">
+      <div id="trail-name">GR34</div>
+      <div id="trail-sub">Côte bretonne</div>
+    </div>
+    <div id="progress-wrap">
+      <svg width="50" height="50" viewBox="0 0 50 50">
+        <circle cx="25" cy="25" r="21" fill="none" stroke="#e0d8cc" stroke-width="4"/>
+        <circle id="arc" cx="25" cy="25" r="21" fill="none" stroke="#4a8c42" stroke-width="4"
+          stroke-linecap="round" stroke-dasharray="132" stroke-dashoffset="132"
+          style="transition:stroke-dashoffset .6s ease"/>
+      </svg>
+      <div id="pct-label">0%</div>
+    </div>
+  </div>
+
+  <div id="panel">
+    <div id="drag-handle"></div>
+    <div id="gps-status">
+      <div id="gps-dot"></div>
+      <span id="gps-msg">GPS actif — bonne marche !</span>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="stat-v" id="s-km">0</div><div class="stat-l">km validés</div></div>
+      <div class="stat"><div class="stat-v" id="s-seg">0</div><div class="stat-l">segments</div></div>
+      <div class="stat"><div class="stat-v" id="s-rest">—</div><div class="stat-l">km restants</div></div>
+      <div class="stat"><div class="stat-v" id="s-pct">0%</div><div class="stat-l">complété</div></div>
+    </div>
+    <div class="row">
+      <button class="btn btn-start" id="btn-gps" onclick="toggleTracking()">📍 Démarrer le suivi</button>
+      <button class="btn btn-gray" onclick="document.getElementById('fi-activity').click()">📂 Importer GPX</button>
+    </div>
+    <div class="row">
+      <button class="btn btn-outline" onclick="centerMap()">🎯 Centrer</button>
+      <button class="btn btn-outline" onclick="document.getElementById('fi-ref').click()">⚙️ Changer tracé</button>
+      <button class="btn btn-outline" onclick="doReset()">🗑 Reset</button>
+    </div>
+  </div>
+
+  <!-- First-time load overlay -->
+  <div id="load-overlay">
+    <div class="lo-icon" id="lo-icon">🌊</div>
+    <div class="lo-title" id="lo-title">GR34 — Bretagne</div>
+    <div class="lo-sub">Chargez le fichier GPX du tracé une seule fois. Cairn s'en souviendra.</div>
+    <label class="drop" for="fi-ref-overlay">
+      <div class="drop-title">📁 Charger le tracé GPX</div>
+      <div class="drop-sub">Appuyez pour choisir le fichier</div>
+    </label>
+    <div class="lo-links">
+      Télécharger sur <a href="https://www.visorando.com" target="_blank">visorando.com</a>
+      · <a href="https://www.openrunner.com" target="_blank">openrunner.com</a>
+    </div>
+  </div>
+
+  <div id="loading">
+    <div class="spin"></div>
+    <div style="font-size:14px;color:#4a3728;font-weight:500">Chargement…</div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<input type="file" id="fi-ref" accept=".gpx" onchange="loadRef(this)">
+<input type="file" id="fi-ref-overlay" accept=".gpx" onchange="loadRef(this)">
+<input type="file" id="fi-activity" accept=".gpx" multiple onchange="loadActivities(this)">
+
+<script>
+const TRAILS={
+  gr34:{name:'GR34 — Bretagne',sub:'Côte bretonne · ~2 000 km',icon:'🌊',center:[47.8,-3.2],zoom:9},
+  gr10:{name:'GR10 — Pyrénées',sub:'Méditerranée → Atlantique · ~900 km',icon:'⛰️',center:[42.8,0.5],zoom:9},
+  gr20:{name:'GR20 — Corse',sub:'Nord–Sud · ~180 km',icon:'🌿',center:[42.1,9.1],zoom:10},
+  custom:{name:'GR personnalisé',sub:'Votre propre tracé GPX',icon:'🗺️',center:[46.5,2.3],zoom:6}
+};
+const SEG=15,THRESH=35;
+let trail=null,refPts=[],done=new Set(),lines=[],tracking=false,wid=null,posMarker=null,mapObj=null;
+
+/* ---- storage ---- */
+function save(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+function load(k){try{const v=localStorage.getItem(k);return v?JSON.parse(v):null}catch(e){return null}}
+
+/* ---- GPX parser ---- */
+function parseGPX(txt){
+  const doc=new DOMParser().parseFromString(txt,'text/xml');
+  const pts=[];
+  doc.querySelectorAll('trkpt,rtept,wpt').forEach(n=>{
+    const la=parseFloat(n.getAttribute('lat')),lo=parseFloat(n.getAttribute('lon'));
+    if(!isNaN(la)&&!isNaN(lo))pts.push([la,lo]);
+  });
+  return pts;
+}
+
+/* ---- geo helpers ---- */
+function dist(a,b){
+  const R=6371000,dL=(b[0]-a[0])*Math.PI/180,dG=(b[1]-a[1])*Math.PI/180,
+    la=a[0]*Math.PI/180,lb=b[0]*Math.PI/180,
+    x=Math.sin(dL/2)**2+Math.cos(la)*Math.cos(lb)*Math.sin(dG/2)**2;
+  return R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x));
+}
+function downsample(pts,d=18){
+  if(!pts.length)return pts;
+  const o=[pts[0]];let l=pts[0];
+  for(let i=1;i<pts.length;i++){if(dist(l,pts[i])>=d){o.push(pts[i]);l=pts[i];}}
+  if(o[o.length-1]!==pts[pts.length-1])o.push(pts[pts.length-1]);
+  return o;
+}
+function matchPts(upts,rpts,ds){
+  for(const u of upts)
+    for(let i=0;i<rpts.length;i++){
+      if(Math.abs(rpts[i][0]-u[0])>THRESH/111000)continue;
+      if(dist(u,rpts[i])<THRESH)ds.add(Math.floor(i/SEG));
+    }
+}
+function totalKm(pts){let d=0;for(let i=1;i<pts.length;i++)d+=dist(pts[i-1],pts[i]);return d/1000;}
+
+/* ---- map init ---- */
+function ensureMap(){
+  if(mapObj)return;
+  mapObj=L.map('map',{zoomControl:true});
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap'}).addTo(mapObj);
+}
+
+/* ---- draw ---- */
+function draw(){
+  lines.forEach(l=>mapObj.removeLayer(l));lines=[];
+  const n=Math.ceil(refPts.length/SEG);
+  for(let s=0;s<n;s++){
+    const seg=refPts.slice(s*SEG,Math.min(s*SEG+SEG+1,refPts.length));
+    if(seg.length<2)continue;
+    const ok=done.has(s);
+    lines.push(L.polyline(seg,{color:ok?'#4a8c42':'#c0392b',weight:ok?5:3.5,opacity:ok?.9:.5}).addTo(mapObj));
+  }
+}
+
+/* ---- UI stats ---- */
+function updateStats(){
+  const total=Math.max(1,Math.ceil(refPts.length/SEG));
+  const n=done.size,pct=Math.round(n/total*100);
+  const tkm=totalKm(refPts),dkm=Math.round(tkm*n/total),rkm=Math.round(tkm-dkm);
+  document.getElementById('s-pct').textContent=pct+'%';
+  document.getElementById('s-seg').textContent=n;
+  document.getElementById('s-km').textContent=dkm;
+  document.getElementById('s-rest').textContent=refPts.length?rkm:'—';
+  document.getElementById('pct-label').textContent=pct+'%';
+  document.getElementById('arc').setAttribute('stroke-dashoffset',132-(pct/100)*132);
+}
+
+/* ---- update home cards ---- */
+function refreshHome(){
+  Object.keys(TRAILS).forEach(t=>{
+    const rr=load('ref_'+t),dd=load('done_'+t);
+    const card=document.getElementById('card-'+t);
+    const fillEl=document.getElementById('fill-'+t);
+    const pctEl=document.getElementById('pct-'+t);
+    if(rr&&rr.length>0){
+      card.classList.add('loaded');
+      const total=Math.max(1,Math.ceil(rr.length/SEG));
+      const n=(dd||[]).length,pct=Math.round(n/total*100);
+      const tkm=totalKm(rr),dkm=Math.round(tkm*n/total);
+      fillEl.style.width=pct+'%';
+      pctEl.textContent=pct+'% · '+dkm+' km parcourus';
+      pctEl.style.color='#2d5a27';
+    }else{
+      card.classList.remove('loaded');
+      fillEl.style.width='0%';
+      pctEl.textContent='Tracé non chargé';
+      pctEl.style.color='';
+    }
+  });
+}
+
+/* ---- open trail ---- */
+function openTrail(t){
+  trail=t;
+  const info=TRAILS[t];
+  document.getElementById('trail-name').textContent=info.name;
+  document.getElementById('trail-sub').textContent=info.sub;
+  document.getElementById('lo-icon').textContent=info.icon;
+  document.getElementById('lo-title').textContent=info.name;
+  document.getElementById('home').style.display='none';
+  document.getElementById('mapscreen').style.display='block';
+  ensureMap();
+  lines.forEach(l=>mapObj.removeLayer(l));lines=[];
+  if(posMarker){mapObj.removeLayer(posMarker);posMarker=null;}
+  const rr=load('ref_'+t),dd=load('done_'+t);
+  if(rr&&rr.length>0){
+    refPts=rr;done=new Set(dd||[]);
+    draw();updateStats();
+    mapObj.setView(info.center,info.zoom);
+    document.getElementById('load-overlay').style.display='none';
+  }else{
+    refPts=[];done=new Set();updateStats();
+    mapObj.setView(info.center,info.zoom);
+    document.getElementById('load-overlay').style.display='flex';
+  }
+}
+
+/* ---- go home ---- */
+function goHome(){
+  if(tracking)stopGPS();
+  document.getElementById('mapscreen').style.display='none';
+  document.getElementById('home').style.display='flex';
+  refreshHome();
+}
+
+/* ---- load reference GPX ---- */
+async function loadRef(inp){
+  const f=inp.files[0];if(!f)return;
+  show(true);
+  const txt=await f.text();
+  let pts=parseGPX(txt);
+  if(pts.length<5){toast('❌ Fichier GPX invalide ou vide');show(false);inp.value='';return;}
+  pts=downsample(pts,18);
+  refPts=pts;done=new Set();
+  save('ref_'+trail,pts);save('done_'+trail,[]);
+  draw();updateStats();
+  mapObj.fitBounds(L.latLngBounds(pts));
+  document.getElementById('load-overlay').style.display='none';
+  show(false);inp.value='';
+  toast('✅ Tracé chargé · '+Math.round(totalKm(pts))+' km');
+}
+
+/* ---- load activity GPX(s) ---- */
+async function loadActivities(inp){
+  if(!refPts.length){toast('⚠️ Chargez d\'abord le tracé de référence');inp.value='';return;}
+  show(true);let n=0;
+  for(const f of inp.files){
+    const pts=parseGPX(await f.text());
+    if(pts.length){matchPts(pts,refPts,done);n++;}
+  }
+  save('done_'+trail,[...done]);
+  draw();updateStats();show(false);inp.value='';
+  toast('✅ '+n+' activité(s) importée(s)');
+}
+
+/* ---- GPS tracking ---- */
+function toggleTracking(){if(tracking)stopGPS();else startGPS();}
+
+function startGPS(){
+  if(!refPts.length){toast('⚠️ Chargez d\'abord le tracé de référence');return;}
+  if(!navigator.geolocation){toast('❌ GPS non disponible');return;}
+  tracking=true;
+  document.getElementById('btn-gps').innerHTML='⏹ Arrêter le suivi';
+  document.getElementById('btn-gps').className='btn btn-stop';
+  document.getElementById('gps-status').style.display='flex';
+  document.getElementById('gps-dot').classList.add('on');
+  let buf=[];
+  wid=navigator.geolocation.watchPosition(pos=>{
+    const pt=[pos.coords.latitude,pos.coords.longitude];
+    buf.push(pt);
+    if(posMarker)mapObj.removeLayer(posMarker);
+    posMarker=L.circleMarker(pt,{radius:10,color:'#1d4ed8',fillColor:'#3b82f6',fillOpacity:1,weight:3}).addTo(mapObj);
+    const prev=done.size;
+    matchPts(buf.slice(-10),refPts,done);
+    if(done.size>prev){draw();updateStats();save('done_'+trail,[...done]);}
+    document.getElementById('gps-msg').textContent='GPS actif · ±'+Math.round(pos.coords.accuracy)+'m';
+  },err=>{toast('⚠️ GPS : '+err.message);},{enableHighAccuracy:true,maximumAge:4000,timeout:12000});
+}
+
+function stopGPS(){
+  if(wid!==null)navigator.geolocation.clearWatch(wid);
+  tracking=false;wid=null;
+  document.getElementById('btn-gps').innerHTML='📍 Démarrer le suivi';
+  document.getElementById('btn-gps').className='btn btn-start';
+  document.getElementById('gps-status').style.display='none';
+  document.getElementById('gps-dot').classList.remove('on');
+  save('done_'+trail,[...done]);
+  toast('Suivi arrêté · progression sauvegardée 💾');
+}
+
+function centerMap(){
+  if(refPts.length)mapObj.fitBounds(L.latLngBounds(refPts));
+  else mapObj.setView(TRAILS[trail].center,TRAILS[trail].zoom);
+}
+
+function doReset(){
+  if(!confirm('Réinitialiser la progression pour '+TRAILS[trail].name+' ?'))return;
+  done=new Set();save('done_'+trail,[]);
+  draw();updateStats();toast('Progression réinitialisée');
+}
+
+function show(v){document.getElementById('loading').style.display=v?'flex':'none';}
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.style.display='block';
+  clearTimeout(t._t);t._t=setTimeout(()=>t.style.display='none',3200);
+}
+
+/* ---- init ---- */
+refreshHome();
+</script>
+</body>
+</html>
