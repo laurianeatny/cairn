@@ -3,386 +3,642 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Cairn — Suivi de GR</title>
+<title>Cairn — Lauriane</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <style>
-:root{
-  --stone:#4a3728;--stone2:#7c5c48;--stone3:#b08060;
-  --moss:#2d5a27;--moss2:#4a8c42;--moss3:#7aba6e;
-  --cream:#faf7f2;--cream2:#f0ebe2;--cream3:#e0d8cc;
-  --red:#c0392b;--sand:#c8a87a;
-  --r:16px;--r2:22px;
+:root {
+  --dark:    #354024;
+  --mid:     #889063;
+  --light:   #b8bc8a;
+  --pale:    #dde0c8;
+  --paper:   #f4f3ee;
+  --white:   #ffffff;
+  --ink:     #1a1f12;
+  --ink2:    #354024cc;
+  --ghost:   #e4e6d8;
+  --mist:    #eceee5;
+  --red:     #6b2e1a;
+  --r:       12px;
+  --r2:      18px;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;overflow:hidden;background:var(--cream)}
+html,body{height:100%;font-family:"HelveticaNeue","Helvetica Neue",Helvetica,Arial,sans-serif;overflow:hidden;background:var(--paper);color:var(--ink)}
 
-/* ===================== HOME SCREEN ===================== */
+/* ═══════════════════════════════════
+   TOPO SVG PATTERN (defs, reusable)
+═══════════════════════════════════ */
+.topo-bg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:hidden}
+
+/* ═══════════════════════════════════
+   HOME
+═══════════════════════════════════ */
 #home{
   position:absolute;inset:0;z-index:800;
-  background:var(--cream);
   display:flex;flex-direction:column;
-  overflow-y:auto;
+  overflow-y:auto;-webkit-overflow-scrolling:touch;
+  background:var(--paper);
 }
-.home-header{
-  padding:52px 24px 28px;
-  background:var(--stone);
-  position:relative;overflow:hidden;
-}
-.home-header::after{
-  content:'';position:absolute;bottom:-30px;left:0;right:0;height:60px;
-  background:var(--cream);border-radius:50% 50% 0 0 / 30px 30px 0 0;
-}
-.cairn-logo{display:flex;align-items:center;gap:10px;margin-bottom:20px}
-.cairn-icon{font-size:28px;line-height:1}
-.cairn-wordmark{font-size:22px;font-weight:800;color:#fff;letter-spacing:-.02em}
-.cairn-tagline{font-size:12px;color:rgba(255,255,255,.55);letter-spacing:.08em;text-transform:uppercase;margin-top:1px}
-.home-title{font-size:28px;font-weight:800;color:#fff;line-height:1.15;letter-spacing:-.02em}
-.home-sub{font-size:14px;color:rgba(255,255,255,.6);margin-top:6px}
 
-.home-section{padding:32px 20px 0;font-size:11px;font-weight:700;color:var(--stone3);text-transform:uppercase;letter-spacing:.1em}
+/* HERO */
+.hero{
+  position:relative;
+  background:var(--dark);
+  padding:52px 40px 44px;
+  flex-shrink:0;overflow:hidden;
+  min-height:340px;
+  display:flex;flex-direction:column;justify-content:flex-end;
+}
+
+/* topo lines drawn inline as SVG */
+.hero-topo{
+  position:absolute;inset:0;width:100%;height:100%;
+  pointer-events:none;overflow:visible;
+}
+
+.hero-content{position:relative;z-index:2;display:flex;flex-direction:column;gap:0}
+
+.hero-by{
+  font-size:11px;font-weight:300;
+  letter-spacing:.28em;text-transform:uppercase;
+  color:var(--mid);margin-bottom:16px;
+}
+
+.hero-wordmark{
+  font-size:100px;font-weight:700;
+  color:var(--white);
+  letter-spacing:-.04em;line-height:.88;
+  margin-bottom:20px;
+}
+
+.hero-tagline{
+  font-size:10px;font-weight:300;
+  color:var(--mid);letter-spacing:.2em;
+  text-transform:uppercase;
+  display:flex;align-items:center;gap:10px;
+}
+.dot{color:var(--light);font-weight:300}
+
+.hero-rule{width:100%;height:1px;background:rgba(136,144,99,.25);margin:24px 0}
+
+.hero-stats{display:flex;gap:40px}
+.hs-v{font-size:28px;font-weight:700;color:var(--white);letter-spacing:-.03em;line-height:1}
+.hs-l{font-size:9px;font-weight:300;letter-spacing:.16em;text-transform:uppercase;color:var(--mid);margin-top:4px}
+
+/* SECTION */
+.section-label{
+  padding:32px 32px 14px;
+  font-size:9px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--mid);display:flex;align-items:center;gap:14px;flex-shrink:0;
+}
+.section-label::after{content:'';flex:1;height:1px;background:var(--ghost)}
+
+/* CARDS */
+.cards-grid{
+  padding:0 24px;
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+  gap:10px;
+  flex-shrink:0;
+}
 
 .gr-card{
-  margin:12px 20px 0;
-  background:#fff;border-radius:var(--r2);
-  border:1.5px solid var(--cream3);
-  padding:16px 18px;cursor:pointer;
-  display:flex;align-items:center;gap:14px;
-  transition:transform .15s,box-shadow .15s;
-  position:relative;overflow:hidden;
+  background:var(--white);border-radius:var(--r2);
+  border:1px solid var(--ghost);
+  padding:20px 22px;cursor:pointer;
+  display:flex;align-items:center;gap:16px;
+  transition:border-color .2s,transform .12s,box-shadow .2s;
 }
-.gr-card:active{transform:scale(.98)}
-.gr-card.loaded{border-color:var(--moss3)}
-.gr-card-icon{width:48px;height:48px;border-radius:14px;background:var(--cream2);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
-.gr-card.loaded .gr-card-icon{background:#edf7eb}
-.gr-card-body{flex:1;min-width:0}
-.gr-card-name{font-size:16px;font-weight:700;color:var(--stone)}
-.gr-card-sub{font-size:12px;color:var(--stone3);margin-top:2px}
-.gr-card-bar{height:5px;background:var(--cream3);border-radius:3px;margin-top:10px;overflow:hidden}
-.gr-card-fill{height:100%;background:linear-gradient(90deg,var(--moss2),var(--moss3));border-radius:3px;transition:width .6s ease}
-.gr-card-pct{font-size:12px;font-weight:700;color:var(--moss);margin-top:5px}
-.gr-card-arrow{font-size:18px;color:var(--cream3);flex-shrink:0}
-.gr-card.loaded .gr-card-arrow{color:var(--moss3)}
+.gr-card:hover{box-shadow:0 4px 20px rgba(53,64,36,.08);transform:translateY(-1px)}
+.gr-card:active{transform:scale(.985)}
+.gr-card.loaded{border-color:var(--light);background:#fafbf7}
 
-.add-card{
-  margin:12px 20px 24px;
-  background:transparent;border-radius:var(--r2);
-  border:2px dashed var(--cream3);
-  padding:18px;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;gap:10px;
-  color:var(--stone3);font-size:14px;font-weight:600;
-  transition:border-color .15s,color .15s;
+.gr-badge{
+  width:46px;height:46px;border-radius:12px;
+  background:var(--mist);
+  display:flex;align-items:center;justify-content:center;
+  font-size:10px;font-weight:700;color:var(--mid);
+  letter-spacing:.04em;flex-shrink:0;line-height:1.25;text-align:center;
+  transition:background .2s,color .2s;
 }
-.add-card:hover{border-color:var(--moss3);color:var(--moss)}
+.gr-card.loaded .gr-badge{background:var(--dark);color:var(--light)}
 
-.home-footer{padding:20px 24px 40px;text-align:center;font-size:12px;color:var(--stone3);line-height:1.8}
-.home-footer a{color:var(--moss);text-decoration:none}
+.gr-body{flex:1;min-width:0}
+.gr-name{font-size:15px;font-weight:700;color:var(--ink);letter-spacing:-.01em}
+.gr-sub{font-size:11px;font-weight:300;color:var(--mid);margin-top:2px;letter-spacing:.01em}
+.gr-bar{height:2px;background:var(--ghost);border-radius:1px;margin-top:12px;overflow:hidden}
+.gr-fill{height:100%;background:linear-gradient(90deg,var(--dark),var(--mid));border-radius:1px;transition:width .9s cubic-bezier(.4,0,.2,1);width:0%}
+.gr-pct{font-size:10px;font-weight:300;color:var(--mid);margin-top:5px;letter-spacing:.02em}
+.gr-card.loaded .gr-pct{color:var(--dark);font-weight:500}
 
-/* ===================== MAP SCREEN ===================== */
-#mapscreen{position:absolute;inset:0;z-index:0;display:none}
-#map{position:absolute;inset:0;z-index:0}
+.gr-arrow{font-size:20px;color:var(--ghost);flex-shrink:0;font-weight:200}
+.gr-card.loaded .gr-arrow{color:var(--mid)}
+
+.home-footer{
+  padding:32px 32px 48px;text-align:center;
+  font-size:11px;font-weight:300;color:var(--mid);line-height:2.4;flex-shrink:0;
+}
+.home-footer a{color:var(--dark);text-decoration:none;border-bottom:1px solid var(--pale)}
+
+/* ═══════════════════════════════════
+   MAP SCREEN
+═══════════════════════════════════ */
+#mapscreen{position:absolute;inset:0;z-index:0;display:none;flex-direction:column}
+#map{flex:1;z-index:0;position:relative}
 
 /* TOP BAR */
 #topbar{
-  position:absolute;top:12px;left:12px;right:12px;z-index:500;
-  background:rgba(250,247,242,.96);
-  border-radius:18px;padding:10px 14px;
-  display:flex;align-items:center;gap:10px;
-  box-shadow:0 2px 20px rgba(74,55,40,.15);
-  border:1px solid var(--cream3);
+  position:absolute;top:14px;left:14px;right:14px;z-index:500;
+  background:rgba(244,243,238,.96);backdrop-filter:blur(12px);
+  border-radius:var(--r2);padding:10px 14px;
+  display:flex;align-items:center;gap:12px;
+  border:1px solid var(--ghost);
+  box-shadow:0 2px 20px rgba(53,64,36,.10);
 }
 #btn-back{
-  width:36px;height:36px;border-radius:10px;border:none;
-  background:var(--cream2);cursor:pointer;font-size:18px;
-  display:flex;align-items:center;justify-content:center;
-  flex-shrink:0;transition:background .15s;
+  width:34px;height:34px;border-radius:9px;
+  border:1px solid var(--ghost);background:var(--white);
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  font-size:15px;color:var(--dark);flex-shrink:0;
+  transition:background .12s;font-family:inherit;
 }
-#btn-back:active{background:var(--cream3)}
+#btn-back:active{background:var(--mist)}
 #trail-info{flex:1;min-width:0}
-#trail-name{font-size:15px;font-weight:700;color:var(--stone);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-#trail-sub{font-size:11px;color:var(--stone3);margin-top:1px}
-#progress-wrap{position:relative;width:50px;height:50px;flex-shrink:0}
+#trail-name{font-size:13px;font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:-.01em}
+#trail-sub{font-size:10px;font-weight:300;color:var(--mid);margin-top:1px;letter-spacing:.02em}
+
+#progress-wrap{position:relative;width:46px;height:46px;flex-shrink:0}
 #progress-wrap svg{display:block;transform:rotate(-90deg)}
-#pct-label{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--moss)}
+#pct-label{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--dark)}
 
-/* BOTTOM PANEL */
-#panel{
-  position:absolute;bottom:0;left:0;right:0;z-index:500;
-  background:rgba(250,247,242,.97);
-  border-radius:var(--r2) var(--r2) 0 0;
-  padding:10px 16px 32px;
-  box-shadow:0 -2px 20px rgba(74,55,40,.12);
-  border-top:1px solid var(--cream3);
+/* LAYER SWITCHER */
+#layer-switcher{
+  position:absolute;top:14px;right:14px;z-index:499;
+  margin-top:64px;
+  display:flex;flex-direction:column;gap:6px;
 }
-#drag-handle{width:32px;height:4px;background:var(--cream3);border-radius:2px;margin:0 auto 12px}
+.layer-btn{
+  width:36px;height:36px;border-radius:9px;
+  border:1px solid var(--ghost);
+  background:rgba(244,243,238,.95);backdrop-filter:blur(8px);
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  font-size:15px;transition:all .15s;box-shadow:0 1px 6px rgba(53,64,36,.08);
+  font-family:inherit;
+}
+.layer-btn.on{background:var(--dark);border-color:var(--dark)}
+.layer-btn:active{transform:scale(.93)}
 
+/* BOTTOM SHEET */
+#sheet{
+  position:absolute;bottom:0;left:0;right:0;z-index:500;
+  background:rgba(244,243,238,.97);
+  border-radius:22px 22px 0 0;
+  border-top:1px solid var(--ghost);
+  box-shadow:0 -2px 28px rgba(53,64,36,.08);
+}
+.sheet-handle{width:28px;height:3px;background:var(--ghost);border-radius:2px;margin:10px auto 0}
+
+/* VIGNETTE TABS */
+.tab-bar{
+  display:flex;gap:8px;
+  padding:12px 16px 8px;
+}
+.tab-btn{
+  padding:8px 16px;border-radius:9px;
+  font-size:11px;font-weight:700;
+  font-family:inherit;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--mid);background:var(--mist);
+  border:1px solid var(--ghost);
+  cursor:pointer;transition:all .15s;
+  white-space:nowrap;
+}
+.tab-btn.on{background:var(--dark);color:var(--white);border-color:var(--dark)}
+.tab-btn:active{transform:scale(.96)}
+
+.tab-pane{display:none;padding:10px 16px 28px}
+.tab-pane.on{display:block}
+
+/* GPS STATUS */
 #gps-status{
   display:none;align-items:center;gap:8px;
-  padding:8px 12px;background:#edf7eb;border-radius:10px;
-  margin-bottom:10px;font-size:13px;color:var(--moss);font-weight:500;
-  border:1px solid #c5e8c0;
+  padding:9px 14px;background:#edf0e4;border-radius:var(--r);
+  margin-bottom:10px;font-size:12px;font-weight:400;color:var(--dark);
+  border:1px solid rgba(53,64,36,.12);
 }
-#gps-dot{width:8px;height:8px;border-radius:50%;background:var(--moss2);flex-shrink:0}
-#gps-dot.on{animation:blink 1.4s ease-in-out infinite}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:.3;transform:scale(1.3)}}
+#gps-dot{width:6px;height:6px;border-radius:50%;background:var(--mid);flex-shrink:0}
+#gps-dot.on{animation:pulse 1.6s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3;transform:scale(1.3)}}
 
-.stats{display:flex;gap:8px;margin-bottom:10px}
-.stat{flex:1;background:var(--cream2);border-radius:12px;padding:10px 6px;text-align:center;border:1px solid var(--cream3)}
-.stat-v{font-size:19px;font-weight:800;color:var(--stone)}
-.stat-l{font-size:9px;color:var(--stone3);margin-top:2px;text-transform:uppercase;letter-spacing:.05em}
+/* STATS */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:10px}
+.stat{background:var(--mist);border-radius:var(--r);padding:10px 4px;text-align:center;border:1px solid var(--ghost)}
+.stat-v{font-size:18px;font-weight:700;color:var(--ink);letter-spacing:-.02em}
+.stat-l{font-size:8px;font-weight:300;color:var(--mid);margin-top:3px;text-transform:uppercase;letter-spacing:.1em}
 
+/* ALTITUDE PROFILE */
+#alti-wrap{
+  background:var(--mist);border-radius:var(--r);
+  border:1px solid var(--ghost);
+  padding:10px 12px 8px;
+  margin-bottom:10px;
+}
+#alti-label{font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--mid);margin-bottom:6px}
+#alti-svg{width:100%;height:56px;display:block}
+#alti-range{display:flex;justify-content:space-between;font-size:9px;font-weight:300;color:var(--mid);margin-top:3px;letter-spacing:.04em}
+
+/* BUTTONS */
 .row{display:flex;gap:8px;margin-bottom:8px}
 .btn{
-  flex:1;padding:13px 8px;border-radius:14px;border:none;
-  font-size:13px;font-weight:600;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;gap:5px;
-  transition:transform .1s,opacity .1s;
+  flex:1;padding:12px 8px;border-radius:11px;border:none;
+  font-size:11px;font-weight:700;font-family:inherit;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;
+  transition:transform .1s,opacity .1s;letter-spacing:.06em;text-transform:uppercase;
 }
 .btn:active{transform:scale(.96)}
-.btn-start{background:var(--moss);color:#fff}
-.btn-stop{background:var(--red);color:#fff}
-.btn-gray{background:var(--cream2);color:var(--stone);border:1px solid var(--cream3)}
-.btn-outline{background:transparent;color:var(--stone2);border:1.5px solid var(--cream3);font-size:12px}
+.btn-primary{background:var(--dark);color:var(--white)}
+.btn-stop{background:var(--red);color:var(--white)}
+.btn-secondary{background:var(--mist);color:var(--ink);border:1px solid var(--ghost)}
+.btn-ghost{background:transparent;color:var(--mid);border:1px solid var(--ghost);font-size:10px}
 
-/* LOAD OVERLAY (first time for a GR) */
+/* HISTORY */
+.hist-empty{text-align:center;padding:24px 16px;font-size:12px;font-weight:300;color:var(--mid);line-height:2}
+.hist-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--ghost)}
+.hist-item:last-child{border-bottom:none}
+.hist-dot{width:7px;height:7px;border-radius:50%;background:var(--ghost);flex-shrink:0}
+.hist-dot.gps{background:var(--dark)}
+.hist-dot.gpx{background:var(--mid)}
+.hist-body{flex:1;min-width:0}
+.hist-name{font-size:12px;font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:-.01em}
+.hist-meta{font-size:10px;font-weight:300;color:var(--mid);margin-top:2px}
+.hist-tag{font-size:9px;font-weight:700;color:var(--dark);background:var(--pale);padding:2px 7px;border-radius:4px;flex-shrink:0;letter-spacing:.04em}
+
+/* LOAD OVERLAY */
 #load-overlay{
   display:none;position:absolute;inset:0;z-index:600;
-  background:rgba(250,247,242,.97);
+  background:var(--paper);
   flex-direction:column;align-items:center;justify-content:center;
-  padding:32px 28px;text-align:center;
+  padding:40px 32px;text-align:center;overflow:hidden;
 }
-.lo-icon{font-size:56px;margin-bottom:16px}
-.lo-title{font-size:22px;font-weight:800;color:var(--stone);letter-spacing:-.02em;margin-bottom:8px}
-.lo-sub{font-size:14px;color:var(--stone2);line-height:1.6;margin-bottom:28px;max-width:280px}
+.lo-topo{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:.5}
+.lo-content{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center}
+.lo-label{font-size:9px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--mid);margin-bottom:10px}
+.lo-title{font-size:32px;font-weight:700;color:var(--ink);letter-spacing:-.03em;margin-bottom:10px}
+.lo-sub{font-size:13px;font-weight:300;color:var(--mid);line-height:1.7;margin-bottom:36px;max-width:260px}
 .drop{
-  width:100%;max-width:300px;border:2.5px dashed var(--sand);border-radius:18px;
-  padding:26px 20px;background:#fff;cursor:pointer;margin-bottom:16px;
+  width:100%;max-width:280px;border:1px dashed var(--light);border-radius:var(--r2);
+  padding:28px 20px;background:var(--white);cursor:pointer;margin-bottom:20px;
   display:block;text-align:center;transition:all .2s;
 }
-.drop:hover,.drop:focus{border-color:var(--moss2);background:#edf7eb}
-.drop-title{font-size:15px;font-weight:700;color:var(--moss)}
-.drop-sub{font-size:12px;color:var(--stone3);margin-top:4px}
-.lo-links{font-size:12px;color:var(--stone3);line-height:2}
-.lo-links a{color:var(--moss);text-decoration:none}
+.drop:hover{border-color:var(--dark);background:var(--mist)}
+.drop-title{font-size:14px;font-weight:700;color:var(--dark);letter-spacing:-.01em}
+.drop-sub{font-size:11px;font-weight:300;color:var(--mid);margin-top:4px}
+.lo-links{font-size:11px;font-weight:300;color:var(--mid);line-height:2.4}
+.lo-links a{color:var(--dark);text-decoration:none;border-bottom:1px solid var(--pale)}
+.lo-back{margin-top:24px;padding:8px 12px;font-size:11px;font-weight:300;color:var(--mid);background:none;border:none;cursor:pointer;font-family:inherit;letter-spacing:.1em;text-transform:uppercase}
 
-/* LOADING SPINNER */
-#loading{
-  display:none;position:absolute;inset:0;z-index:700;
-  background:rgba(250,247,242,.8);
-  align-items:center;justify-content:center;flex-direction:column;gap:12px;
-}
-.spin{width:36px;height:36px;border:3px solid var(--cream3);border-top-color:var(--moss2);border-radius:50%;animation:spin .7s linear infinite}
+/* LOADING */
+#loading{display:none;position:absolute;inset:0;z-index:700;background:rgba(244,243,238,.9);align-items:center;justify-content:center;flex-direction:column;gap:14px}
+.spin{width:26px;height:26px;border:1.5px solid var(--ghost);border-top-color:var(--dark);border-radius:50%;animation:spin .7s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
+#loading-msg{font-size:10px;font-weight:300;color:var(--mid);letter-spacing:.14em;text-transform:uppercase}
 
 /* TOAST */
-#toast{
-  display:none;position:absolute;bottom:185px;left:50%;transform:translateX(-50%);z-index:800;
-  background:rgba(74,55,40,.92);color:#fff;
-  padding:9px 18px;border-radius:100px;font-size:13px;font-weight:500;
-  white-space:nowrap;pointer-events:none;
-}
+#toast{display:none;position:absolute;bottom:195px;left:50%;transform:translateX(-50%);z-index:900;background:var(--ink);color:var(--white);padding:8px 20px;border-radius:100px;font-size:11px;font-weight:300;white-space:nowrap;pointer-events:none;letter-spacing:.06em}
 
 input[type=file]{display:none}
 .leaflet-control-attribution{font-size:9px!important}
+.leaflet-control-zoom{border:1px solid var(--ghost)!important;border-radius:10px!important;overflow:hidden!important;box-shadow:0 2px 10px rgba(53,64,36,.1)!important}
+.leaflet-control-zoom a{color:var(--dark)!important;background:rgba(244,243,238,.95)!important}
 </style>
 </head>
 <body>
 
-<!-- =================== HOME =================== -->
+<!-- ═══════════════════ HOME ═══════════════════ -->
 <div id="home">
-  <div class="home-header">
-    <div class="cairn-logo">
-      <div class="cairn-icon">🪨</div>
-      <div>
-        <div class="cairn-wordmark">Cairn</div>
-        <div class="cairn-tagline">Suivi de sentiers GR</div>
+  <div class="hero">
+
+    <!-- Fine topo pattern SVG -->
+    <svg class="hero-topo" viewBox="0 0 900 340" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+      <!-- Dense topo contour family 1 — sweeping horizontal -->
+      <path d="M-50,310 C100,298 220,285 360,292 C500,299 620,280 780,288 C880,293 950,286 1000,290" fill="none" stroke="rgba(184,188,138,0.18)" stroke-width="0.8"/>
+      <path d="M-50,298 C100,285 225,270 368,278 C510,286 628,265 790,274 C890,279 955,271 1000,275" fill="none" stroke="rgba(184,188,138,0.16)" stroke-width="0.8"/>
+      <path d="M-50,285 C105,270 228,254 372,262 C516,270 635,248 795,258 C896,264 958,255 1000,259" fill="none" stroke="rgba(184,188,138,0.15)" stroke-width="0.8"/>
+      <path d="M-50,271 C108,254 232,237 376,246 C520,255 640,231 800,242 C902,248 961,238 1000,243" fill="none" stroke="rgba(184,188,138,0.14)" stroke-width="1"/>
+      <path d="M-50,256 C112,237 236,219 380,229 C524,239 645,213 805,225 C908,232 964,221 1000,226" fill="none" stroke="rgba(184,188,138,0.13)" stroke-width="0.8"/>
+      <path d="M-50,240 C115,219 240,200 384,211 C528,222 650,194 810,207 C914,215 967,203 1000,208" fill="none" stroke="rgba(184,188,138,0.13)" stroke-width="0.8"/>
+      <path d="M-50,223 C118,200 244,180 388,192 C532,204 655,174 815,188 C920,197 970,184 1000,189" fill="none" stroke="rgba(184,188,138,0.12)" stroke-width="1"/>
+      <path d="M-50,205 C122,180 248,158 393,172 C538,186 660,154 820,169 C926,178 973,164 1000,170" fill="none" stroke="rgba(184,188,138,0.11)" stroke-width="0.8"/>
+      <path d="M-50,186 C126,158 253,135 398,150 C543,165 665,131 825,148 C932,158 976,143 1000,149" fill="none" stroke="rgba(184,188,138,0.10)" stroke-width="0.8"/>
+      <path d="M-50,166 C130,135 258,110 403,127 C548,144 670,107 830,126 C938,137 979,121 1000,127" fill="none" stroke="rgba(184,188,138,0.09)" stroke-width="1"/>
+      <path d="M-50,145 C134,111 263,84 409,103 C555,122 675,82 835,103 C944,116 982,98 1000,105" fill="none" stroke="rgba(184,188,138,0.08)" stroke-width="0.8"/>
+      <path d="M-50,122 C138,85 268,56 414,78 C560,100 680,55 840,79 C950,94 985,74 1000,81" fill="none" stroke="rgba(184,188,138,0.08)" stroke-width="0.8"/>
+      <path d="M-50,98 C142,57 274,26 420,51 C566,76 686,27 845,54 C956,71 988,48 1000,56" fill="none" stroke="rgba(184,188,138,0.07)" stroke-width="0.8"/>
+      <path d="M-50,72 C146,28 279,-5 426,23 C572,51 692,-3 850,27 C962,46 991,20 1000,29" fill="none" stroke="rgba(184,188,138,0.06)" stroke-width="0.8"/>
+      <path d="M-50,44 C150,-3 284,-38 432,-7 C578,24 698,-33 855,-1 C968,20 994,-8 1000,2" fill="none" stroke="rgba(184,188,138,0.05)" stroke-width="0.8"/>
+      <!-- Inner tight contours (summit area) -->
+      <path d="M220,280 C280,262 360,248 440,255 C520,262 580,244 650,251 C710,257 750,244 800,250" fill="none" stroke="rgba(184,188,138,0.14)" stroke-width="0.7" stroke-dasharray="3 5"/>
+      <path d="M240,265 C298,246 376,231 454,238 C532,245 592,226 660,233 C718,239 757,225 806,232" fill="none" stroke="rgba(184,188,138,0.12)" stroke-width="0.7" stroke-dasharray="3 5"/>
+      <path d="M262,249 C318,228 395,212 470,220 C545,228 605,207 671,215 C728,221 766,206 814,214" fill="none" stroke="rgba(184,188,138,0.11)" stroke-width="0.7" stroke-dasharray="3 5"/>
+      <path d="M285,232 C339,209 415,192 488,201 C561,210 620,187 684,196 C740,203 777,187 822,196" fill="none" stroke="rgba(184,188,138,0.10)" stroke-width="0.7" stroke-dasharray="2 6"/>
+      <path d="M310,214 C362,189 436,170 507,180 C578,190 636,165 698,175 C753,183 789,166 830,176" fill="none" stroke="rgba(184,188,138,0.09)" stroke-width="0.7" stroke-dasharray="2 6"/>
+      <path d="M338,194 C388,167 460,147 528,158 C596,169 653,142 713,153 C768,162 803,144 839,155" fill="none" stroke="rgba(184,188,138,0.08)" stroke-width="0.7" stroke-dasharray="2 6"/>
+      <!-- Dotted micro lines -->
+      <path d="M-50,320 C150,310 350,305 550,312 C750,319 900,308 1000,314" fill="none" stroke="rgba(184,188,138,0.10)" stroke-width="0.6" stroke-dasharray="1 7"/>
+      <path d="M-50,328 C150,320 350,315 560,322 C760,329 910,318 1000,324" fill="none" stroke="rgba(184,188,138,0.08)" stroke-width="0.6" stroke-dasharray="1 7"/>
+    </svg>
+
+    <div class="hero-content">
+      <div class="hero-by">Lauriane &nbsp;·&nbsp; Journal de marche</div>
+      <div class="hero-wordmark">CAIRN</div>
+      <div class="hero-tagline">
+        Arpenter <span class="dot">·</span>
+        Mémoriser <span class="dot">·</span>
+        Appartenir
+      </div>
+      <div class="hero-rule"></div>
+      <div class="hero-stats">
+        <div class="hs"><div class="hs-v" id="total-km">0</div><div class="hs-l">km validés</div></div>
+        <div class="hs"><div class="hs-v" id="total-gr">0</div><div class="hs-l">GR actifs</div></div>
+        <div class="hs"><div class="hs-v" id="total-sorties">0</div><div class="hs-l">sorties</div></div>
       </div>
     </div>
-    <div class="home-title">Vos grandes<br>randonnées</div>
-    <div class="home-sub">Tracez votre progression km par km</div>
   </div>
 
-  <div class="home-section">Sentiers</div>
+  <div class="section-label">Sentiers</div>
 
-  <div class="gr-card" id="card-gr34" onclick="openTrail('gr34')">
-    <div class="gr-card-icon">🌊</div>
-    <div class="gr-card-body">
-      <div class="gr-card-name">GR34 — Bretagne</div>
-      <div class="gr-card-sub">Côte bretonne · ~2 000 km</div>
-      <div class="gr-card-bar"><div class="gr-card-fill" id="fill-gr34" style="width:0%"></div></div>
-      <div class="gr-card-pct" id="pct-gr34">Tracé non chargé</div>
+  <div class="cards-grid">
+    <div class="gr-card" id="card-gr34" onclick="openTrail('gr34')">
+      <div class="gr-badge" id="badge-gr34">GR<br>34</div>
+      <div class="gr-body">
+        <div class="gr-name">Bretagne</div>
+        <div class="gr-sub">Côte bretonne · ~2 000 km</div>
+        <div class="gr-bar"><div class="gr-fill" id="fill-gr34"></div></div>
+        <div class="gr-pct" id="pct-gr34">Tracé non chargé</div>
+      </div>
+      <div class="gr-arrow">›</div>
     </div>
-    <div class="gr-card-arrow" id="arrow-gr34">›</div>
-  </div>
 
-  <div class="gr-card" id="card-gr10" onclick="openTrail('gr10')">
-    <div class="gr-card-icon">⛰️</div>
-    <div class="gr-card-body">
-      <div class="gr-card-name">GR10 — Pyrénées</div>
-      <div class="gr-card-sub">Méditerranée → Atlantique · ~900 km</div>
-      <div class="gr-card-bar"><div class="gr-card-fill" id="fill-gr10" style="width:0%"></div></div>
-      <div class="gr-card-pct" id="pct-gr10">Tracé non chargé</div>
+    <div class="gr-card" id="card-gr10" onclick="openTrail('gr10')">
+      <div class="gr-badge" id="badge-gr10">GR<br>10</div>
+      <div class="gr-body">
+        <div class="gr-name">Pyrénées</div>
+        <div class="gr-sub">Méditerranée → Atlantique · ~900 km</div>
+        <div class="gr-bar"><div class="gr-fill" id="fill-gr10"></div></div>
+        <div class="gr-pct" id="pct-gr10">Tracé non chargé</div>
+      </div>
+      <div class="gr-arrow">›</div>
     </div>
-    <div class="gr-card-arrow" id="arrow-gr10">›</div>
-  </div>
 
-  <div class="gr-card" id="card-gr20" onclick="openTrail('gr20')">
-    <div class="gr-card-icon">🌿</div>
-    <div class="gr-card-body">
-      <div class="gr-card-name">GR20 — Corse</div>
-      <div class="gr-card-sub">Nord–Sud · ~180 km</div>
-      <div class="gr-card-bar"><div class="gr-card-fill" id="fill-gr20" style="width:0%"></div></div>
-      <div class="gr-card-pct" id="pct-gr20">Tracé non chargé</div>
+    <div class="gr-card" id="card-gr20" onclick="openTrail('gr20')">
+      <div class="gr-badge" id="badge-gr20">GR<br>20</div>
+      <div class="gr-body">
+        <div class="gr-name">Corse</div>
+        <div class="gr-sub">Nord–Sud · ~180 km</div>
+        <div class="gr-bar"><div class="gr-fill" id="fill-gr20"></div></div>
+        <div class="gr-pct" id="pct-gr20">Tracé non chargé</div>
+      </div>
+      <div class="gr-arrow">›</div>
     </div>
-    <div class="gr-card-arrow" id="arrow-gr20">›</div>
-  </div>
 
-  <div class="gr-card" id="card-custom" onclick="openTrail('custom')">
-    <div class="gr-card-icon">🗺️</div>
-    <div class="gr-card-body">
-      <div class="gr-card-name">Autre GR</div>
-      <div class="gr-card-sub">Chargez n'importe quel tracé GPX</div>
-      <div class="gr-card-bar"><div class="gr-card-fill" id="fill-custom" style="width:0%"></div></div>
-      <div class="gr-card-pct" id="pct-custom">Tracé non chargé</div>
+    <div class="gr-card" id="card-gr5" onclick="openTrail('gr5')">
+      <div class="gr-badge" id="badge-gr5">GR<br>5</div>
+      <div class="gr-body">
+        <div class="gr-name">Alpes</div>
+        <div class="gr-sub">Lac Léman → Méditerranée · ~600 km</div>
+        <div class="gr-bar"><div class="gr-fill" id="fill-gr5"></div></div>
+        <div class="gr-pct" id="pct-gr5">Tracé non chargé</div>
+      </div>
+      <div class="gr-arrow">›</div>
     </div>
-    <div class="gr-card-arrow" id="arrow-custom">›</div>
+
+    <div class="gr-card" id="card-custom" onclick="openTrail('custom')">
+      <div class="gr-badge" id="badge-custom" style="font-size:22px;font-weight:200;color:var(--pale)">+</div>
+      <div class="gr-body">
+        <div class="gr-name">Autre GR</div>
+        <div class="gr-sub">Chargez n'importe quel tracé GPX</div>
+        <div class="gr-bar"><div class="gr-fill" id="fill-custom"></div></div>
+        <div class="gr-pct" id="pct-custom">Tracé non chargé</div>
+      </div>
+      <div class="gr-arrow">›</div>
+    </div>
   </div>
 
   <div class="home-footer">
-    Fichiers GPX gratuits sur
+    Fichiers GPX sur
     <a href="https://www.visorando.com" target="_blank">visorando.com</a> ·
     <a href="https://www.openrunner.com" target="_blank">openrunner.com</a><br>
-    Strava : activité → ··· → Exporter GPX
+    Strava : activité → ··· → Exporter le fichier GPX
   </div>
 </div>
 
-<!-- =================== MAP SCREEN =================== -->
+<!-- ═══════════════════ MAP SCREEN ═══════════════════ -->
 <div id="mapscreen">
   <div id="map"></div>
 
   <div id="topbar">
-    <button id="btn-back" onclick="goHome()" title="Retour à l'accueil">←</button>
+    <button id="btn-back" onclick="goHome()">←</button>
     <div id="trail-info">
-      <div id="trail-name">GR34</div>
-      <div id="trail-sub">Côte bretonne</div>
+      <div id="trail-name">GR34 — Bretagne</div>
+      <div id="trail-sub">Côte bretonne · ~2 000 km</div>
     </div>
     <div id="progress-wrap">
-      <svg width="50" height="50" viewBox="0 0 50 50">
-        <circle cx="25" cy="25" r="21" fill="none" stroke="#e0d8cc" stroke-width="4"/>
-        <circle id="arc" cx="25" cy="25" r="21" fill="none" stroke="#4a8c42" stroke-width="4"
-          stroke-linecap="round" stroke-dasharray="132" stroke-dashoffset="132"
-          style="transition:stroke-dashoffset .6s ease"/>
+      <svg width="46" height="46" viewBox="0 0 46 46">
+        <circle cx="23" cy="23" r="19" fill="none" stroke="#e4e6d8" stroke-width="3"/>
+        <circle id="arc" cx="23" cy="23" r="19" fill="none" stroke="#889063" stroke-width="3"
+          stroke-linecap="round" stroke-dasharray="119.4" stroke-dashoffset="119.4"
+          style="transition:stroke-dashoffset .7s cubic-bezier(.4,0,.2,1)"/>
       </svg>
       <div id="pct-label">0%</div>
     </div>
   </div>
 
-  <div id="panel">
-    <div id="drag-handle"></div>
-    <div id="gps-status">
-      <div id="gps-dot"></div>
-      <span id="gps-msg">GPS actif — bonne marche !</span>
+  <!-- Layer switcher -->
+  <div id="layer-switcher" style="position:absolute;top:80px;right:14px;z-index:499;display:flex;flex-direction:column;gap:6px">
+    <button class="layer-btn on" id="lb-positron" onclick="setLayer('positron')" title="Carte épurée">🗺</button>
+    <button class="layer-btn" id="lb-topo" onclick="setLayer('topo')" title="Topographique">⛰</button>
+    <button class="layer-btn" id="lb-satellite" onclick="setLayer('satellite')" title="Satellite">🛰</button>
+  </div>
+
+  <div id="sheet">
+    <div class="sheet-handle"></div>
+    <div class="tab-bar">
+      <button class="tab-btn on"  onclick="switchTab('suivi')">Suivi</button>
+      <button class="tab-btn"     onclick="switchTab('altitude')">Altitude</button>
+      <button class="tab-btn"     onclick="switchTab('historique')">Historique</button>
+      <button class="tab-btn"     onclick="switchTab('options')">Options</button>
     </div>
-    <div class="stats">
-      <div class="stat"><div class="stat-v" id="s-km">0</div><div class="stat-l">km validés</div></div>
-      <div class="stat"><div class="stat-v" id="s-seg">0</div><div class="stat-l">segments</div></div>
-      <div class="stat"><div class="stat-v" id="s-rest">—</div><div class="stat-l">km restants</div></div>
-      <div class="stat"><div class="stat-v" id="s-pct">0%</div><div class="stat-l">complété</div></div>
+
+    <!-- SUIVI -->
+    <div class="tab-pane on" id="tab-suivi">
+      <div id="gps-status">
+        <div id="gps-dot"></div>
+        <span id="gps-msg">GPS actif</span>
+      </div>
+      <div class="stats">
+        <div class="stat"><div class="stat-v" id="s-km">0</div><div class="stat-l">km validés</div></div>
+        <div class="stat"><div class="stat-v" id="s-seg">0</div><div class="stat-l">segments</div></div>
+        <div class="stat"><div class="stat-v" id="s-rest">—</div><div class="stat-l">restants</div></div>
+        <div class="stat"><div class="stat-v" id="s-pct">0%</div><div class="stat-l">complété</div></div>
+      </div>
+      <div class="row">
+        <button class="btn btn-primary" id="btn-gps" onclick="toggleTracking()">📍 Démarrer le suivi</button>
+        <button class="btn btn-secondary" onclick="document.getElementById('fi-activity').click()">📂 Importer GPX</button>
+      </div>
     </div>
-    <div class="row">
-      <button class="btn btn-start" id="btn-gps" onclick="toggleTracking()">📍 Démarrer le suivi</button>
-      <button class="btn btn-gray" onclick="document.getElementById('fi-activity').click()">📂 Importer GPX</button>
+
+    <!-- ALTITUDE -->
+    <div class="tab-pane" id="tab-altitude">
+      <div id="alti-wrap">
+        <div id="alti-label">Profil altimétrique</div>
+        <svg id="alti-svg" viewBox="0 0 600 56" preserveAspectRatio="none">
+          <text x="300" y="32" text-anchor="middle" font-size="11" fill="#889063" font-family="Helvetica Neue, sans-serif" font-weight="300">Chargez un tracé GPX avec données d'altitude</text>
+        </svg>
+        <div id="alti-range"><span id="alti-min">—</span><span id="alti-max">—</span></div>
+      </div>
+      <div class="stats">
+        <div class="stat"><div class="stat-v" id="a-min">—</div><div class="stat-l">Alt. min (m)</div></div>
+        <div class="stat"><div class="stat-v" id="a-max">—</div><div class="stat-l">Alt. max (m)</div></div>
+        <div class="stat"><div class="stat-v" id="a-up">—</div><div class="stat-l">D+ total (m)</div></div>
+        <div class="stat"><div class="stat-v" id="a-down">—</div><div class="stat-l">D- total (m)</div></div>
+      </div>
     </div>
-    <div class="row">
-      <button class="btn btn-outline" onclick="centerMap()">🎯 Centrer</button>
-      <button class="btn btn-outline" onclick="document.getElementById('fi-ref').click()">⚙️ Changer tracé</button>
-      <button class="btn btn-outline" onclick="doReset()">🗑 Reset</button>
+
+    <!-- HISTORIQUE -->
+    <div class="tab-pane" id="tab-historique">
+      <div id="hist-list"><div class="hist-empty">Aucune sortie enregistrée.<br>Démarrez le suivi GPS ou importez vos fichiers Strava.</div></div>
+    </div>
+
+    <!-- OPTIONS -->
+    <div class="tab-pane" id="tab-options">
+      <div class="row">
+        <button class="btn btn-secondary" onclick="document.getElementById('fi-ref').click()">⚙️ Changer le tracé GPX</button>
+      </div>
+      <div class="row">
+        <button class="btn btn-ghost" onclick="centerMap()">🎯 Recentrer</button>
+        <button class="btn btn-ghost" onclick="doReset()">🗑 Réinitialiser</button>
+      </div>
     </div>
   </div>
 
-  <!-- First-time load overlay -->
+  <!-- Load overlay -->
   <div id="load-overlay">
-    <div class="lo-icon" id="lo-icon">🌊</div>
-    <div class="lo-title" id="lo-title">GR34 — Bretagne</div>
-    <div class="lo-sub">Chargez le fichier GPX du tracé une seule fois. Cairn s'en souviendra.</div>
-    <label class="drop" for="fi-ref-overlay">
-      <div class="drop-title">📁 Charger le tracé GPX</div>
-      <div class="drop-sub">Appuyez pour choisir le fichier</div>
-    </label>
-    <div class="lo-links">
-      Télécharger sur <a href="https://www.visorando.com" target="_blank">visorando.com</a>
-      · <a href="https://www.openrunner.com" target="_blank">openrunner.com</a>
+    <svg class="lo-topo" viewBox="0 0 600 700" preserveAspectRatio="xMidYMid slice">
+      <path d="M-50,650 C100,632 250,615 400,624 C550,633 680,610 800,620" fill="none" stroke="rgba(136,144,99,0.15)" stroke-width="1"/>
+      <path d="M-50,620 C105,600 255,581 406,591 C558,601 688,576 808,587" fill="none" stroke="rgba(136,144,99,0.13)" stroke-width="1"/>
+      <path d="M-50,588 C110,565 260,544 412,556 C564,568 696,540 816,552" fill="none" stroke="rgba(136,144,99,0.12)" stroke-width="1"/>
+      <path d="M-50,554 C115,528 265,505 418,519 C571,533 705,502 824,516" fill="none" stroke="rgba(136,144,99,0.11)" stroke-width="1.2"/>
+      <path d="M-50,518 C120,489 270,464 424,480 C578,496 714,462 832,478" fill="none" stroke="rgba(136,144,99,0.10)" stroke-width="1"/>
+      <path d="M-50,480 C125,448 275,420 430,438 C585,456 723,419 840,437" fill="none" stroke="rgba(136,144,99,0.09)" stroke-width="1"/>
+      <path d="M-50,440 C130,404 280,374 436,394 C592,414 732,373 848,394" fill="none" stroke="rgba(136,144,99,0.08)" stroke-width="1"/>
+      <path d="M-50,396 C135,357 285,324 442,347 C599,370 741,325 856,348" fill="none" stroke="rgba(136,144,99,0.07)" stroke-width="1"/>
+      <path d="M-50,350 C140,307 291,271 449,297 C607,323 751,274 864,300" fill="none" stroke="rgba(136,144,99,0.07)" stroke-width="1"/>
+      <path d="M100,500 C160,474 230,458 305,466 C380,474 440,454 510,461" fill="none" stroke="rgba(136,144,99,0.10)" stroke-width="0.8" stroke-dasharray="3 5"/>
+      <path d="M115,478 C173,450 242,432 316,441 C390,450 450,429 519,437" fill="none" stroke="rgba(136,144,99,0.09)" stroke-width="0.8" stroke-dasharray="3 5"/>
+      <path d="M132,454 C188,425 256,405 328,415 C400,425 462,402 530,411" fill="none" stroke="rgba(136,144,99,0.08)" stroke-width="0.8" stroke-dasharray="2 6"/>
+    </svg>
+    <div class="lo-content">
+      <div class="lo-label" id="lo-label">GR34</div>
+      <div class="lo-title" id="lo-title">Bretagne</div>
+      <div class="lo-sub">Chargez le fichier GPX du tracé une seule fois — Cairn s'en souviendra.</div>
+      <label class="drop" for="fi-ref-overlay">
+        <div class="drop-title">Charger le tracé GPX</div>
+        <div class="drop-sub">Cliquez pour choisir le fichier</div>
+      </label>
+      <div class="lo-links">
+        <a href="https://www.visorando.com" target="_blank">visorando.com</a> ·
+        <a href="https://www.openrunner.com" target="_blank">openrunner.com</a>
+      </div>
+      <button class="lo-back" onclick="goHome()">← Retour</button>
     </div>
   </div>
 
   <div id="loading">
     <div class="spin"></div>
-    <div style="font-size:14px;color:#4a3728;font-weight:500">Chargement…</div>
+    <div id="loading-msg">Chargement</div>
   </div>
 </div>
 
 <div id="toast"></div>
-
-<input type="file" id="fi-ref" accept=".gpx" onchange="loadRef(this)">
+<input type="file" id="fi-ref"         accept=".gpx" onchange="loadRef(this)">
 <input type="file" id="fi-ref-overlay" accept=".gpx" onchange="loadRef(this)">
-<input type="file" id="fi-activity" accept=".gpx" multiple onchange="loadActivities(this)">
+<input type="file" id="fi-activity"    accept=".gpx" multiple onchange="loadActivities(this)">
 
 <script>
 const TRAILS={
-  gr34:{name:'GR34 — Bretagne',sub:'Côte bretonne · ~2 000 km',icon:'🌊',center:[47.8,-3.2],zoom:9},
-  gr10:{name:'GR10 — Pyrénées',sub:'Méditerranée → Atlantique · ~900 km',icon:'⛰️',center:[42.8,0.5],zoom:9},
-  gr20:{name:'GR20 — Corse',sub:'Nord–Sud · ~180 km',icon:'🌿',center:[42.1,9.1],zoom:10},
-  custom:{name:'GR personnalisé',sub:'Votre propre tracé GPX',icon:'🗺️',center:[46.5,2.3],zoom:6}
+  gr34:  {name:'GR34 — Bretagne',  sub:'Côte bretonne · ~2 000 km',         label:'GR34',title:'Bretagne',      center:[47.8,-3.2],zoom:9},
+  gr10:  {name:'GR10 — Pyrénées',  sub:'Méditerranée → Atlantique · ~900 km',label:'GR10',title:'Pyrénées',      center:[42.8,0.5], zoom:9},
+  gr20:  {name:'GR20 — Corse',     sub:'Nord–Sud · ~180 km',                 label:'GR20',title:'Corse',         center:[42.1,9.1], zoom:10},
+  gr5:   {name:'GR5 — Alpes',      sub:'Lac Léman → Méditerranée · ~600 km', label:'GR5', title:'Alpes',         center:[45.5,6.8], zoom:9},
+  custom:{name:'GR Personnalisé',  sub:'Votre propre tracé GPX',             label:'+',   title:'GR personnalisé',center:[46.5,2.3], zoom:6}
+};
+const LAYERS={
+  positron:{url:'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', attr:'© OpenStreetMap © CARTO'},
+  topo:    {url:'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',               attr:'© OpenStreetMap © OpenTopoMap'},
+  satellite:{url:'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',attr:'© Esri'}
 };
 const SEG=15,THRESH=35;
-let trail=null,refPts=[],done=new Set(),lines=[],tracking=false,wid=null,posMarker=null,mapObj=null;
+let trail=null,refPts=[],refEle=[],done=new Set(),lines=[],poiMarkers=[],
+    tracking=false,wid=null,posMarker=null,mapObj=null,tileLayer=null,currentLayer='positron';
 
-/* ---- storage ---- */
-function save(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
-function load(k){try{const v=localStorage.getItem(k);return v?JSON.parse(v):null}catch(e){return null}}
+function sv(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+function ld(k){try{const v=localStorage.getItem(k);return v?JSON.parse(v):null}catch(e){return null}}
 
-/* ---- GPX parser ---- */
 function parseGPX(txt){
   const doc=new DOMParser().parseFromString(txt,'text/xml');
-  const pts=[];
-  doc.querySelectorAll('trkpt,rtept,wpt').forEach(n=>{
+  const pts=[],ele=[],pois=[];
+  doc.querySelectorAll('trkpt,rtept').forEach(n=>{
     const la=parseFloat(n.getAttribute('lat')),lo=parseFloat(n.getAttribute('lon'));
-    if(!isNaN(la)&&!isNaN(lo))pts.push([la,lo]);
+    const el=parseFloat(n.querySelector('ele')?.textContent||'NaN');
+    if(!isNaN(la)&&!isNaN(lo)){pts.push([la,lo]);ele.push(isNaN(el)?null:el);}
   });
-  return pts;
+  doc.querySelectorAll('wpt').forEach(n=>{
+    const la=parseFloat(n.getAttribute('lat')),lo=parseFloat(n.getAttribute('lon'));
+    const name=n.querySelector('name')?.textContent||'';
+    if(!isNaN(la)&&!isNaN(lo))pois.push({latlng:[la,lo],name});
+  });
+  return{pts,ele,pois};
 }
 
-/* ---- geo helpers ---- */
 function dist(a,b){
   const R=6371000,dL=(b[0]-a[0])*Math.PI/180,dG=(b[1]-a[1])*Math.PI/180,
     la=a[0]*Math.PI/180,lb=b[0]*Math.PI/180,
     x=Math.sin(dL/2)**2+Math.cos(la)*Math.cos(lb)*Math.sin(dG/2)**2;
   return R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x));
 }
-function downsample(pts,d=18){
-  if(!pts.length)return pts;
-  const o=[pts[0]];let l=pts[0];
-  for(let i=1;i<pts.length;i++){if(dist(l,pts[i])>=d){o.push(pts[i]);l=pts[i];}}
-  if(o[o.length-1]!==pts[pts.length-1])o.push(pts[pts.length-1]);
-  return o;
+function downsample(pts,ele,d=18){
+  if(!pts.length)return{pts:[],ele:[]};
+  const op=[pts[0]],oe=[ele[0]];let l=pts[0];
+  for(let i=1;i<pts.length;i++){if(dist(l,pts[i])>=d){op.push(pts[i]);oe.push(ele[i]);l=pts[i];}}
+  if(op[op.length-1]!==pts[pts.length-1]){op.push(pts[pts.length-1]);oe.push(ele[ele.length-1]);}
+  return{pts:op,ele:oe};
 }
-function matchPts(upts,rpts,ds){
-  for(const u of upts)
-    for(let i=0;i<rpts.length;i++){
-      if(Math.abs(rpts[i][0]-u[0])>THRESH/111000)continue;
-      if(dist(u,rpts[i])<THRESH)ds.add(Math.floor(i/SEG));
+function matchPts(up,rp,ds){
+  for(const u of up)
+    for(let i=0;i<rp.length;i++){
+      if(Math.abs(rp[i][0]-u[0])>THRESH/111000)continue;
+      if(dist(u,rp[i])<THRESH)ds.add(Math.floor(i/SEG));
     }
 }
 function totalKm(pts){let d=0;for(let i=1;i<pts.length;i++)d+=dist(pts[i-1],pts[i]);return d/1000;}
 
-/* ---- map init ---- */
+/* ── MAP ── */
 function ensureMap(){
   if(mapObj)return;
   mapObj=L.map('map',{zoomControl:true});
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap'}).addTo(mapObj);
+  const l=LAYERS[currentLayer];
+  tileLayer=L.tileLayer(l.url,{maxZoom:19,attribution:l.attr}).addTo(mapObj);
+}
+function setLayer(name){
+  currentLayer=name;
+  if(!mapObj)return;
+  if(tileLayer)mapObj.removeLayer(tileLayer);
+  const l=LAYERS[name];
+  tileLayer=L.tileLayer(l.url,{maxZoom:19,attribution:l.attr}).addTo(mapObj);
+  document.querySelectorAll('.layer-btn').forEach(b=>b.classList.remove('on'));
+  document.getElementById('lb-'+name).classList.add('on');
 }
 
-/* ---- draw ---- */
+/* ── DRAW ── */
 function draw(){
   lines.forEach(l=>mapObj.removeLayer(l));lines=[];
   const n=Math.ceil(refPts.length/SEG);
@@ -390,11 +646,67 @@ function draw(){
     const seg=refPts.slice(s*SEG,Math.min(s*SEG+SEG+1,refPts.length));
     if(seg.length<2)continue;
     const ok=done.has(s);
-    lines.push(L.polyline(seg,{color:ok?'#4a8c42':'#c0392b',weight:ok?5:3.5,opacity:ok?.9:.5}).addTo(mapObj));
+    lines.push(L.polyline(seg,{color:ok?'#889063':'#6b2e1a',weight:ok?5.5:3,opacity:ok?.88:.38}).addTo(mapObj));
   }
 }
+function drawPOIs(pois){
+  poiMarkers.forEach(m=>mapObj.removeLayer(m));poiMarkers=[];
+  if(!pois||!pois.length)return;
+  const icon=L.divIcon({html:'<div style="width:7px;height:7px;border-radius:50%;background:#354024;border:2px solid white;box-shadow:0 1px 4px rgba(0,0,0,.22)"></div>',className:'',iconSize:[7,7],iconAnchor:[3.5,3.5]});
+  pois.forEach(p=>{
+    const m=L.marker(p.latlng,{icon}).addTo(mapObj);
+    if(p.name)m.bindPopup(`<span style="font-family:'Helvetica Neue',sans-serif;font-size:12px;color:#1a1f12">${p.name}</span>`);
+    poiMarkers.push(m);
+  });
+}
 
-/* ---- UI stats ---- */
+/* ── ALTITUDE PROFILE ── */
+function drawAltitude(ele){
+  const valid=ele.filter(e=>e!==null);
+  if(valid.length<2){
+    document.getElementById('alti-svg').innerHTML='<text x="300" y="32" text-anchor="middle" font-size="11" fill="#889063" font-family="Helvetica Neue,sans-serif" font-weight="300">Pas de données d\'altitude dans ce fichier GPX</text>';
+    ['a-min','a-max','a-up','a-down','alti-min','alti-max'].forEach(id=>document.getElementById(id).textContent='—');
+    return;
+  }
+  const mn=Math.min(...valid),mx=Math.max(...valid);
+  const pad=6,W=600,H=56,iW=W-2*pad,iH=H-2*pad;
+  // sample down to 300 pts for rendering
+  const step=Math.max(1,Math.floor(valid.length/300));
+  const sampled=[];for(let i=0;i<valid.length;i+=step)sampled.push(valid[i]);
+  const points=sampled.map((v,i)=>{
+    const x=pad+i/(sampled.length-1)*iW;
+    const y=pad+(1-(v-mn)/(mx-mn||1))*iH;
+    return`${x},${y}`;
+  }).join(' ');
+  // fill area
+  const first=`${pad},${H-pad}`;
+  const last=`${pad+iW},${H-pad}`;
+  const fillPts=`${first} ${points} ${last}`;
+  // D+ D-
+  let up=0,down=0;
+  for(let i=1;i<valid.length;i++){
+    const d=valid[i]-valid[i-1];
+    if(d>0)up+=d; else down+=Math.abs(d);
+  }
+  document.getElementById('alti-svg').innerHTML=`
+    <defs>
+      <linearGradient id="ag" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#889063" stop-opacity=".35"/>
+        <stop offset="100%" stop-color="#889063" stop-opacity=".04"/>
+      </linearGradient>
+    </defs>
+    <polygon points="${fillPts}" fill="url(#ag)"/>
+    <polyline points="${points}" fill="none" stroke="#354024" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/>
+  `;
+  document.getElementById('alti-min').textContent=Math.round(mn)+' m';
+  document.getElementById('alti-max').textContent=Math.round(mx)+' m';
+  document.getElementById('a-min').textContent=Math.round(mn);
+  document.getElementById('a-max').textContent=Math.round(mx);
+  document.getElementById('a-up').textContent='+'+Math.round(up);
+  document.getElementById('a-down').textContent='-'+Math.round(down);
+}
+
+/* ── STATS ── */
 function updateStats(){
   const total=Math.max(1,Math.ceil(refPts.length/SEG));
   const n=done.size,pct=Math.round(n/total*100);
@@ -402,62 +714,64 @@ function updateStats(){
   document.getElementById('s-pct').textContent=pct+'%';
   document.getElementById('s-seg').textContent=n;
   document.getElementById('s-km').textContent=dkm;
-  document.getElementById('s-rest').textContent=refPts.length?rkm:'—';
+  document.getElementById('s-rest').textContent=refPts.length?rkm+' km':'—';
   document.getElementById('pct-label').textContent=pct+'%';
-  document.getElementById('arc').setAttribute('stroke-dashoffset',132-(pct/100)*132);
+  document.getElementById('arc').setAttribute('stroke-dashoffset',119.4-(pct/100)*119.4);
 }
 
-/* ---- update home cards ---- */
+/* ── HOME ── */
 function refreshHome(){
+  let kAll=0,gAll=0,sAll=0;
   Object.keys(TRAILS).forEach(t=>{
-    const rr=load('ref_'+t),dd=load('done_'+t);
+    const rr=ld('ref_'+t),dd=ld('done_'+t),hist=ld('hist_'+t)||[];
     const card=document.getElementById('card-'+t);
-    const fillEl=document.getElementById('fill-'+t);
-    const pctEl=document.getElementById('pct-'+t);
     if(rr&&rr.length>0){
       card.classList.add('loaded');
       const total=Math.max(1,Math.ceil(rr.length/SEG));
       const n=(dd||[]).length,pct=Math.round(n/total*100);
-      const tkm=totalKm(rr),dkm=Math.round(tkm*n/total);
-      fillEl.style.width=pct+'%';
-      pctEl.textContent=pct+'% · '+dkm+' km parcourus';
-      pctEl.style.color='#2d5a27';
+      const dkm=Math.round(totalKm(rr)*n/total);
+      document.getElementById('fill-'+t).style.width=pct+'%';
+      document.getElementById('pct-'+t).textContent=pct+'% · '+dkm+' km parcourus';
+      kAll+=dkm;gAll++;
     }else{
       card.classList.remove('loaded');
-      fillEl.style.width='0%';
-      pctEl.textContent='Tracé non chargé';
-      pctEl.style.color='';
+      document.getElementById('fill-'+t).style.width='0%';
+      document.getElementById('pct-'+t).textContent='Tracé non chargé';
     }
+    sAll+=hist.length;
   });
+  document.getElementById('total-km').textContent=kAll;
+  document.getElementById('total-gr').textContent=gAll;
+  document.getElementById('total-sorties').textContent=sAll;
 }
 
-/* ---- open trail ---- */
+/* ── OPEN / CLOSE ── */
 function openTrail(t){
-  trail=t;
-  const info=TRAILS[t];
+  trail=t;const info=TRAILS[t];
   document.getElementById('trail-name').textContent=info.name;
   document.getElementById('trail-sub').textContent=info.sub;
-  document.getElementById('lo-icon').textContent=info.icon;
-  document.getElementById('lo-title').textContent=info.name;
+  document.getElementById('lo-label').textContent=info.label;
+  document.getElementById('lo-title').textContent=info.title;
   document.getElementById('home').style.display='none';
   document.getElementById('mapscreen').style.display='block';
   ensureMap();
   lines.forEach(l=>mapObj.removeLayer(l));lines=[];
+  poiMarkers.forEach(m=>mapObj.removeLayer(m));poiMarkers=[];
   if(posMarker){mapObj.removeLayer(posMarker);posMarker=null;}
-  const rr=load('ref_'+t),dd=load('done_'+t);
+  const rr=ld('ref_'+t),dd=ld('done_'+t),re=ld('ele_'+t)||[];
+  switchTab('suivi');
   if(rr&&rr.length>0){
-    refPts=rr;done=new Set(dd||[]);
-    draw();updateStats();
+    refPts=rr;refEle=re;done=new Set(dd||[]);
+    const pois=ld('poi_'+t)||[];
+    draw();drawPOIs(pois);drawAltitude(refEle);updateStats();renderHistory();
     mapObj.setView(info.center,info.zoom);
     document.getElementById('load-overlay').style.display='none';
   }else{
-    refPts=[];done=new Set();updateStats();
+    refPts=[];refEle=[];done=new Set();updateStats();renderHistory();
     mapObj.setView(info.center,info.zoom);
     document.getElementById('load-overlay').style.display='flex';
   }
 }
-
-/* ---- go home ---- */
 function goHome(){
   if(tracking)stopGPS();
   document.getElementById('mapscreen').style.display='none';
@@ -465,90 +779,125 @@ function goHome(){
   refreshHome();
 }
 
-/* ---- load reference GPX ---- */
+/* ── LOAD REF ── */
 async function loadRef(inp){
   const f=inp.files[0];if(!f)return;
-  show(true);
+  showLoading(true,'Analyse du tracé');
   const txt=await f.text();
-  let pts=parseGPX(txt);
-  if(pts.length<5){toast('❌ Fichier GPX invalide ou vide');show(false);inp.value='';return;}
-  pts=downsample(pts,18);
-  refPts=pts;done=new Set();
-  save('ref_'+trail,pts);save('done_'+trail,[]);
-  draw();updateStats();
-  mapObj.fitBounds(L.latLngBounds(pts));
+  const{pts,ele,pois}=parseGPX(txt);
+  if(pts.length<5){toast('Fichier GPX invalide');showLoading(false);inp.value='';return;}
+  const ds=downsample(pts,ele,18);
+  refPts=ds.pts;refEle=ds.ele;done=new Set();
+  sv('ref_'+trail,ds.pts);sv('done_'+trail,[]);sv('ele_'+trail,ds.ele);sv('poi_'+trail,pois);
+  draw();drawPOIs(pois);drawAltitude(refEle);updateStats();
+  mapObj.fitBounds(L.latLngBounds(ds.pts));
   document.getElementById('load-overlay').style.display='none';
-  show(false);inp.value='';
-  toast('✅ Tracé chargé · '+Math.round(totalKm(pts))+' km');
+  showLoading(false);inp.value='';
+  toast('Tracé chargé · '+Math.round(totalKm(ds.pts))+' km'+(pois.length?' · '+pois.length+' PDI':''));
 }
 
-/* ---- load activity GPX(s) ---- */
+/* ── LOAD ACTIVITIES ── */
 async function loadActivities(inp){
-  if(!refPts.length){toast('⚠️ Chargez d\'abord le tracé de référence');inp.value='';return;}
-  show(true);let n=0;
+  if(!refPts.length){toast('Chargez d\'abord le tracé de référence');inp.value='';return;}
+  showLoading(true,'Analyse des activités');
+  let count=0;const hist=ld('hist_'+trail)||[];
   for(const f of inp.files){
-    const pts=parseGPX(await f.text());
-    if(pts.length){matchPts(pts,refPts,done);n++;}
+    const{pts}=parseGPX(await f.text());
+    if(!pts.length)continue;
+    const prev=done.size;
+    matchPts(pts,refPts,done);
+    hist.unshift({id:Date.now()+count,name:f.name.replace('.gpx','').replace(/_/g,' '),
+      date:new Date().toLocaleDateString('fr-FR',{day:'numeric',month:'short',year:'numeric'}),
+      source:'gpx',km:Math.round(totalKm(pts)),newSegs:done.size-prev});
+    count++;
   }
-  save('done_'+trail,[...done]);
-  draw();updateStats();show(false);inp.value='';
-  toast('✅ '+n+' activité(s) importée(s)');
+  sv('done_'+trail,[...done]);sv('hist_'+trail,hist);
+  draw();updateStats();renderHistory();showLoading(false);inp.value='';
+  toast(count+' activité'+(count>1?'s':'')+' importée'+(count>1?'s':''));
 }
 
-/* ---- GPS tracking ---- */
-function toggleTracking(){if(tracking)stopGPS();else startGPS();}
+/* ── HISTORY ── */
+function renderHistory(){
+  const hist=ld('hist_'+trail)||[];
+  const el=document.getElementById('hist-list');
+  if(!hist.length){el.innerHTML='<div class="hist-empty">Aucune sortie enregistrée.<br>Démarrez le suivi GPS ou importez vos fichiers Strava.</div>';return;}
+  el.innerHTML=hist.map(h=>`
+    <div class="hist-item">
+      <div class="hist-dot ${h.source}"></div>
+      <div class="hist-body">
+        <div class="hist-name">${h.name}</div>
+        <div class="hist-meta">${h.date}${h.km?' · '+h.km+' km':''}</div>
+      </div>
+      ${h.newSegs>0?`<div class="hist-tag">+${h.newSegs} seg.</div>`:''}
+    </div>`).join('');
+}
 
+/* ── GPS ── */
+function toggleTracking(){if(tracking)stopGPS();else startGPS();}
 function startGPS(){
-  if(!refPts.length){toast('⚠️ Chargez d\'abord le tracé de référence');return;}
-  if(!navigator.geolocation){toast('❌ GPS non disponible');return;}
+  if(!refPts.length){toast('Chargez d\'abord le tracé');return;}
+  if(!navigator.geolocation){toast('GPS non disponible');return;}
   tracking=true;
   document.getElementById('btn-gps').innerHTML='⏹ Arrêter le suivi';
   document.getElementById('btn-gps').className='btn btn-stop';
   document.getElementById('gps-status').style.display='flex';
   document.getElementById('gps-dot').classList.add('on');
-  let buf=[];
+  let buf=[];window._sessionStart=Date.now();window._sessionBuf=buf;
   wid=navigator.geolocation.watchPosition(pos=>{
-    const pt=[pos.coords.latitude,pos.coords.longitude];
-    buf.push(pt);
+    const pt=[pos.coords.latitude,pos.coords.longitude];buf.push(pt);
     if(posMarker)mapObj.removeLayer(posMarker);
-    posMarker=L.circleMarker(pt,{radius:10,color:'#1d4ed8',fillColor:'#3b82f6',fillOpacity:1,weight:3}).addTo(mapObj);
+    const icon=L.divIcon({html:'<div style="width:13px;height:13px;border-radius:50%;background:#354024;border:3px solid white;box-shadow:0 2px 8px rgba(0,0,0,.28)"></div>',className:'',iconSize:[13,13],iconAnchor:[6.5,6.5]});
+    posMarker=L.marker(pt,{icon}).addTo(mapObj);
     const prev=done.size;
     matchPts(buf.slice(-10),refPts,done);
-    if(done.size>prev){draw();updateStats();save('done_'+trail,[...done]);}
+    if(done.size>prev){draw();updateStats();sv('done_'+trail,[...done]);}
     document.getElementById('gps-msg').textContent='GPS actif · ±'+Math.round(pos.coords.accuracy)+'m';
-  },err=>{toast('⚠️ GPS : '+err.message);},{enableHighAccuracy:true,maximumAge:4000,timeout:12000});
+  },err=>toast('GPS : '+err.message),{enableHighAccuracy:true,maximumAge:4000,timeout:12000});
 }
-
 function stopGPS(){
   if(wid!==null)navigator.geolocation.clearWatch(wid);
   tracking=false;wid=null;
   document.getElementById('btn-gps').innerHTML='📍 Démarrer le suivi';
-  document.getElementById('btn-gps').className='btn btn-start';
+  document.getElementById('btn-gps').className='btn btn-primary';
   document.getElementById('gps-status').style.display='none';
   document.getElementById('gps-dot').classList.remove('on');
-  save('done_'+trail,[...done]);
-  toast('Suivi arrêté · progression sauvegardée 💾');
+  sv('done_'+trail,[...done]);
+  const buf=window._sessionBuf||[];
+  let km=0;for(let i=1;i<buf.length;i++)km+=dist(buf[i-1],buf[i]);
+  const hist=ld('hist_'+trail)||[];
+  hist.unshift({id:Date.now(),source:'gps',
+    name:'Sortie du '+new Date().toLocaleDateString('fr-FR',{day:'numeric',month:'long'}),
+    date:new Date().toLocaleDateString('fr-FR',{day:'numeric',month:'short',year:'numeric'}),
+    km:Math.round(km/1000),newSegs:0});
+  sv('hist_'+trail,hist);renderHistory();
+  toast('Suivi arrêté · progression sauvegardée');
 }
 
+/* ── TABS / UTILS ── */
+function switchTab(name){
+  const names=['suivi','altitude','historique','options'];
+  document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('on',names[i]===name));
+  document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('on'));
+  document.getElementById('tab-'+name).classList.add('on');
+}
 function centerMap(){
   if(refPts.length)mapObj.fitBounds(L.latLngBounds(refPts));
   else mapObj.setView(TRAILS[trail].center,TRAILS[trail].zoom);
 }
-
 function doReset(){
   if(!confirm('Réinitialiser la progression pour '+TRAILS[trail].name+' ?'))return;
-  done=new Set();save('done_'+trail,[]);
-  draw();updateStats();toast('Progression réinitialisée');
+  done=new Set();sv('done_'+trail,[]);sv('hist_'+trail,[]);
+  draw();updateStats();renderHistory();toast('Progression réinitialisée');
 }
-
-function show(v){document.getElementById('loading').style.display=v?'flex':'none';}
+function showLoading(v,msg='Chargement'){
+  document.getElementById('loading').style.display=v?'flex':'none';
+  document.getElementById('loading-msg').textContent=msg;
+}
 function toast(msg){
-  const t=document.getElementById('toast');
-  t.textContent=msg;t.style.display='block';
-  clearTimeout(t._t);t._t=setTimeout(()=>t.style.display='none',3200);
+  const t=document.getElementById('toast');t.textContent=msg;t.style.display='block';
+  clearTimeout(t._t);t._t=setTimeout(()=>t.style.display='none',3000);
 }
 
-/* ---- init ---- */
 refreshHome();
 </script>
 </body>
