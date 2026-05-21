@@ -7,20 +7,25 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <style>
-:root {
-  --dark:    #354024;
-  --mid:     #889063;
-  --light:   #b8bc8a;
-  --pale:    #dde0c8;
-  --paper:   #f4f3ee;
-  --white:   #ffffff;
-  --ink:     #1a1f12;
-  --ink2:    #354024cc;
-  --ghost:   #e4e6d8;
-  --mist:    #eceee5;
-  --red:     #6b2e1a;
-  --r:       12px;
-  --r2:      18px;
+:root{
+  --dark:#1f2d24;
+  --dark-2:#243126;
+  --mid:#6f816c;
+  --light:#a8b49b;
+  --pale:#dfe5d6;
+  --paper:#f4f3ee;
+  --white:#ffffff;
+  --ink:#182019;
+  --ghost:#d8ddd0;
+  --mist:#ecefe8;
+
+  /* GR */
+  --gr-red:#c83a32;
+  --gr-green:#2f7d57;
+  --gr-current:#e9a93e;
+
+  --r:14px;
+  --r2:22px;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;font-family:"HelveticaNeue","Helvetica Neue",Helvetica,Arial,sans-serif;overflow:hidden;background:var(--paper);color:var(--ink)}
@@ -43,18 +48,80 @@ html,body{height:100%;font-family:"HelveticaNeue","Helvetica Neue",Helvetica,Ari
 /* HERO */
 .hero{
   position:relative;
-  background:var(--dark);
-  padding:52px 40px 44px;
-  flex-shrink:0;overflow:hidden;
-  min-height:340px;
-  display:flex;flex-direction:column;justify-content:flex-end;
+  background:linear-gradient(
+    180deg,
+    #1f2d24 0%,
+    #243126 100%
+  );
+  padding:90px 48px 60px;
+  flex-shrink:0;
+  overflow:hidden;
+  min-height:420px;
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-end;
 }
 
-/* topo lines drawn inline as SVG */
-.hero-topo{
-  position:absolute;inset:0;width:100%;height:100%;
-  pointer-events:none;overflow:visible;
-}
+<svg class="hero-topo" viewBox="0 0 1400 700" preserveAspectRatio="xMidYMid slice">
+
+  <!-- massif principal -->
+  <path d="M310,510
+  C360,420 470,360 610,350
+  C760,338 860,400 920,510
+  C970,600 900,660 760,680
+  C570,705 390,645 330,560
+  Z"
+  fill="none"
+  stroke="rgba(168,180,155,.14)"
+  stroke-width="1.2"/>
+
+  <path d="M360,520
+  C410,450 500,405 615,396
+  C730,388 815,430 860,515
+  C900,586 840,635 740,648
+  C590,668 450,628 390,562
+  Z"
+  fill="none"
+  stroke="rgba(168,180,155,.12)"
+  stroke-width="1"/>
+
+  <path d="M430,528
+  C470,470 540,435 620,430
+  C710,425 775,458 810,520
+  C835,570 790,610 710,620
+  C590,635 500,605 450,560
+  Z"
+  fill="none"
+  stroke="rgba(168,180,155,.10)"
+  stroke-width="1"/>
+
+  <!-- relief secondaire -->
+  <path d="M980,260
+  C1030,220 1100,210 1160,245
+  C1220,280 1235,350 1190,405
+  C1145,460 1065,455 1010,405
+  C955,355 940,300 980,260
+  Z"
+  fill="none"
+  stroke="rgba(168,180,155,.08)"
+  stroke-width="1"/>
+
+  <!-- micro courbes -->
+  <path d="M500,500
+  C560,475 640,470 710,495"
+  fill="none"
+  stroke="rgba(168,180,155,.10)"
+  stroke-width="0.8"
+  stroke-dasharray="3 8"/>
+
+  <path d="M520,545
+  C590,525 655,525 725,545"
+  fill="none"
+  stroke="rgba(168,180,155,.08)"
+  stroke-width="0.8"
+  stroke-dasharray="3 8"/>
+
+</svg>
 
 .hero-content{position:relative;z-index:2;display:flex;flex-direction:column;gap:0}
 
@@ -65,10 +132,13 @@ html,body{height:100%;font-family:"HelveticaNeue","Helvetica Neue",Helvetica,Ari
 }
 
 .hero-wordmark{
-  font-size:100px;font-weight:700;
+  font-size:clamp(90px,13vw,180px);
+  font-weight:800;
   color:var(--white);
-  letter-spacing:-.04em;line-height:.88;
-  margin-bottom:20px;
+  letter-spacing:-.07em;
+  line-height:.82;
+  margin-bottom:24px;
+  text-shadow:0 10px 30px rgba(0,0,0,.18);
 }
 
 .hero-tagline{
@@ -95,24 +165,41 @@ html,body{height:100%;font-family:"HelveticaNeue","Helvetica Neue",Helvetica,Ari
 
 /* CARDS */
 .cards-grid{
-  padding:0 24px;
+  padding:0 36px 50px;
   display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
-  gap:10px;
+  grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
+  gap:18px;
   flex-shrink:0;
 }
 
 .gr-card{
-  background:var(--white);border-radius:var(--r2);
-  border:1px solid var(--ghost);
-  padding:20px 22px;cursor:pointer;
-  display:flex;align-items:center;gap:16px;
-  transition:border-color .2s,transform .12s,box-shadow .2s;
-}
-.gr-card:hover{box-shadow:0 4px 20px rgba(53,64,36,.08);transform:translateY(-1px)}
-.gr-card:active{transform:scale(.985)}
-.gr-card.loaded{border-color:var(--light);background:#fafbf7}
+  background:rgba(255,255,255,.75);
+  backdrop-filter:blur(14px);
 
+  border-radius:24px;
+  border:1px solid rgba(255,255,255,.5);
+
+  padding:26px;
+
+  cursor:pointer;
+
+  display:flex;
+  align-items:center;
+  gap:18px;
+
+  transition:
+    transform .18s,
+    box-shadow .2s,
+    border-color .2s;
+
+  box-shadow:
+    0 10px 30px rgba(0,0,0,.04);
+}
+
+.gr-card:hover{
+  transform:translateY(-4px);
+  box-shadow:0 18px 40px rgba(0,0,0,.08);
+}
 .gr-badge{
   width:46px;height:46px;border-radius:12px;
   background:var(--mist);
@@ -370,8 +457,8 @@ input[type=file]{display:none}
     <div class="gr-card" id="card-gr34" onclick="openTrail('gr34')">
       <div class="gr-badge" id="badge-gr34">GR<br>34</div>
       <div class="gr-body">
-        <div class="gr-name">Bretagne</div>
-        <div class="gr-sub">Côte bretonne · ~2 000 km</div>
+     <div class="gr-name">Sentier des Douaniers</div>
+      <div class="gr-sub">GR34 · Côte bretonne · ~2 000 km</div>
         <div class="gr-bar"><div class="gr-fill" id="fill-gr34"></div></div>
         <div class="gr-pct" id="pct-gr34">Tracé non chargé</div>
       </div>
@@ -381,8 +468,8 @@ input[type=file]{display:none}
     <div class="gr-card" id="card-gr10" onclick="openTrail('gr10')">
       <div class="gr-badge" id="badge-gr10">GR<br>10</div>
       <div class="gr-body">
-        <div class="gr-name">Pyrénées</div>
-        <div class="gr-sub">Méditerranée → Atlantique · ~900 km</div>
+      <div class="gr-name">Traversée des Pyrénées</div>
+        <div class="gr-sub">GR10 · Atlantique → Méditerranée · ~900 km</div>
         <div class="gr-bar"><div class="gr-fill" id="fill-gr10"></div></div>
         <div class="gr-pct" id="pct-gr10">Tracé non chargé</div>
       </div>
@@ -392,8 +479,8 @@ input[type=file]{display:none}
     <div class="gr-card" id="card-gr20" onclick="openTrail('gr20')">
       <div class="gr-badge" id="badge-gr20">GR<br>20</div>
       <div class="gr-body">
-        <div class="gr-name">Corse</div>
-        <div class="gr-sub">Nord–Sud · ~180 km</div>
+      <div class="gr-name">Fra li Monti</div>
+        <div class="gr-sub">GR20 · Corse · ~180 km</div>
         <div class="gr-bar"><div class="gr-fill" id="fill-gr20"></div></div>
         <div class="gr-pct" id="pct-gr20">Tracé non chargé</div>
       </div>
@@ -403,8 +490,8 @@ input[type=file]{display:none}
     <div class="gr-card" id="card-gr5" onclick="openTrail('gr5')">
       <div class="gr-badge" id="badge-gr5">GR<br>5</div>
       <div class="gr-body">
-        <div class="gr-name">Alpes</div>
-        <div class="gr-sub">Lac Léman → Méditerranée · ~600 km</div>
+       <div class="gr-name">Grande Traversée des Alpes</div>
+        <div class="gr-sub">GR5 · Léman → Méditerranée · ~600 km</div>
         <div class="gr-bar"><div class="gr-fill" id="fill-gr5"></div></div>
         <div class="gr-pct" id="pct-gr5">Tracé non chargé</div>
       </div>
@@ -452,6 +539,109 @@ input[type=file]{display:none}
     </div>
   </div>
 
+  <div id="sidebar">
+
+  <div id="sidebar-logo">CAIRN</div>
+
+  <div class="sidebar-section">
+
+    <div class="sidebar-label">Sentiers</div>
+
+    <button class="sidebar-trail active">
+      <span>GR34</span>
+      <span>72%</span>
+    </button>
+
+    <button class="sidebar-trail">
+      <span>GR10</span>
+      <span>18%</span>
+    </button>
+
+    <button class="sidebar-trail">
+      <span>GR20</span>
+      <span>0%</span>
+    </button>
+
+    <button class="sidebar-trail">
+      <span>GR5</span>
+      <span>0%</span>
+    </button>
+
+  </div>
+
+</div>
+
+  #sidebar{
+  position:absolute;
+  left:0;
+  top:0;
+  bottom:0;
+  width:260px;
+  z-index:900;
+
+  background:rgba(244,243,238,.94);
+  backdrop-filter:blur(18px);
+
+  border-right:1px solid var(--ghost);
+
+  padding:28px 20px;
+
+  display:flex;
+  flex-direction:column;
+}
+
+#sidebar-logo{
+  font-size:42px;
+  font-weight:800;
+  letter-spacing:-.06em;
+  color:var(--dark);
+  margin-bottom:40px;
+}
+  .sidebar-label{
+  font-size:10px;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  color:var(--mid);
+  margin-bottom:14px;
+}
+
+.sidebar-trail{
+  width:100%;
+  border:none;
+  background:transparent;
+
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+
+  padding:14px 14px;
+
+  border-radius:14px;
+
+  margin-bottom:8px;
+
+  cursor:pointer;
+
+  font-size:14px;
+  font-weight:600;
+
+  color:var(--ink);
+
+  transition:.18s;
+}
+  .sidebar-trail:hover{
+  background:var(--mist);
+}
+
+.sidebar-trail.active{
+  background:var(--dark);
+  color:white;
+}
+
+#map{
+  left:260px;
+}
+  
   <!-- Layer switcher -->
   <div id="layer-switcher" style="position:absolute;top:80px;right:14px;z-index:499;display:flex;flex-direction:column;gap:6px">
     <button class="layer-btn on" id="lb-positron" onclick="setLayer('positron')" title="Carte épurée">🗺</button>
@@ -575,10 +765,14 @@ const LAYERS={
   positron:{url:'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', attr:'© OpenStreetMap © CARTO'},
   topo:    {url:'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',               attr:'© OpenStreetMap © OpenTopoMap'},
   satellite:{url:'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',attr:'© Esri'}
+  outdoor:{
+  url:'https://tile.thunderforest.com/outdoors/{z}/{x}/{y}.png?apikey=TA_CLE_API',
+  attr:'© Thunderforest'
+}
 };
 const SEG=15,THRESH=35;
 let trail=null,refPts=[],refEle=[],done=new Set(),lines=[],poiMarkers=[],
-    tracking=false,wid=null,posMarker=null,mapObj=null,tileLayer=null,currentLayer='positron';
+    tracking=false,wid=null,posMarker=null,mapObj=null,tileLayer=null,currentLayer='topo';
 
 function sv(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
 function ld(k){try{const v=localStorage.getItem(k);return v?JSON.parse(v):null}catch(e){return null}}
@@ -640,14 +834,46 @@ function setLayer(name){
 
 /* ── DRAW ── */
 function draw(){
-  lines.forEach(l=>mapObj.removeLayer(l));lines=[];
+
+  lines.forEach(l=>mapObj.removeLayer(l));
+  lines=[];
+
   const n=Math.ceil(refPts.length/SEG);
+
   for(let s=0;s<n;s++){
-    const seg=refPts.slice(s*SEG,Math.min(s*SEG+SEG+1,refPts.length));
+
+    const seg=refPts.slice(
+      s*SEG,
+      Math.min(s*SEG+SEG+1,refPts.length)
+    );
+
     if(seg.length<2)continue;
+
     const ok=done.has(s);
-    lines.push(L.polyline(seg,{color:ok?'#889063':'#6b2e1a',weight:ok?5.5:3,opacity:ok?.88:.38}).addTo(mapObj));
+     /* outline blanc */
+    const outline=L.polyline(seg,{
+      color:'#ffffff',
+      weight:ok?10:8,
+      opacity:.92,
+      lineCap:'round',
+      lineJoin:'round'
+    }).addTo(mapObj);
+
+    /* ligne principale */
+    const main=L.polyline(seg,{
+      color:ok
+        ? 'var(--gr-green)'
+        : 'var(--gr-red)',
+      weight:ok?6:4.5,
+      opacity:1,
+      lineCap:'round',
+      lineJoin:'round'
+    }).addTo(mapObj);
+
+    lines.push(outline);
+    lines.push(main);
   }
+}
 }
 function drawPOIs(pois){
   poiMarkers.forEach(m=>mapObj.removeLayer(m));poiMarkers=[];
