@@ -8,10 +8,23 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <style>
 :root{
-  --dark:#354024; --mid:#889063; --light:#b8bc8a;
-  --pale:#dde0c8; --paper:#f4f3ee; --white:#ffffff;
-  --ink:#1a1f12; --ghost:#e4e6d8; --mist:#eceee5;
-  --red:#6b2e1a; --r:12px; --r2:18px;
+  --dark:#1f2d24;
+  --dark-2:#243126;
+  --mid:#6f816c;
+  --light:#a8b49b;
+  --pale:#dfe5d6;
+  --paper:#f4f3ee;
+  --white:#ffffff;
+  --ink:#182019;
+  --ghost:#d8ddd0;
+  --mist:#ecefe8;
+
+  --gr-red:#c83a32;
+  --gr-green:#2f7d57;
+  --gr-current:#e9a93e;
+
+  --r:14px;
+  --r2:24px;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;font-family:"HelveticaNeue","Helvetica Neue",Helvetica,Arial,sans-serif;overflow:hidden;background:var(--paper);color:var(--ink)}
@@ -77,14 +90,30 @@ html,body{height:100%;font-family:"HelveticaNeue","Helvetica Neue",Helvetica,Ari
   background:var(--paper);
 }
 .hero{
-  position:relative;background:var(--dark);
+  position:relative;
+  background:linear-gradient(180deg,#1f2d24 0%,#243126 100%);
+  padding:90px 48px 60px;
+  flex-shrink:0;
+  overflow:hidden;
+  min-height:420px;
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-end;
+}
   padding:52px 40px 44px;flex-shrink:0;overflow:hidden;
   min-height:300px;display:flex;flex-direction:column;justify-content:flex-end;
-}
 .hero-topo{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible}
 .hero-content{position:relative;z-index:2}
 .hero-by{font-size:11px;font-weight:300;letter-spacing:.28em;text-transform:uppercase;color:var(--mid);margin-bottom:14px}
-.hero-wordmark{font-size:clamp(56px,8vw,96px);font-weight:700;color:var(--white);letter-spacing:-.04em;line-height:.88;margin-bottom:18px}
+.hero-wordmark{
+  font-size:clamp(90px,13vw,180px);
+  font-weight:800;
+  color:var(--white);
+  letter-spacing:-.07em;
+  line-height:.82;
+  margin-bottom:24px;
+  text-shadow:0 10px 30px rgba(0,0,0,.18);
+}
 .hero-tagline{font-size:10px;font-weight:300;color:var(--mid);letter-spacing:.2em;text-transform:uppercase;display:flex;align-items:center;gap:10px}
 .dot{color:var(--light)}
 .hero-rule{width:100%;height:1px;background:rgba(136,144,99,.25);margin:22px 0}
@@ -95,8 +124,26 @@ html,body{height:100%;font-family:"HelveticaNeue","Helvetica Neue",Helvetica,Ari
 .section-label{padding:28px 32px 12px;font-size:9px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--mid);display:flex;align-items:center;gap:14px;flex-shrink:0}
 .section-label::after{content:'';flex:1;height:1px;background:var(--ghost)}
 
-.cards-grid{padding:0 24px;display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px;flex-shrink:0}
-.gr-card{background:var(--white);border-radius:var(--r2);border:1px solid var(--ghost);padding:20px 22px;cursor:pointer;display:flex;align-items:center;gap:16px;transition:border-color .2s,transform .12s,box-shadow .2s}
+.cards-grid{
+  padding:0 36px 50px;
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
+  gap:18px;
+  flex-shrink:0;
+}
+.gr-card{
+  background:rgba(255,255,255,.78);
+  backdrop-filter:blur(14px);
+  border-radius:24px;
+  border:1px solid rgba(255,255,255,.5);
+  padding:26px;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  gap:18px;
+  transition:transform .18s, box-shadow .2s, border-color .2s;
+  box-shadow:0 10px 30px rgba(0,0,0,.04);
+}
 .gr-card:hover{box-shadow:0 4px 20px rgba(53,64,36,.08);transform:translateY(-1px)}
 .gr-card:active{transform:scale(.985)}
 .gr-card.loaded{border-color:var(--light);background:#fafbf7}
@@ -261,19 +308,39 @@ input[type=file]{display:none}
 <!-- ══════════ HOME ══════════ -->
 <div id="home" style="display:none">
   <div class="hero">
-    <svg class="hero-topo" viewBox="0 0 900 300" preserveAspectRatio="xMidYMid slice">
-      <path d="M-50,285 C100,268 250,252 400,260 C550,268 700,248 900,256" fill="none" stroke="rgba(184,188,138,0.18)" stroke-width="0.9"/>
-      <path d="M-50,265 C105,246 254,228 406,237 C558,246 708,224 908,233" fill="none" stroke="rgba(184,188,138,0.16)" stroke-width="0.9"/>
-      <path d="M-50,244 C110,222 258,202 412,212 C566,222 718,198 916,208" fill="none" stroke="rgba(184,188,138,0.15)" stroke-width="1"/>
-      <path d="M-50,221 C115,196 262,174 418,186 C574,198 728,170 924,182" fill="none" stroke="rgba(184,188,138,0.14)" stroke-width="0.9"/>
-      <path d="M-50,196 C120,168 266,144 424,158 C582,172 738,140 932,155" fill="none" stroke="rgba(184,188,138,0.13)" stroke-width="0.9"/>
-      <path d="M-50,169 C125,138 270,111 430,128 C590,145 748,108 940,126" fill="none" stroke="rgba(184,188,138,0.12)" stroke-width="1"/>
-      <path d="M-50,140 C130,105 275,75 437,96 C599,117 759,74 948,95" fill="none" stroke="rgba(184,188,138,0.10)" stroke-width="0.9"/>
-      <path d="M-50,109 C135,70 280,36 444,61 C608,86 770,37 956,62" fill="none" stroke="rgba(184,188,138,0.08)" stroke-width="0.9"/>
-      <path d="M200,240 C260,220 330,208 410,215 C490,222 560,206 640,212" fill="none" stroke="rgba(184,188,138,0.13)" stroke-width="0.7" stroke-dasharray="3 6"/>
-      <path d="M215,222 C274,200 344,187 422,195 C500,203 570,185 650,192" fill="none" stroke="rgba(184,188,138,0.11)" stroke-width="0.7" stroke-dasharray="3 6"/>
-      <path d="M232,202 C290,178 360,164 436,173 C512,182 582,162 662,170" fill="none" stroke="rgba(184,188,138,0.09)" stroke-width="0.7" stroke-dasharray="2 7"/>
-    </svg>
+    <svg class="hero-topo" viewBox="0 0 1400 700" preserveAspectRatio="xMidYMid slice">
+
+  <path d="M310,510
+  C360,420 470,360 610,350
+  C760,338 860,400 920,510
+  C970,600 900,660 760,680
+  C570,705 390,645 330,560
+  Z"
+  fill="none"
+  stroke="rgba(168,180,155,.14)"
+  stroke-width="1.2"/>
+
+  <path d="M360,520
+  C410,450 500,405 615,396
+  C730,388 815,430 860,515
+  C900,586 840,635 740,648
+  C590,668 450,628 390,562
+  Z"
+  fill="none"
+  stroke="rgba(168,180,155,.12)"
+  stroke-width="1"/>
+
+  <path d="M430,528
+  C470,470 540,435 620,430
+  C710,425 775,458 810,520
+  C835,570 790,610 710,620
+  C590,635 500,605 450,560
+  Z"
+  fill="none"
+  stroke="rgba(168,180,155,.10)"
+  stroke-width="1"/>
+
+</svg>
     <div class="hero-content">
       <div class="hero-by">Lauriane &nbsp;·&nbsp; Journal de marche</div>
       <div class="hero-wordmark">CAIRN</div>
@@ -445,7 +512,7 @@ const LAYERS={
 };
 const SEG=15, THRESH=35;
 let trail=null, refPts=[], refEle=[], done=new Set(), lines=[], poiMarkers=[],
-    tracking=false, wid=null, posMarker=null, mapObj=null, tileLayer=null, currentLayer='positron';
+    tracking=false, wid=null, posMarker=null, mapObj=null, tileLayer=null, currentLayer='topo';
 
 function sv(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
 function ld(k){try{const v=localStorage.getItem(k);return v?JSON.parse(v):null}catch(e){return null}}
