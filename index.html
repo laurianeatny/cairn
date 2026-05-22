@@ -4,28 +4,20 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Cairn — Lauriane</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#354024">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Cairn">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <style>
 :root{
-  --dark:#1f2d24;
-  --dark-2:#243126;
-  --mid:#6f816c;
-  --light:#a8b49b;
-  --pale:#dfe5d6;
-  --paper:#f4f3ee;
-  --white:#ffffff;
-  --ink:#182019;
-  --ghost:#d8ddd0;
-  --mist:#ecefe8;
-  --red:#c83a32;
-
-  --gr-red:#d93a2f;
-  --gr-green:#1f8c50;
-  --gr-current:#e9a93e;
-
-  --r:14px;
-  --r2:24px;
+  --dark:#354024; --mid:#889063; --light:#b8bc8a;
+  --pale:#dde0c8; --paper:#f4f3ee; --white:#ffffff;
+  --ink:#1a1f12; --ghost:#e4e6d8; --mist:#eceee5;
+  --red:#6b2e1a; --r:12px; --r2:18px;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;font-family:"HelveticaNeue","Helvetica Neue",Helvetica,Arial,sans-serif;overflow:hidden;background:var(--paper);color:var(--ink)}
@@ -48,17 +40,14 @@ html,body{height:100%;font-family:"HelveticaNeue","Helvetica Neue",Helvetica,Ari
   position:relative;z-index:2;
   display:flex;flex-direction:column;align-items:center;
   user-select:none;
-  padding:0 24px;
 }
 #splash-word{
-  font-size:clamp(82px,11vw,150px);
-  font-weight:800;
+  font-size:clamp(80px,18vw,200px);
+  font-weight:700;
   color:var(--white);
-  letter-spacing:-0.06em;
+  letter-spacing:-.04em;
   line-height:.88;
   text-align:center;
-  text-shadow:0 2px 20px rgba(0,0,0,.12);
-  margin-bottom:clamp(32px,5vw,56px);
 }
 #splash-by{
   font-size:clamp(10px,1.2vw,13px);
@@ -66,6 +55,7 @@ html,body{height:100%;font-family:"HelveticaNeue","Helvetica Neue",Helvetica,Ari
   letter-spacing:.3em;
   text-transform:uppercase;
   color:var(--mid);
+  margin-top:clamp(12px,2vw,24px);
   text-align:center;
 }
 #splash-hint{
@@ -74,7 +64,7 @@ html,body{height:100%;font-family:"HelveticaNeue","Helvetica Neue",Helvetica,Ari
   letter-spacing:.2em;
   text-transform:uppercase;
   color:rgba(136,144,99,.5);
-  margin-top:clamp(48px,8vw,80px);
+  margin-top:clamp(32px,5vw,60px);
   display:flex;align-items:center;gap:10px;
 }
 #splash-hint::before,#splash-hint::after{
@@ -93,29 +83,17 @@ html,body{height:100%;font-family:"HelveticaNeue","Helvetica Neue",Helvetica,Ari
   background:var(--paper);
 }
 .hero{
-  position:relative;
-  background:linear-gradient(180deg,#1a2820 0%,#243126 100%);
-  padding:72px 48px 56px;
-  flex-shrink:0;
-  overflow:hidden;
-  min-height:460px;
-  display:flex;
-  flex-direction:column;
-  justify-content:flex-end;
+  position:relative;background:var(--dark);
+  padding:52px 40px 44px;flex-shrink:0;overflow:hidden;
+  min-height:300px;display:flex;flex-direction:column;justify-content:flex-end;
 }
 .hero-topo{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible}
 .hero-content{position:relative;z-index:2}
-.hero-by{font-size:10px;font-weight:300;letter-spacing:.32em;text-transform:uppercase;color:rgba(111,129,108,.6);margin-bottom:20px}
-.hero-wordmark{
-  font-size:clamp(82px,11vw,150px);
-  font-weight:800;
-  color:var(--white);
-  letter-spacing:-0.06em;
-  line-height:.88;
-  margin-bottom:36px;
-  text-shadow:0 2px 20px rgba(0,0,0,.12);
-}
-.hero-rule{width:100%;height:1px;background:rgba(136,144,99,.2);margin:20px 0}
+.hero-by{font-size:11px;font-weight:300;letter-spacing:.28em;text-transform:uppercase;color:var(--mid);margin-bottom:14px}
+.hero-wordmark{font-size:clamp(56px,8vw,96px);font-weight:700;color:var(--white);letter-spacing:-.04em;line-height:.88;margin-bottom:18px}
+.hero-tagline{font-size:10px;font-weight:300;color:var(--mid);letter-spacing:.2em;text-transform:uppercase;display:flex;align-items:center;gap:10px}
+.dot{color:var(--light)}
+.hero-rule{width:100%;height:1px;background:rgba(136,144,99,.25);margin:22px 0}
 .hero-stats{display:flex;gap:36px}
 .hs-v{font-size:26px;font-weight:700;color:var(--white);letter-spacing:-.03em;line-height:1}
 .hs-l{font-size:9px;font-weight:300;letter-spacing:.16em;text-transform:uppercase;color:var(--mid);margin-top:4px}
@@ -123,26 +101,8 @@ html,body{height:100%;font-family:"HelveticaNeue","Helvetica Neue",Helvetica,Ari
 .section-label{padding:28px 32px 12px;font-size:9px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--mid);display:flex;align-items:center;gap:14px;flex-shrink:0}
 .section-label::after{content:'';flex:1;height:1px;background:var(--ghost)}
 
-.cards-grid{
-  padding:0 36px 50px;
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
-  gap:18px;
-  flex-shrink:0;
-}
-.gr-card{
-  background:rgba(255,255,255,.78);
-  backdrop-filter:blur(14px);
-  border-radius:24px;
-  border:1px solid rgba(255,255,255,.5);
-  padding:26px;
-  cursor:pointer;
-  display:flex;
-  align-items:center;
-  gap:18px;
-  transition:transform .18s, box-shadow .2s, border-color .2s;
-  box-shadow:0 10px 30px rgba(0,0,0,.04);
-}
+.cards-grid{padding:0 24px;display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px;flex-shrink:0}
+.gr-card{background:var(--white);border-radius:var(--r2);border:1px solid var(--ghost);padding:20px 22px;cursor:pointer;display:flex;align-items:center;gap:16px;transition:border-color .2s,transform .12s,box-shadow .2s}
 .gr-card:hover{box-shadow:0 4px 20px rgba(53,64,36,.08);transform:translateY(-1px)}
 .gr-card:active{transform:scale(.985)}
 .gr-card.loaded{border-color:var(--light);background:#fafbf7}
@@ -265,56 +225,36 @@ input[type=file]{display:none}
 
 <!-- ══════════ SPLASH ══════════ -->
 <div id="splash" onclick="exitSplash()">
-  <!-- Topo SVG background — vraie topographie : masses, sommets, resserrements -->
+  <!-- Full topo SVG background -->
   <svg id="splash-topo" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice">
-    <!-- Masse montagne principale — gauche -->
-    <ellipse cx="220" cy="480" rx="310" ry="220" fill="none" stroke="rgba(168,180,120,0.13)" stroke-width="1.2"/>
-    <ellipse cx="230" cy="470" rx="260" ry="178" fill="none" stroke="rgba(168,180,120,0.14)" stroke-width="1"/>
-    <ellipse cx="242" cy="458" rx="210" ry="138" fill="none" stroke="rgba(168,180,120,0.15)" stroke-width="1.1"/>
-    <ellipse cx="256" cy="444" rx="164" ry="104" fill="none" stroke="rgba(168,180,120,0.16)" stroke-width="1"/>
-    <ellipse cx="268" cy="432" rx="122" ry="76" fill="none" stroke="rgba(168,180,120,0.18)" stroke-width="1.2"/>
-    <ellipse cx="278" cy="422" rx="86" ry="52" fill="none" stroke="rgba(168,180,120,0.20)" stroke-width="1"/>
-    <ellipse cx="286" cy="414" rx="56" ry="34" fill="none" stroke="rgba(168,180,120,0.22)" stroke-width="0.9"/>
-    <ellipse cx="292" cy="408" rx="32" ry="20" fill="none" stroke="rgba(168,180,120,0.24)" stroke-width="0.8"/>
-    <ellipse cx="296" cy="404" rx="16" ry="10" fill="none" stroke="rgba(168,180,120,0.26)" stroke-width="0.7"/>
-
-    <!-- Masse montagne secondaire — droite haute -->
-    <path d="M760,120 C870,90 980,100 1080,140 C1160,172 1200,220 1200,280 C1200,340 1160,380 1080,400 C980,424 870,420 780,390 C690,360 640,300 650,240 C658,188 700,148 760,120 Z" fill="none" stroke="rgba(168,180,120,0.12)" stroke-width="1.2"/>
-    <path d="M790,148 C886,120 978,130 1062,166 C1134,196 1168,238 1168,290 C1168,342 1134,376 1062,396 C978,418 886,414 804,386 C720,358 676,302 686,248 C694,202 732,168 790,148 Z" fill="none" stroke="rgba(168,180,120,0.14)" stroke-width="1"/>
-    <path d="M822,178 C904,154 982,162 1046,194 C1108,224 1138,262 1136,306 C1134,350 1104,380 1044,398 C980,418 900,414 828,390 C752,364 714,314 722,268 C730,228 764,196 822,178 Z" fill="none" stroke="rgba(168,180,120,0.16)" stroke-width="1"/>
-    <path d="M856,208 C924,188 990,196 1044,224 C1094,250 1116,284 1114,320 C1112,356 1090,382 1040,398 C986,416 918,412 858,390 C790,366 758,322 766,282 C774,248 802,222 856,208 Z" fill="none" stroke="rgba(168,180,120,0.18)" stroke-width="1"/>
-    <path d="M886,236 C942,218 996,226 1040,250 C1076,270 1092,298 1090,328 C1088,358 1070,380 1032,394 C990,410 934,406 882,386 C822,364 796,326 804,292 C812,262 836,248 886,236 Z" fill="none" stroke="rgba(168,180,120,0.20)" stroke-width="0.9"/>
-    <path d="M916,262 C960,246 1004,254 1034,274 C1058,290 1068,312 1066,336 C1064,360 1048,378 1018,390 C982,404 936,400 898,382 C850,362 830,330 838,302 C846,278 868,270 916,262 Z" fill="none" stroke="rgba(168,180,120,0.22)" stroke-width="0.8"/>
-    <path d="M940,284 C974,270 1008,278 1028,296 C1044,310 1050,328 1048,348 C1046,368 1032,382 1006,392 C974,404 940,400 910,384 C870,364 856,336 864,312 C872,292 904,290 940,284 Z" fill="none" stroke="rgba(168,180,120,0.24)" stroke-width="0.8"/>
-    <path d="M960,304 C986,292 1012,300 1026,316 C1036,328 1040,344 1038,360 C1036,376 1024,388 1002,396 C974,406 948,402 924,388 C892,370 882,346 890,326 C898,308 924,310 960,304 Z" fill="none" stroke="rgba(168,180,120,0.25)" stroke-width="0.7"/>
-
-    <!-- Cuvette centrale — vallée entre les deux massifs -->
-    <path d="M420,600 C480,570 560,552 640,558 C720,564 800,582 860,610 C900,630 920,660 900,690 C880,720 820,740 740,748 C640,758 520,748 450,720 C390,696 370,640 420,600 Z" fill="none" stroke="rgba(168,180,120,0.10)" stroke-width="1.2"/>
-    <path d="M450,612 C504,584 574,568 644,574 C714,580 784,598 836,622 C868,638 882,662 862,688 C842,712 788,728 716,736 C624,746 512,738 450,716 C396,696 380,640 450,612 Z" fill="none" stroke="rgba(168,180,120,0.12)" stroke-width="1"/>
-    <path d="M482,626 C530,600 592,586 652,592 C712,598 768,614 808,634 C832,648 840,666 820,686 C800,706 752,720 690,726 C608,734 502,726 450,706 C404,688 406,648 482,626 Z" fill="none" stroke="rgba(168,180,120,0.13)" stroke-width="0.9"/>
-
-    <!-- Dorsale — courbe de crête reliant les massifs -->
-    <path d="M180,480 C260,440 380,400 500,390 C640,378 760,390 880,360 C980,334 1060,290 1100,240" fill="none" stroke="rgba(168,180,120,0.09)" stroke-width="1.5"/>
-    <path d="M200,502 C278,462 396,420 516,408 C652,396 770,406 888,376 C986,350 1064,308 1102,262" fill="none" stroke="rgba(168,180,120,0.08)" stroke-width="1"/>
-    <path d="M158,460 C238,420 360,382 484,372 C624,360 748,374 872,346 C974,322 1056,280 1098,228" fill="none" stroke="rgba(168,180,120,0.07)" stroke-width="1"/>
-
-    <!-- Zone très dense — resserrement au nord-est -->
-    <path d="M1000,540 C1040,516 1090,510 1130,522 C1160,532 1178,550 1172,572 C1166,594 1140,608 1104,614 C1062,620 1018,612 992,594 C968,578 966,556 1000,540 Z" fill="none" stroke="rgba(168,180,120,0.18)" stroke-width="0.9"/>
-    <path d="M1014,548 C1048,526 1090,520 1122,532 C1148,542 1162,558 1156,578 C1150,596 1126,608 1094,614 C1056,620 1018,612 994,596 C972,580 978,562 1014,548 Z" fill="none" stroke="rgba(168,180,120,0.20)" stroke-width="0.8"/>
-    <path d="M1028,558 C1056,538 1090,532 1116,542 C1138,550 1148,564 1142,582 C1136,598 1114,608 1086,612 C1052,618 1020,610 998,596 C978,582 990,570 1028,558 Z" fill="none" stroke="rgba(168,180,120,0.22)" stroke-width="0.7"/>
-    <path d="M1044,568 C1064,550 1090,546 1110,554 C1126,560 1134,572 1128,586 C1122,600 1102,608 1078,612 C1048,616 1022,608 1004,596 C986,584 1002,580 1044,568 Z" fill="none" stroke="rgba(168,180,120,0.24)" stroke-width="0.6"/>
-    <path d="M1058,578 C1072,562 1090,558 1104,564 C1116,570 1120,580 1114,592 C1108,604 1090,610 1068,612 C1044,614 1024,606 1010,596 C996,586 1014,588 1058,578 Z" fill="none" stroke="rgba(168,180,120,0.25)" stroke-width="0.6"/>
-
-    <!-- Collines basses — bas de l'écran, rupture de pente -->
-    <path d="M-50,720 C80,700 200,688 340,694 C480,700 600,714 720,718 C840,722 960,712 1100,718 C1180,722 1220,730 1250,740" fill="none" stroke="rgba(168,180,120,0.09)" stroke-width="1"/>
-    <path d="M-50,742 C80,722 200,710 340,716 C480,722 600,736 720,740 C840,744 960,734 1100,740 C1180,744 1220,752 1250,762" fill="none" stroke="rgba(168,180,120,0.08)" stroke-width="1"/>
-    <path d="M-50,760 C80,742 200,730 340,736 C480,742 600,754 720,758 C840,762 960,752 1100,758 C1180,762 1220,770 1250,778" fill="none" stroke="rgba(168,180,120,0.07)" stroke-width="0.8"/>
-
-    <!-- Petite masse isolée — bas gauche -->
-    <ellipse cx="120" cy="680" rx="140" ry="80" fill="none" stroke="rgba(168,180,120,0.11)" stroke-width="1"/>
-    <ellipse cx="124" cy="672" rx="104" ry="58" fill="none" stroke="rgba(168,180,120,0.13)" stroke-width="0.9"/>
-    <ellipse cx="128" cy="665" rx="72" ry="40" fill="none" stroke="rgba(168,180,120,0.15)" stroke-width="0.8"/>
-    <ellipse cx="132" cy="660" rx="46" ry="26" fill="none" stroke="rgba(168,180,120,0.17)" stroke-width="0.7"/>
+    <!-- Famille de courbes principales -->
+    <path d="M-100,750 C150,728 350,710 600,720 C850,730 1050,708 1300,718" fill="none" stroke="rgba(184,188,138,0.22)" stroke-width="1"/>
+    <path d="M-100,726 C155,702 358,682 608,693 C858,704 1058,680 1308,691" fill="none" stroke="rgba(184,188,138,0.20)" stroke-width="1"/>
+    <path d="M-100,700 C160,674 362,652 614,664 C866,676 1066,650 1314,662" fill="none" stroke="rgba(184,188,138,0.19)" stroke-width="1.2"/>
+    <path d="M-100,672 C165,644 366,620 620,633 C874,646 1074,618 1320,632" fill="none" stroke="rgba(184,188,138,0.18)" stroke-width="1"/>
+    <path d="M-100,642 C170,611 370,585 626,600 C882,615 1082,584 1326,600" fill="none" stroke="rgba(184,188,138,0.17)" stroke-width="1"/>
+    <path d="M-100,610 C175,576 375,548 632,565 C889,582 1090,548 1332,566" fill="none" stroke="rgba(184,188,138,0.16)" stroke-width="1.2"/>
+    <path d="M-100,576 C180,539 380,509 638,528 C896,547 1098,510 1338,530" fill="none" stroke="rgba(184,188,138,0.15)" stroke-width="1"/>
+    <path d="M-100,540 C185,500 385,467 645,489 C905,511 1106,470 1344,492" fill="none" stroke="rgba(184,188,138,0.14)" stroke-width="1"/>
+    <path d="M-100,502 C190,459 390,423 652,448 C914,473 1114,428 1350,452" fill="none" stroke="rgba(184,188,138,0.13)" stroke-width="1.2"/>
+    <path d="M-100,462 C195,415 396,376 659,405 C922,434 1122,384 1356,411" fill="none" stroke="rgba(184,188,138,0.12)" stroke-width="1"/>
+    <path d="M-100,420 C200,369 402,326 667,360 C932,394 1130,339 1362,368" fill="none" stroke="rgba(184,188,138,0.11)" stroke-width="1"/>
+    <path d="M-100,376 C205,320 408,273 675,312 C942,351 1138,291 1368,323" fill="none" stroke="rgba(184,188,138,0.10)" stroke-width="1.2"/>
+    <path d="M-100,330 C210,269 414,218 684,262 C954,306 1147,240 1374,276" fill="none" stroke="rgba(184,188,138,0.09)" stroke-width="1"/>
+    <path d="M-100,282 C215,215 420,160 693,210 C966,260 1156,187 1380,227" fill="none" stroke="rgba(184,188,138,0.08)" stroke-width="1"/>
+    <path d="M-100,232 C220,158 426,99 703,155 C980,211 1165,131 1386,175" fill="none" stroke="rgba(184,188,138,0.07)" stroke-width="1"/>
+    <path d="M-100,180 C225,98 432,34 714,97 C996,160 1175,72 1392,121" fill="none" stroke="rgba(184,188,138,0.06)" stroke-width="1"/>
+    <!-- Courbes intérieures resserrées (sommet) -->
+    <path d="M300,620 C390,594 490,574 600,582 C710,590 810,568 920,577" fill="none" stroke="rgba(184,188,138,0.16)" stroke-width="0.8" stroke-dasharray="4 6"/>
+    <path d="M318,596 C406,568 506,547 614,556 C722,565 822,542 930,552" fill="none" stroke="rgba(184,188,138,0.14)" stroke-width="0.8" stroke-dasharray="4 6"/>
+    <path d="M338,570 C424,540 524,518 630,528 C736,538 836,514 942,525" fill="none" stroke="rgba(184,188,138,0.13)" stroke-width="0.8" stroke-dasharray="3 7"/>
+    <path d="M360,542 C444,510 544,487 648,498 C752,509 852,483 956,495" fill="none" stroke="rgba(184,188,138,0.12)" stroke-width="0.8" stroke-dasharray="3 7"/>
+    <path d="M384,513 C466,478 566,453 668,466 C770,479 870,451 970,464" fill="none" stroke="rgba(184,188,138,0.11)" stroke-width="0.8" stroke-dasharray="2 8"/>
+    <path d="M410,482 C490,444 590,417 690,432 C790,447 890,417 986,431" fill="none" stroke="rgba(184,188,138,0.10)" stroke-width="0.8" stroke-dasharray="2 8"/>
+    <path d="M438,449 C516,408 617,378 715,395 C813,412 912,380 1004,396" fill="none" stroke="rgba(184,188,138,0.09)" stroke-width="0.8" stroke-dasharray="2 8"/>
+    <!-- Micro pointillés -->
+    <path d="M-100,762 C200,750 500,744 800,752 C1000,758 1150,748 1300,754" fill="none" stroke="rgba(184,188,138,0.12)" stroke-width="0.6" stroke-dasharray="1 8"/>
+    <path d="M-100,772 C200,762 500,756 800,764 C1000,770 1150,760 1300,766" fill="none" stroke="rgba(184,188,138,0.09)" stroke-width="0.6" stroke-dasharray="1 8"/>
   </svg>
 
   <div id="splash-content">
@@ -327,32 +267,23 @@ input[type=file]{display:none}
 <!-- ══════════ HOME ══════════ -->
 <div id="home" style="display:none">
   <div class="hero">
-    <!-- Topo hero : masses imbriquées, zones denses, vraie topographie -->
-    <svg class="hero-topo" viewBox="0 0 1400 500" preserveAspectRatio="xMidYMid slice">
-      <!-- Massif principal — centre gauche -->
-      <path d="M80,380 C160,300 300,240 480,228 C680,214 860,270 980,360 C1060,420 1080,490 1000,520 C880,558 680,568 480,552 C280,536 100,490 60,430 Z" fill="none" stroke="rgba(168,180,120,0.10)" stroke-width="1.2"/>
-      <path d="M130,372 C206,296 338,240 508,228 C700,216 876,268 992,354 C1064,410 1082,472 1006,502 C890,538 696,548 500,532 C304,516 122,470 86,414 Z" fill="none" stroke="rgba(168,180,120,0.12)" stroke-width="1.1"/>
-      <path d="M190,364 C260,294 382,242 540,232 C720,220 888,268 996,348 C1060,400 1074,456 1002,484 C892,518 704,526 520,510 C334,494 148,448 116,396 Z" fill="none" stroke="rgba(168,180,120,0.13)" stroke-width="1"/>
-      <path d="M260,356 C322,292 430,246 574,236 C740,224 896,268 1000,342 C1056,390 1066,440 998,466 C892,496 710,504 538,488 C366,472 180,428 152,378 Z" fill="none" stroke="rgba(168,180,120,0.15)" stroke-width="1"/>
-      <path d="M340,348 C390,290 482,250 608,242 C764,232 904,270 1000,336 C1050,378 1056,424 994,448 C892,474 716,480 556,464 C400,448 218,408 196,360 Z" fill="none" stroke="rgba(168,180,120,0.16)" stroke-width="0.9"/>
-      <path d="M426,342 C466,290 542,254 646,248 C786,240 912,272 1000,330 C1044,366 1048,406 990,428 C894,452 722,456 574,440 C430,424 258,390 244,346 Z" fill="none" stroke="rgba(168,180,120,0.17)" stroke-width="0.9"/>
-      <path d="M514,338 C544,292 606,260 686,254 C806,248 920,274 1000,324 C1038,354 1040,388 986,408 C894,430 728,432 592,416 C460,400 304,368 300,330 Z" fill="none" stroke="rgba(168,180,120,0.18)" stroke-width="0.8"/>
-      <path d="M600,334 C622,296 668,268 728,262 C826,254 926,278 1000,320 C1032,342 1032,372 982,390 C894,408 734,408 610,392 C490,376 360,348 364,316 Z" fill="none" stroke="rgba(168,180,120,0.20)" stroke-width="0.8"/>
-
-      <!-- Masse secondaire — extrême droite, hors champ partiel -->
-      <path d="M1100,180 C1180,140 1300,130 1400,160 C1460,180 1480,230 1460,280 C1440,330 1380,360 1300,372 C1200,384 1100,360 1060,310 C1030,270 1046,214 1100,180 Z" fill="none" stroke="rgba(168,180,120,0.11)" stroke-width="1.1"/>
-      <path d="M1130,200 C1200,164 1308,154 1400,180 C1454,200 1470,244 1450,290 C1430,334 1376,360 1302,370 C1208,382 1116,358 1080,314 C1052,276 1068,228 1130,200 Z" fill="none" stroke="rgba(168,180,120,0.14)" stroke-width="1"/>
-      <path d="M1162,222 C1222,190 1316,180 1400,202 C1446,218 1458,256 1438,298 C1418,338 1370,360 1302,370 C1216,380 1132,356 1100,316 C1074,282 1094,248 1162,222 Z" fill="none" stroke="rgba(168,180,120,0.16)" stroke-width="0.9"/>
-      <path d="M1194,246 C1244,218 1324,210 1400,228 C1438,238 1446,270 1426,306 C1406,340 1364,360 1302,368 C1224,378 1150,354 1122,320 C1098,290 1120,268 1194,246 Z" fill="none" stroke="rgba(168,180,120,0.18)" stroke-width="0.8"/>
-
-      <!-- Rupture — escarpement bas de carte -->
-      <path d="M-50,460 C100,442 280,428 500,434 C720,440 940,452 1150,448 C1300,444 1380,450 1450,458" fill="none" stroke="rgba(168,180,120,0.08)" stroke-width="1.2"/>
-      <path d="M-50,476 C100,458 280,444 500,450 C720,456 940,468 1150,464 C1300,460 1380,466 1450,474" fill="none" stroke="rgba(168,180,120,0.07)" stroke-width="1"/>
+    <svg class="hero-topo" viewBox="0 0 900 300" preserveAspectRatio="xMidYMid slice">
+      <path d="M-50,285 C100,268 250,252 400,260 C550,268 700,248 900,256" fill="none" stroke="rgba(184,188,138,0.18)" stroke-width="0.9"/>
+      <path d="M-50,265 C105,246 254,228 406,237 C558,246 708,224 908,233" fill="none" stroke="rgba(184,188,138,0.16)" stroke-width="0.9"/>
+      <path d="M-50,244 C110,222 258,202 412,212 C566,222 718,198 916,208" fill="none" stroke="rgba(184,188,138,0.15)" stroke-width="1"/>
+      <path d="M-50,221 C115,196 262,174 418,186 C574,198 728,170 924,182" fill="none" stroke="rgba(184,188,138,0.14)" stroke-width="0.9"/>
+      <path d="M-50,196 C120,168 266,144 424,158 C582,172 738,140 932,155" fill="none" stroke="rgba(184,188,138,0.13)" stroke-width="0.9"/>
+      <path d="M-50,169 C125,138 270,111 430,128 C590,145 748,108 940,126" fill="none" stroke="rgba(184,188,138,0.12)" stroke-width="1"/>
+      <path d="M-50,140 C130,105 275,75 437,96 C599,117 759,74 948,95" fill="none" stroke="rgba(184,188,138,0.10)" stroke-width="0.9"/>
+      <path d="M-50,109 C135,70 280,36 444,61 C608,86 770,37 956,62" fill="none" stroke="rgba(184,188,138,0.08)" stroke-width="0.9"/>
+      <path d="M200,240 C260,220 330,208 410,215 C490,222 560,206 640,212" fill="none" stroke="rgba(184,188,138,0.13)" stroke-width="0.7" stroke-dasharray="3 6"/>
+      <path d="M215,222 C274,200 344,187 422,195 C500,203 570,185 650,192" fill="none" stroke="rgba(184,188,138,0.11)" stroke-width="0.7" stroke-dasharray="3 6"/>
+      <path d="M232,202 C290,178 360,164 436,173 C512,182 582,162 662,170" fill="none" stroke="rgba(184,188,138,0.09)" stroke-width="0.7" stroke-dasharray="2 7"/>
     </svg>
-
     <div class="hero-content">
       <div class="hero-by">Lauriane &nbsp;·&nbsp; Journal de marche</div>
       <div class="hero-wordmark">CAIRN</div>
+      <div class="hero-tagline">Arpenter <span class="dot">·</span> Mémoriser <span class="dot">·</span> Appartenir</div>
       <div class="hero-rule"></div>
       <div class="hero-stats">
         <div class="hs"><div class="hs-v" id="total-km">0</div><div class="hs-l">km validés</div></div>
@@ -366,27 +297,27 @@ input[type=file]{display:none}
   <div class="cards-grid">
     <div class="gr-card" id="card-gr34" onclick="openTrail('gr34')">
       <div class="gr-badge" id="badge-gr34">GR<br>34</div>
-      <div class="gr-body"><div class="gr-name">Sentier des Douaniers</div><div class="gr-sub">GR34 · Tour de Bretagne · ~2 000 km</div><div class="gr-bar"><div class="gr-fill" id="fill-gr34"></div></div><div class="gr-pct" id="pct-gr34">Tracé non chargé</div></div>
+      <div class="gr-body"><div class="gr-name">Bretagne</div><div class="gr-sub">Côte bretonne · ~2 000 km</div><div class="gr-bar"><div class="gr-fill" id="fill-gr34"></div></div><div class="gr-pct" id="pct-gr34">Tracé non chargé</div></div>
       <div class="gr-arrow">›</div>
     </div>
     <div class="gr-card" id="card-gr10" onclick="openTrail('gr10')">
       <div class="gr-badge" id="badge-gr10">GR<br>10</div>
-      <div class="gr-body"><div class="gr-name">Sentier des Pyrénées</div><div class="gr-sub">GR10 · Méditerranée → Atlantique · ~900 km</div><div class="gr-bar"><div class="gr-fill" id="fill-gr10"></div></div><div class="gr-pct" id="pct-gr10">Tracé non chargé</div></div>
+      <div class="gr-body"><div class="gr-name">Pyrénées</div><div class="gr-sub">Méditerranée → Atlantique · ~900 km</div><div class="gr-bar"><div class="gr-fill" id="fill-gr10"></div></div><div class="gr-pct" id="pct-gr10">Tracé non chargé</div></div>
       <div class="gr-arrow">›</div>
     </div>
     <div class="gr-card" id="card-gr20" onclick="openTrail('gr20')">
       <div class="gr-badge" id="badge-gr20">GR<br>20</div>
-      <div class="gr-body"><div class="gr-name">Alta Via di Corsica</div><div class="gr-sub">GR20 · Traversée de Corse Nord–Sud · ~180 km</div><div class="gr-bar"><div class="gr-fill" id="fill-gr20"></div></div><div class="gr-pct" id="pct-gr20">Tracé non chargé</div></div>
+      <div class="gr-body"><div class="gr-name">Corse</div><div class="gr-sub">Nord–Sud · ~180 km</div><div class="gr-bar"><div class="gr-fill" id="fill-gr20"></div></div><div class="gr-pct" id="pct-gr20">Tracé non chargé</div></div>
       <div class="gr-arrow">›</div>
     </div>
     <div class="gr-card" id="card-gr5" onclick="openTrail('gr5')">
       <div class="gr-badge" id="badge-gr5">GR<br>5</div>
-      <div class="gr-body"><div class="gr-name">Sentier des Alpes</div><div class="gr-sub">GR5 · Lac Léman → Méditerranée · ~600 km</div><div class="gr-bar"><div class="gr-fill" id="fill-gr5"></div></div><div class="gr-pct" id="pct-gr5">Tracé non chargé</div></div>
+      <div class="gr-body"><div class="gr-name">Alpes</div><div class="gr-sub">Lac Léman → Méditerranée · ~600 km</div><div class="gr-bar"><div class="gr-fill" id="fill-gr5"></div></div><div class="gr-pct" id="pct-gr5">Tracé non chargé</div></div>
       <div class="gr-arrow">›</div>
     </div>
     <div class="gr-card" id="card-custom" onclick="openTrail('custom')">
       <div class="gr-badge" id="badge-custom" style="font-size:22px;font-weight:200;color:var(--pale)">+</div>
-      <div class="gr-body"><div class="gr-name">Autre sentier</div><div class="gr-sub">Chargez n'importe quel tracé GPX</div><div class="gr-bar"><div class="gr-fill" id="fill-custom"></div></div><div class="gr-pct" id="pct-custom">Tracé non chargé</div></div>
+      <div class="gr-body"><div class="gr-name">Autre GR</div><div class="gr-sub">Chargez n'importe quel tracé GPX</div><div class="gr-bar"><div class="gr-fill" id="fill-custom"></div></div><div class="gr-pct" id="pct-custom">Tracé non chargé</div></div>
       <div class="gr-arrow">›</div>
     </div>
   </div>
@@ -402,8 +333,8 @@ input[type=file]{display:none}
   <div id="topbar">
     <button id="btn-back" onclick="goHome()">←</button>
     <div id="trail-info">
-      <div id="trail-name">GR34 — Sentier des Douaniers</div>
-      <div id="trail-sub">Tour de Bretagne · ~2 000 km</div>
+      <div id="trail-name">GR34 — Bretagne</div>
+      <div id="trail-sub">Côte bretonne · ~2 000 km</div>
     </div>
     <div id="progress-wrap">
       <svg width="46" height="46" viewBox="0 0 46 46">
@@ -417,8 +348,8 @@ input[type=file]{display:none}
   </div>
 
   <div id="layer-switcher">
-    <button class="layer-btn on" id="lb-topo" onclick="setLayer('topo')" title="Topographique">⛰</button>
-    <button class="layer-btn" id="lb-outdoor" onclick="setLayer('outdoor')" title="Outdoor">🥾</button>
+    <button class="layer-btn on" id="lb-positron" onclick="setLayer('positron')" title="Carte épurée">🗺</button>
+    <button class="layer-btn" id="lb-topo" onclick="setLayer('topo')" title="Topographique">⛰</button>
     <button class="layer-btn" id="lb-satellite" onclick="setLayer('satellite')" title="Satellite">🛰</button>
   </div>
 
@@ -472,12 +403,14 @@ input[type=file]{display:none}
 
   <div id="load-overlay">
     <svg class="lo-topo" viewBox="0 0 600 700" preserveAspectRatio="xMidYMid slice">
-      <ellipse cx="300" cy="350" rx="280" ry="200" fill="none" stroke="rgba(136,144,99,0.15)" stroke-width="1.2"/>
-      <ellipse cx="300" cy="350" rx="230" ry="158" fill="none" stroke="rgba(136,144,99,0.14)" stroke-width="1"/>
-      <ellipse cx="300" cy="348" rx="182" ry="122" fill="none" stroke="rgba(136,144,99,0.13)" stroke-width="1"/>
-      <ellipse cx="300" cy="346" rx="138" ry="90" fill="none" stroke="rgba(136,144,99,0.12)" stroke-width="0.9"/>
-      <ellipse cx="300" cy="344" rx="98" ry="62" fill="none" stroke="rgba(136,144,99,0.11)" stroke-width="0.8"/>
-      <ellipse cx="300" cy="342" rx="62" ry="38" fill="none" stroke="rgba(136,144,99,0.10)" stroke-width="0.7"/>
+      <path d="M-50,620 C100,600 250,582 400,592 C550,602 700,578 800,589" fill="none" stroke="rgba(136,144,99,0.18)" stroke-width="1"/>
+      <path d="M-50,592 C105,569 255,549 406,560 C558,571 708,545 808,557" fill="none" stroke="rgba(136,144,99,0.16)" stroke-width="1"/>
+      <path d="M-50,562 C110,536 260,514 412,527 C564,540 718,511 816,524" fill="none" stroke="rgba(136,144,99,0.14)" stroke-width="1.1"/>
+      <path d="M-50,530 C115,501 265,476 418,492 C572,508 728,475 824,490" fill="none" stroke="rgba(136,144,99,0.13)" stroke-width="1"/>
+      <path d="M-50,496 C120,463 270,435 424,454 C578,473 738,436 832,453" fill="none" stroke="rgba(136,144,99,0.12)" stroke-width="1"/>
+      <path d="M100,540 C160,514 230,498 305,506 C380,514 450,494 530,502" fill="none" stroke="rgba(136,144,99,0.12)" stroke-width="0.8" stroke-dasharray="3 6"/>
+      <path d="M115,518 C174,490 244,472 318,481 C392,490 462,469 541,478" fill="none" stroke="rgba(136,144,99,0.10)" stroke-width="0.8" stroke-dasharray="3 6"/>
+      <path d="M132,494 C189,464 259,444 332,454 C405,464 476,442 554,452" fill="none" stroke="rgba(136,144,99,0.09)" stroke-width="0.8" stroke-dasharray="2 7"/>
     </svg>
     <div class="lo-content">
       <div class="lo-label" id="lo-label">GR34</div>
@@ -505,23 +438,20 @@ input[type=file]{display:none}
 
 <script>
 const TRAILS={
-  gr34:  {name:'GR34 — Sentier des Douaniers',  sub:'Tour de Bretagne · ~2 000 km',          label:'GR34',title:'Sentier des Douaniers', center:[47.8,-3.2],zoom:9},
-  gr10:  {name:'GR10 — Sentier des Pyrénées',   sub:'Méditerranée → Atlantique · ~900 km',   label:'GR10',title:'Sentier des Pyrénées',  center:[42.8,0.5], zoom:9},
-  gr20:  {name:'GR20 — Alta Via di Corsica',    sub:'Traversée Nord–Sud · ~180 km',          label:'GR20',title:'Alta Via di Corsica',   center:[42.1,9.1], zoom:10},
-  gr5:   {name:'GR5 — Sentier des Alpes',       sub:'Lac Léman → Méditerranée · ~600 km',    label:'GR5', title:'Sentier des Alpes',     center:[45.5,6.8], zoom:9},
-  custom:{name:'Sentier personnalisé',           sub:'Votre propre tracé GPX',                label:'+',   title:'Sentier personnalisé',  center:[46.5,2.3], zoom:6}
+  gr34:  {name:'GR34 — Bretagne',  sub:'Côte bretonne · ~2 000 km',          label:'GR34',title:'Bretagne',       center:[47.8,-3.2],zoom:9},
+  gr10:  {name:'GR10 — Pyrénées',  sub:'Méditerranée → Atlantique · ~900 km', label:'GR10',title:'Pyrénées',       center:[42.8,0.5], zoom:9},
+  gr20:  {name:'GR20 — Corse',     sub:'Nord–Sud · ~180 km',                  label:'GR20',title:'Corse',          center:[42.1,9.1], zoom:10},
+  gr5:   {name:'GR5 — Alpes',      sub:'Lac Léman → Méditerranée · ~600 km',  label:'GR5', title:'Alpes',          center:[45.5,6.8], zoom:9},
+  custom:{name:'GR Personnalisé',  sub:'Votre propre tracé GPX',              label:'+',   title:'GR personnalisé',center:[46.5,2.3], zoom:6}
 };
-
-// Couches de tuiles : OpenTopoMap par défaut (meilleur rendu topo sans clé API)
-// Thunderforest Outdoor (clé requise) et Esri satellite
 const LAYERS={
-  topo:    {url:'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',               attr:'© OpenStreetMap © OpenTopoMap'},
-  outdoor: {url:'https://tile.waymarkedtrails.org/hiking/{z}/{x}/{y}.png',        attr:'© waymarkedtrails.org'},
+  positron: {url:'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', attr:'© OpenStreetMap © CARTO'},
+  topo:     {url:'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',               attr:'© OpenStreetMap © OpenTopoMap'},
   satellite:{url:'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', attr:'© Esri'}
 };
 const SEG=15, THRESH=35;
 let trail=null, refPts=[], refEle=[], done=new Set(), lines=[], poiMarkers=[],
-    tracking=false, wid=null, posMarker=null, mapObj=null, tileLayer=null, currentLayer='topo';
+    tracking=false, wid=null, posMarker=null, mapObj=null, tileLayer=null, currentLayer='positron';
 
 function sv(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
 function ld(k){try{const v=localStorage.getItem(k);return v?JSON.parse(v):null}catch(e){return null}}
@@ -591,7 +521,7 @@ function setLayer(name){
   document.getElementById('lb-'+name).classList.add('on');
 }
 
-/* ── DRAW — couleurs GR plus visibles ── */
+/* ── DRAW ── */
 function draw(){
   lines.forEach(l=>mapObj.removeLayer(l));lines=[];
   const n=Math.ceil(refPts.length/SEG);
@@ -599,12 +529,7 @@ function draw(){
     const seg=refPts.slice(s*SEG,Math.min(s*SEG+SEG+1,refPts.length));
     if(seg.length<2)continue;
     const ok=done.has(s);
-    // Segments validés : vert vif · Segments restants : rouge GR bien visible
-    lines.push(L.polyline(seg,{
-      color: ok ? '#1f8c50' : '#d93a2f',
-      weight: ok ? 6 : 4,
-      opacity: ok ? 0.92 : 0.70
-    }).addTo(mapObj));
+    lines.push(L.polyline(seg,{color:ok?'#889063':'#6b2e1a',weight:ok?5.5:3,opacity:ok?.88:.38}).addTo(mapObj));
   }
 }
 function drawPOIs(pois){
@@ -697,9 +622,11 @@ function openTrail(t){
   document.getElementById('lo-title').textContent=info.title;
   document.getElementById('home').style.display='none';
 
+  // Show map screen FIRST, then init map so Leaflet gets correct dimensions
   const ms=document.getElementById('mapscreen');
   ms.style.display='block';
 
+  // Small delay ensures the DOM has painted before Leaflet measures
   setTimeout(()=>{
     ensureMap();
     if(mapObj)mapObj.invalidateSize();
@@ -851,6 +778,15 @@ function showLoading(v,msg='Chargement'){
 function toast(msg){
   const t=document.getElementById('toast');t.textContent=msg;t.style.display='block';
   clearTimeout(t._t);t._t=setTimeout(()=>t.style.display='none',3000);
+}
+</script>
+<script>
+if('serviceWorker' in navigator){
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js')
+      .then(r => console.log('Cairn SW enregistré'))
+      .catch(e => console.log('SW erreur:', e));
+  });
 }
 </script>
 </body>
