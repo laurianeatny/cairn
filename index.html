@@ -12,6 +12,7 @@
 <link rel="apple-touch-icon" href="icons/icon-192.png">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{
   --dark:#354024; --mid:#889063; --light:#b8bc8a;
@@ -22,74 +23,79 @@
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;font-family:"HelveticaNeue","Helvetica Neue",Helvetica,Arial,sans-serif;overflow:hidden;background:var(--paper);color:var(--ink)}
 
-/* ══════════════════════════════
-   SPLASH
-══════════════════════════════ */
-#splash{
-  position:absolute;inset:0;z-index:1000;
-  background:var(--dark);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  cursor:pointer;overflow:hidden;
-  transition:opacity .6s ease, transform .6s ease;
-}
+/* ══════ SPLASH ══════ */
+#splash{position:absolute;inset:0;z-index:1000;background:var(--dark);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;transition:opacity .6s ease}
 #splash.out{opacity:0;pointer-events:none}
-
 #splash-topo{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
-
-#splash-content{
-  position:relative;z-index:2;
-  display:flex;flex-direction:column;align-items:center;
-  user-select:none;
-}
-#splash-word{
-  font-size:clamp(80px,18vw,200px);
-  font-weight:700;
-  color:var(--white);
-  letter-spacing:-.04em;
-  line-height:.88;
-  text-align:center;
-}
-#splash-by{
-  font-size:clamp(10px,1.2vw,13px);
-  font-weight:300;
-  letter-spacing:.3em;
-  text-transform:uppercase;
-  color:var(--mid);
-  margin-top:clamp(12px,2vw,24px);
-  text-align:center;
-}
-#splash-hint{
-  font-size:10px;
-  font-weight:300;
-  letter-spacing:.2em;
-  text-transform:uppercase;
-  color:rgba(136,144,99,.5);
-  margin-top:clamp(32px,5vw,60px);
-  display:flex;align-items:center;gap:10px;
-}
-#splash-hint::before,#splash-hint::after{
-  content:'';width:24px;height:1px;background:rgba(136,144,99,.3);
-}
+#splash-content{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;user-select:none}
+#splash-word{font-size:clamp(80px,18vw,200px);font-weight:700;color:var(--white);letter-spacing:-.04em;line-height:.88;text-align:center}
+#splash-by{font-size:clamp(10px,1.2vw,13px);font-weight:300;letter-spacing:.3em;text-transform:uppercase;color:var(--mid);margin-top:clamp(12px,2vw,24px)}
+#splash-hint{font-size:10px;font-weight:300;letter-spacing:.2em;text-transform:uppercase;color:rgba(136,144,99,.5);margin-top:clamp(32px,5vw,60px);display:flex;align-items:center;gap:10px;animation:breathe 2.4s ease-in-out infinite}
+#splash-hint::before,#splash-hint::after{content:'';width:24px;height:1px;background:rgba(136,144,99,.3)}
 @keyframes breathe{0%,100%{opacity:.5}50%{opacity:1}}
-#splash-hint{animation:breathe 2.4s ease-in-out infinite}
 
-/* ══════════════════════════════
-   HOME
-══════════════════════════════ */
-#home{
-  position:absolute;inset:0;z-index:800;
-  display:flex;flex-direction:column;
-  overflow-y:auto;-webkit-overflow-scrolling:touch;
-  background:var(--paper);
+/* ══════ AUTH SCREEN ══════ */
+#authscreen{
+  display:none;position:absolute;inset:0;z-index:900;
+  background:var(--paper);overflow-y:auto;
 }
-.hero{
-  position:relative;background:var(--dark);
-  padding:52px 40px 44px;flex-shrink:0;overflow:hidden;
-  min-height:300px;display:flex;flex-direction:column;justify-content:flex-end;
+.auth-hero{
+  background:var(--dark);padding:52px 40px 44px;
+  position:relative;overflow:hidden;min-height:220px;
+  display:flex;flex-direction:column;justify-content:flex-end;
 }
+.auth-hero-topo{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.auth-hero-content{position:relative;z-index:2}
+.auth-by{font-size:10px;font-weight:300;letter-spacing:.28em;text-transform:uppercase;color:var(--mid);margin-bottom:12px}
+.auth-wordmark{font-size:clamp(44px,7vw,72px);font-weight:700;color:var(--white);letter-spacing:-.04em;line-height:.88;margin-bottom:14px}
+.auth-tagline{font-size:10px;font-weight:300;color:var(--mid);letter-spacing:.18em;text-transform:uppercase}
+
+.auth-card{
+  max-width:420px;margin:32px auto;padding:0 24px 48px;
+}
+.auth-tabs{display:flex;gap:0;margin-bottom:28px;border-bottom:1px solid var(--ghost)}
+.auth-tab{
+  flex:1;padding:12px 8px;font-size:12px;font-weight:700;
+  font-family:inherit;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--mid);background:none;border:none;cursor:pointer;
+  border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s;
+}
+.auth-tab.on{color:var(--dark);border-bottom-color:var(--dark)}
+
+.auth-pane{display:none}.auth-pane.on{display:block}
+
+.field{margin-bottom:14px}
+.field label{display:block;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--mid);margin-bottom:6px}
+.field input{
+  width:100%;padding:13px 14px;border-radius:var(--r);
+  border:1px solid var(--ghost);background:var(--white);
+  font-size:14px;font-family:inherit;color:var(--ink);
+  transition:border-color .15s;outline:none;
+}
+.field input:focus{border-color:var(--mid)}
+
+.auth-btn{
+  width:100%;padding:14px;border-radius:var(--r);border:none;
+  font-size:13px;font-weight:700;font-family:inherit;
+  cursor:pointer;transition:transform .1s,opacity .12s;
+  letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.auth-btn:active{transform:scale(.97)}
+.auth-btn-primary{background:var(--dark);color:var(--white)}
+.auth-btn-google{background:var(--white);color:var(--ink);border:1px solid var(--ghost)}
+
+.auth-divider{display:flex;align-items:center;gap:12px;margin:16px 0;font-size:10px;font-weight:300;color:var(--mid);letter-spacing:.1em;text-transform:uppercase}
+.auth-divider::before,.auth-divider::after{content:'';flex:1;height:1px;background:var(--ghost)}
+
+.auth-error{font-size:12px;color:var(--red);text-align:center;margin-top:8px;min-height:18px;font-weight:300}
+
+/* ══════ HOME ══════ */
+#home{position:absolute;inset:0;z-index:800;display:none;flex-direction:column;overflow-y:auto;-webkit-overflow-scrolling:touch;background:var(--paper)}
+.hero{position:relative;background:var(--dark);padding:52px 40px 44px;flex-shrink:0;overflow:hidden;min-height:300px;display:flex;flex-direction:column;justify-content:flex-end}
 .hero-topo{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible}
 .hero-content{position:relative;z-index:2}
-.hero-by{font-size:11px;font-weight:300;letter-spacing:.28em;text-transform:uppercase;color:var(--mid);margin-bottom:14px}
+.hero-by{font-size:11px;font-weight:300;letter-spacing:.28em;text-transform:uppercase;color:var(--mid);margin-bottom:14px;display:flex;align-items:center;justify-content:space-between}
 .hero-wordmark{font-size:clamp(56px,8vw,96px);font-weight:700;color:var(--white);letter-spacing:-.04em;line-height:.88;margin-bottom:18px}
 .hero-tagline{font-size:10px;font-weight:300;color:var(--mid);letter-spacing:.2em;text-transform:uppercase;display:flex;align-items:center;gap:10px}
 .dot{color:var(--light)}
@@ -98,9 +104,24 @@ html,body{height:100%;font-family:"HelveticaNeue","Helvetica Neue",Helvetica,Ari
 .hs-v{font-size:26px;font-weight:700;color:var(--white);letter-spacing:-.03em;line-height:1}
 .hs-l{font-size:9px;font-weight:300;letter-spacing:.16em;text-transform:uppercase;color:var(--mid);margin-top:4px}
 
+/* user pill */
+.user-pill{
+  display:flex;align-items:center;gap:7px;
+  background:rgba(255,255,255,.1);border-radius:100px;
+  padding:5px 10px 5px 7px;cursor:pointer;transition:background .15s;
+  font-size:11px;font-weight:300;color:var(--pale);letter-spacing:.04em;
+  border:none;font-family:inherit;
+}
+.user-pill:hover{background:rgba(255,255,255,.18)}
+.user-avatar{width:22px;height:22px;border-radius:50%;background:var(--mid);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--dark);flex-shrink:0}
+
+/* sync indicator */
+.sync-dot{width:6px;height:6px;border-radius:50%;background:var(--mid);display:inline-block;margin-left:4px}
+.sync-dot.syncing{animation:breathe .8s ease-in-out infinite;background:var(--light)}
+.sync-dot.ok{background:#7ab87a}
+
 .section-label{padding:28px 32px 12px;font-size:9px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--mid);display:flex;align-items:center;gap:14px;flex-shrink:0}
 .section-label::after{content:'';flex:1;height:1px;background:var(--ghost)}
-
 .cards-grid{padding:0 24px;display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px;flex-shrink:0}
 .gr-card{background:var(--white);border-radius:var(--r2);border:1px solid var(--ghost);padding:20px 22px;cursor:pointer;display:flex;align-items:center;gap:16px;transition:border-color .2s,transform .12s,box-shadow .2s}
 .gr-card:hover{box-shadow:0 4px 20px rgba(53,64,36,.08);transform:translateY(-1px)}
@@ -120,20 +141,10 @@ html,body{height:100%;font-family:"HelveticaNeue","Helvetica Neue",Helvetica,Ari
 .home-footer{padding:32px 32px 48px;text-align:center;font-size:11px;font-weight:300;color:var(--mid);line-height:2.4;flex-shrink:0}
 .home-footer a{color:var(--dark);text-decoration:none;border-bottom:1px solid var(--pale)}
 
-/* ══════════════════════════════
-   MAP SCREEN
-══════════════════════════════ */
+/* ══════ MAP ══════ */
 #mapscreen{position:absolute;inset:0;z-index:0;display:none}
 #map{position:absolute;inset:0;z-index:0}
-
-#topbar{
-  position:absolute;top:14px;left:14px;right:14px;z-index:500;
-  background:rgba(244,243,238,.96);backdrop-filter:blur(12px);
-  border-radius:var(--r2);padding:10px 14px;
-  display:flex;align-items:center;gap:12px;
-  border:1px solid var(--ghost);
-  box-shadow:0 2px 20px rgba(53,64,36,.10);
-}
+#topbar{position:absolute;top:14px;left:14px;right:14px;z-index:500;background:rgba(244,243,238,.96);backdrop-filter:blur(12px);border-radius:var(--r2);padding:10px 14px;display:flex;align-items:center;gap:12px;border:1px solid var(--ghost);box-shadow:0 2px 20px rgba(53,64,36,.10)}
 #btn-back{width:34px;height:34px;border-radius:9px;border:1px solid var(--ghost);background:var(--white);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:15px;color:var(--dark);flex-shrink:0;transition:background .12s;font-family:inherit}
 #btn-back:active{background:var(--mist)}
 #trail-info{flex:1;min-width:0}
@@ -142,14 +153,10 @@ html,body{height:100%;font-family:"HelveticaNeue","Helvetica Neue",Helvetica,Ari
 #progress-wrap{position:relative;width:46px;height:46px;flex-shrink:0}
 #progress-wrap svg{display:block;transform:rotate(-90deg)}
 #pct-label{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--dark)}
-
-/* layer switcher */
 #layer-switcher{position:absolute;top:80px;right:14px;z-index:499;display:flex;flex-direction:column;gap:6px}
 .layer-btn{width:36px;height:36px;border-radius:9px;border:1px solid var(--ghost);background:rgba(244,243,238,.95);backdrop-filter:blur(8px);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:15px;transition:all .15s;box-shadow:0 1px 6px rgba(53,64,36,.08);font-family:inherit}
 .layer-btn.on{background:var(--dark);border-color:var(--dark)}
 .layer-btn:active{transform:scale(.93)}
-
-/* SHEET */
 #sheet{position:absolute;bottom:0;left:0;right:0;z-index:500;background:rgba(244,243,238,.97);border-radius:22px 22px 0 0;border-top:1px solid var(--ghost);box-shadow:0 -2px 28px rgba(53,64,36,.08)}
 .sheet-handle{width:28px;height:3px;background:var(--ghost);border-radius:2px;margin:10px auto 0}
 .tab-bar{display:flex;gap:8px;padding:12px 16px 8px}
@@ -158,23 +165,18 @@ html,body{height:100%;font-family:"HelveticaNeue","Helvetica Neue",Helvetica,Ari
 .tab-btn:active{transform:scale(.96)}
 .tab-pane{display:none;padding:10px 16px 28px}
 .tab-pane.on{display:block}
-
 #gps-status{display:none;align-items:center;gap:8px;padding:9px 14px;background:#edf0e4;border-radius:var(--r);margin-bottom:10px;font-size:12px;font-weight:400;color:var(--dark);border:1px solid rgba(53,64,36,.12)}
 #gps-dot{width:6px;height:6px;border-radius:50%;background:var(--mid);flex-shrink:0}
 #gps-dot.on{animation:pulse 1.6s ease-in-out infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3;transform:scale(1.3)}}
-
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:10px}
 .stat{background:var(--mist);border-radius:var(--r);padding:10px 4px;text-align:center;border:1px solid var(--ghost)}
 .stat-v{font-size:18px;font-weight:700;color:var(--ink);letter-spacing:-.02em}
 .stat-l{font-size:8px;font-weight:300;color:var(--mid);margin-top:3px;text-transform:uppercase;letter-spacing:.1em}
-
-/* altitude */
 #alti-wrap{background:var(--mist);border-radius:var(--r);border:1px solid var(--ghost);padding:10px 12px 8px;margin-bottom:10px}
 #alti-label{font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--mid);margin-bottom:6px}
 #alti-svg{width:100%;height:56px;display:block}
 #alti-range{display:flex;justify-content:space-between;font-size:9px;font-weight:300;color:var(--mid);margin-top:3px}
-
 .row{display:flex;gap:8px;margin-bottom:8px}
 .btn{flex:1;padding:12px 8px;border-radius:11px;border:none;font-size:11px;font-weight:700;font-family:inherit;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:transform .1s;letter-spacing:.06em;text-transform:uppercase}
 .btn:active{transform:scale(.96)}
@@ -182,7 +184,6 @@ html,body{height:100%;font-family:"HelveticaNeue","Helvetica Neue",Helvetica,Ari
 .btn-stop{background:var(--red);color:var(--white)}
 .btn-secondary{background:var(--mist);color:var(--ink);border:1px solid var(--ghost)}
 .btn-ghost{background:transparent;color:var(--mid);border:1px solid var(--ghost);font-size:10px}
-
 .hist-empty{text-align:center;padding:24px 16px;font-size:12px;font-weight:300;color:var(--mid);line-height:2}
 .hist-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--ghost)}
 .hist-item:last-child{border-bottom:none}
@@ -192,8 +193,6 @@ html,body{height:100%;font-family:"HelveticaNeue","Helvetica Neue",Helvetica,Ari
 .hist-name{font-size:12px;font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .hist-meta{font-size:10px;font-weight:300;color:var(--mid);margin-top:2px}
 .hist-tag{font-size:9px;font-weight:700;color:var(--dark);background:var(--pale);padding:2px 7px;border-radius:4px;flex-shrink:0}
-
-/* load overlay */
 #load-overlay{display:none;position:absolute;inset:0;z-index:600;background:var(--paper);flex-direction:column;align-items:center;justify-content:center;padding:40px 32px;text-align:center;overflow:hidden}
 .lo-topo{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:.5}
 .lo-content{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center}
@@ -207,14 +206,11 @@ html,body{height:100%;font-family:"HelveticaNeue","Helvetica Neue",Helvetica,Ari
 .lo-links{font-size:11px;font-weight:300;color:var(--mid);line-height:2.4}
 .lo-links a{color:var(--dark);text-decoration:none;border-bottom:1px solid var(--pale)}
 .lo-back{margin-top:24px;padding:8px 12px;font-size:11px;font-weight:300;color:var(--mid);background:none;border:none;cursor:pointer;font-family:inherit;letter-spacing:.1em;text-transform:uppercase}
-
 #loading{display:none;position:absolute;inset:0;z-index:700;background:rgba(244,243,238,.9);align-items:center;justify-content:center;flex-direction:column;gap:14px}
 .spin{width:26px;height:26px;border:1.5px solid var(--ghost);border-top-color:var(--dark);border-radius:50%;animation:spin .7s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 #loading-msg{font-size:10px;font-weight:300;color:var(--mid);letter-spacing:.14em;text-transform:uppercase}
-
 #toast{display:none;position:absolute;bottom:195px;left:50%;transform:translateX(-50%);z-index:900;background:var(--ink);color:var(--white);padding:8px 20px;border-radius:100px;font-size:11px;font-weight:300;white-space:nowrap;pointer-events:none;letter-spacing:.06em}
-
 input[type=file]{display:none}
 .leaflet-control-attribution{font-size:9px!important}
 .leaflet-control-zoom{border:1px solid var(--ghost)!important;border-radius:10px!important;overflow:hidden!important}
@@ -223,68 +219,107 @@ input[type=file]{display:none}
 </head>
 <body>
 
-<!-- ══════════ SPLASH ══════════ -->
+<!-- ══════ SPLASH ══════ -->
 <div id="splash" onclick="exitSplash()">
-  <!-- Full topo SVG background -->
   <svg id="splash-topo" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice">
-    <!-- Famille de courbes principales -->
     <path d="M-100,750 C150,728 350,710 600,720 C850,730 1050,708 1300,718" fill="none" stroke="rgba(184,188,138,0.22)" stroke-width="1"/>
-    <path d="M-100,726 C155,702 358,682 608,693 C858,704 1058,680 1308,691" fill="none" stroke="rgba(184,188,138,0.20)" stroke-width="1"/>
-    <path d="M-100,700 C160,674 362,652 614,664 C866,676 1066,650 1314,662" fill="none" stroke="rgba(184,188,138,0.19)" stroke-width="1.2"/>
-    <path d="M-100,672 C165,644 366,620 620,633 C874,646 1074,618 1320,632" fill="none" stroke="rgba(184,188,138,0.18)" stroke-width="1"/>
-    <path d="M-100,642 C170,611 370,585 626,600 C882,615 1082,584 1326,600" fill="none" stroke="rgba(184,188,138,0.17)" stroke-width="1"/>
-    <path d="M-100,610 C175,576 375,548 632,565 C889,582 1090,548 1332,566" fill="none" stroke="rgba(184,188,138,0.16)" stroke-width="1.2"/>
-    <path d="M-100,576 C180,539 380,509 638,528 C896,547 1098,510 1338,530" fill="none" stroke="rgba(184,188,138,0.15)" stroke-width="1"/>
-    <path d="M-100,540 C185,500 385,467 645,489 C905,511 1106,470 1344,492" fill="none" stroke="rgba(184,188,138,0.14)" stroke-width="1"/>
-    <path d="M-100,502 C190,459 390,423 652,448 C914,473 1114,428 1350,452" fill="none" stroke="rgba(184,188,138,0.13)" stroke-width="1.2"/>
-    <path d="M-100,462 C195,415 396,376 659,405 C922,434 1122,384 1356,411" fill="none" stroke="rgba(184,188,138,0.12)" stroke-width="1"/>
-    <path d="M-100,420 C200,369 402,326 667,360 C932,394 1130,339 1362,368" fill="none" stroke="rgba(184,188,138,0.11)" stroke-width="1"/>
-    <path d="M-100,376 C205,320 408,273 675,312 C942,351 1138,291 1368,323" fill="none" stroke="rgba(184,188,138,0.10)" stroke-width="1.2"/>
-    <path d="M-100,330 C210,269 414,218 684,262 C954,306 1147,240 1374,276" fill="none" stroke="rgba(184,188,138,0.09)" stroke-width="1"/>
-    <path d="M-100,282 C215,215 420,160 693,210 C966,260 1156,187 1380,227" fill="none" stroke="rgba(184,188,138,0.08)" stroke-width="1"/>
-    <path d="M-100,232 C220,158 426,99 703,155 C980,211 1165,131 1386,175" fill="none" stroke="rgba(184,188,138,0.07)" stroke-width="1"/>
-    <path d="M-100,180 C225,98 432,34 714,97 C996,160 1175,72 1392,121" fill="none" stroke="rgba(184,188,138,0.06)" stroke-width="1"/>
-    <!-- Courbes intérieures resserrées (sommet) -->
-    <path d="M300,620 C390,594 490,574 600,582 C710,590 810,568 920,577" fill="none" stroke="rgba(184,188,138,0.16)" stroke-width="0.8" stroke-dasharray="4 6"/>
-    <path d="M318,596 C406,568 506,547 614,556 C722,565 822,542 930,552" fill="none" stroke="rgba(184,188,138,0.14)" stroke-width="0.8" stroke-dasharray="4 6"/>
-    <path d="M338,570 C424,540 524,518 630,528 C736,538 836,514 942,525" fill="none" stroke="rgba(184,188,138,0.13)" stroke-width="0.8" stroke-dasharray="3 7"/>
-    <path d="M360,542 C444,510 544,487 648,498 C752,509 852,483 956,495" fill="none" stroke="rgba(184,188,138,0.12)" stroke-width="0.8" stroke-dasharray="3 7"/>
-    <path d="M384,513 C466,478 566,453 668,466 C770,479 870,451 970,464" fill="none" stroke="rgba(184,188,138,0.11)" stroke-width="0.8" stroke-dasharray="2 8"/>
-    <path d="M410,482 C490,444 590,417 690,432 C790,447 890,417 986,431" fill="none" stroke="rgba(184,188,138,0.10)" stroke-width="0.8" stroke-dasharray="2 8"/>
-    <path d="M438,449 C516,408 617,378 715,395 C813,412 912,380 1004,396" fill="none" stroke="rgba(184,188,138,0.09)" stroke-width="0.8" stroke-dasharray="2 8"/>
-    <!-- Micro pointillés -->
-    <path d="M-100,762 C200,750 500,744 800,752 C1000,758 1150,748 1300,754" fill="none" stroke="rgba(184,188,138,0.12)" stroke-width="0.6" stroke-dasharray="1 8"/>
-    <path d="M-100,772 C200,762 500,756 800,764 C1000,770 1150,760 1300,766" fill="none" stroke="rgba(184,188,138,0.09)" stroke-width="0.6" stroke-dasharray="1 8"/>
+    <path d="M-100,720 C155,696 358,676 608,687 C858,698 1058,674 1308,685" fill="none" stroke="rgba(184,188,138,0.19)" stroke-width="1"/>
+    <path d="M-100,688 C160,661 362,639 614,651 C866,663 1066,637 1314,650" fill="none" stroke="rgba(184,188,138,0.17)" stroke-width="1.2"/>
+    <path d="M-100,654 C165,624 366,600 620,613 C874,626 1074,598 1320,612" fill="none" stroke="rgba(184,188,138,0.16)" stroke-width="1"/>
+    <path d="M-100,618 C170,585 370,558 626,573 C882,588 1082,557 1326,573" fill="none" stroke="rgba(184,188,138,0.15)" stroke-width="1"/>
+    <path d="M-100,580 C175,543 375,513 632,530 C889,547 1090,513 1332,531" fill="none" stroke="rgba(184,188,138,0.14)" stroke-width="1.2"/>
+    <path d="M-100,540 C180,499 380,466 638,486 C896,506 1098,468 1338,490" fill="none" stroke="rgba(184,188,138,0.13)" stroke-width="1"/>
+    <path d="M-100,498 C185,453 385,417 645,440 C905,463 1106,421 1344,446" fill="none" stroke="rgba(184,188,138,0.12)" stroke-width="1"/>
+    <path d="M-100,454 C190,404 390,365 652,391 C914,417 1114,370 1350,399" fill="none" stroke="rgba(184,188,138,0.11)" stroke-width="1.2"/>
+    <path d="M-100,408 C195,353 396,310 659,340 C922,370 1122,318 1356,351" fill="none" stroke="rgba(184,188,138,0.10)" stroke-width="1"/>
+    <path d="M300,600 C390,572 490,552 600,560 C710,568 810,546 920,555" fill="none" stroke="rgba(184,188,138,0.14)" stroke-width="0.8" stroke-dasharray="4 6"/>
+    <path d="M320,574 C408,544 508,522 616,531 C724,540 824,516 932,526" fill="none" stroke="rgba(184,188,138,0.12)" stroke-width="0.8" stroke-dasharray="3 7"/>
+    <path d="M342,546 C428,513 528,490 634,500 C740,510 840,484 946,495" fill="none" stroke="rgba(184,188,138,0.10)" stroke-width="0.8" stroke-dasharray="2 8"/>
+    <path d="M-100,762 C200,750 500,744 800,752 C1000,758 1150,748 1300,754" fill="none" stroke="rgba(184,188,138,0.10)" stroke-width="0.6" stroke-dasharray="1 8"/>
   </svg>
-
   <div id="splash-content">
     <div id="splash-word">CAIRN</div>
-    <div id="splash-by">Lauriane &nbsp;·&nbsp; Journal de marche</div>
+    <div id="splash-by">Lauriane · Journal de marche</div>
     <div id="splash-hint">Entrer</div>
   </div>
 </div>
 
-<!-- ══════════ HOME ══════════ -->
-<div id="home" style="display:none">
+<!-- ══════ AUTH ══════ -->
+<div id="authscreen">
+  <div class="auth-hero">
+    <svg class="auth-hero-topo" viewBox="0 0 900 220" preserveAspectRatio="xMidYMid slice">
+      <path d="M-50,200 C150,182 350,168 600,176 C800,183 950,165 1000,170" fill="none" stroke="rgba(184,188,138,0.18)" stroke-width="1"/>
+      <path d="M-50,178 C155,158 355,142 606,151 C808,159 955,139 1000,145" fill="none" stroke="rgba(184,188,138,0.15)" stroke-width="1"/>
+      <path d="M-50,154 C160,131 360,113 612,124 C816,133 960,111 1000,118" fill="none" stroke="rgba(184,188,138,0.13)" stroke-width="1.2"/>
+      <path d="M-50,128 C165,101 365,81 618,94 C820,105 965,81 1000,89" fill="none" stroke="rgba(184,188,138,0.11)" stroke-width="1"/>
+      <path d="M-50,100 C170,69 370,46 624,62 C824,75 970,48 1000,57" fill="none" stroke="rgba(184,188,138,0.09)" stroke-width="1"/>
+    </svg>
+    <div class="auth-hero-content">
+      <div class="auth-by">Lauriane · Journal de marche</div>
+      <div class="auth-wordmark">CAIRN</div>
+      <div class="auth-tagline">Arpenter · Mémoriser · Appartenir</div>
+    </div>
+  </div>
+
+  <div class="auth-card">
+    <div class="auth-tabs">
+      <button class="auth-tab on" onclick="switchAuthTab('login')">Connexion</button>
+      <button class="auth-tab" onclick="switchAuthTab('signup')">Créer un compte</button>
+    </div>
+
+    <!-- LOGIN -->
+    <div class="auth-pane on" id="pane-login">
+      <div class="field"><label>Email</label><input type="email" id="login-email" placeholder="vous@exemple.com" autocomplete="email"></div>
+      <div class="field"><label>Mot de passe</label><input type="password" id="login-pwd" placeholder="••••••••" autocomplete="current-password"></div>
+      <button class="auth-btn auth-btn-primary" onclick="loginEmail()">Se connecter</button>
+      <div class="auth-divider">ou</div>
+      <button class="auth-btn auth-btn-google" onclick="loginGoogle()">
+        <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844a4.14 4.14 0 0 1-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615Z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18Z"/><path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332Z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58Z"/></svg>
+        Continuer avec Google
+      </button>
+      <div class="auth-error" id="login-error"></div>
+    </div>
+
+    <!-- SIGNUP -->
+    <div class="auth-pane" id="pane-signup">
+      <div class="field"><label>Email</label><input type="email" id="signup-email" placeholder="vous@exemple.com" autocomplete="email"></div>
+      <div class="field"><label>Mot de passe</label><input type="password" id="signup-pwd" placeholder="8 caractères minimum" autocomplete="new-password"></div>
+      <button class="auth-btn auth-btn-primary" onclick="signupEmail()">Créer mon compte</button>
+      <div class="auth-divider">ou</div>
+      <button class="auth-btn auth-btn-google" onclick="loginGoogle()">
+        <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844a4.14 4.14 0 0 1-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615Z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18Z"/><path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332Z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58Z"/></svg>
+        Continuer avec Google
+      </button>
+      <div class="auth-error" id="signup-error"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ HOME ══════ -->
+<div id="home">
   <div class="hero">
     <svg class="hero-topo" viewBox="0 0 900 300" preserveAspectRatio="xMidYMid slice">
       <path d="M-50,285 C100,268 250,252 400,260 C550,268 700,248 900,256" fill="none" stroke="rgba(184,188,138,0.18)" stroke-width="0.9"/>
-      <path d="M-50,265 C105,246 254,228 406,237 C558,246 708,224 908,233" fill="none" stroke="rgba(184,188,138,0.16)" stroke-width="0.9"/>
-      <path d="M-50,244 C110,222 258,202 412,212 C566,222 718,198 916,208" fill="none" stroke="rgba(184,188,138,0.15)" stroke-width="1"/>
-      <path d="M-50,221 C115,196 262,174 418,186 C574,198 728,170 924,182" fill="none" stroke="rgba(184,188,138,0.14)" stroke-width="0.9"/>
-      <path d="M-50,196 C120,168 266,144 424,158 C582,172 738,140 932,155" fill="none" stroke="rgba(184,188,138,0.13)" stroke-width="0.9"/>
-      <path d="M-50,169 C125,138 270,111 430,128 C590,145 748,108 940,126" fill="none" stroke="rgba(184,188,138,0.12)" stroke-width="1"/>
-      <path d="M-50,140 C130,105 275,75 437,96 C599,117 759,74 948,95" fill="none" stroke="rgba(184,188,138,0.10)" stroke-width="0.9"/>
-      <path d="M-50,109 C135,70 280,36 444,61 C608,86 770,37 956,62" fill="none" stroke="rgba(184,188,138,0.08)" stroke-width="0.9"/>
-      <path d="M200,240 C260,220 330,208 410,215 C490,222 560,206 640,212" fill="none" stroke="rgba(184,188,138,0.13)" stroke-width="0.7" stroke-dasharray="3 6"/>
-      <path d="M215,222 C274,200 344,187 422,195 C500,203 570,185 650,192" fill="none" stroke="rgba(184,188,138,0.11)" stroke-width="0.7" stroke-dasharray="3 6"/>
-      <path d="M232,202 C290,178 360,164 436,173 C512,182 582,162 662,170" fill="none" stroke="rgba(184,188,138,0.09)" stroke-width="0.7" stroke-dasharray="2 7"/>
+      <path d="M-50,262 C105,243 254,225 406,234 C558,243 708,221 908,230" fill="none" stroke="rgba(184,188,138,0.16)" stroke-width="0.9"/>
+      <path d="M-50,238 C110,216 258,196 412,207 C566,218 718,193 916,204" fill="none" stroke="rgba(184,188,138,0.15)" stroke-width="1"/>
+      <path d="M-50,212 C115,187 262,165 418,178 C574,191 728,163 924,176" fill="none" stroke="rgba(184,188,138,0.13)" stroke-width="0.9"/>
+      <path d="M-50,184 C120,155 266,131 424,146 C582,161 738,128 932,145" fill="none" stroke="rgba(184,188,138,0.11)" stroke-width="1"/>
+      <path d="M-50,154 C125,120 270,92 430,111 C590,130 748,91 940,113" fill="none" stroke="rgba(184,188,138,0.09)" stroke-width="0.9"/>
+      <path d="M200,240 C260,220 330,208 410,215 C490,222 560,206 640,212" fill="none" stroke="rgba(184,188,138,0.12)" stroke-width="0.7" stroke-dasharray="3 6"/>
+      <path d="M215,220 C274,198 344,185 422,193 C500,201 570,183 650,190" fill="none" stroke="rgba(184,188,138,0.10)" stroke-width="0.7" stroke-dasharray="2 7"/>
     </svg>
     <div class="hero-content">
-      <div class="hero-by">Lauriane &nbsp;·&nbsp; Journal de marche</div>
+      <div class="hero-by">
+        <span>Lauriane · Journal de marche</span>
+        <button class="user-pill" id="user-pill" onclick="showUserMenu()">
+          <div class="user-avatar" id="user-avatar">?</div>
+          <span id="user-email-short">—</span>
+          <span class="sync-dot" id="sync-dot"></span>
+        </button>
+      </div>
       <div class="hero-wordmark">CAIRN</div>
       <div class="hero-tagline">Arpenter <span class="dot">·</span> Mémoriser <span class="dot">·</span> Appartenir</div>
-      <div class="hero-rule"></div>
+      <div class="hero-rule" style="width:100%;height:1px;background:rgba(136,144,99,.25);margin:22px 0"></div>
       <div class="hero-stats">
         <div class="hs"><div class="hs-v" id="total-km">0</div><div class="hs-l">km validés</div></div>
         <div class="hs"><div class="hs-v" id="total-gr">0</div><div class="hs-l">GR actifs</div></div>
@@ -295,31 +330,11 @@ input[type=file]{display:none}
 
   <div class="section-label">Sentiers</div>
   <div class="cards-grid">
-    <div class="gr-card" id="card-gr34" onclick="openTrail('gr34')">
-      <div class="gr-badge" id="badge-gr34">GR<br>34</div>
-      <div class="gr-body"><div class="gr-name">Bretagne</div><div class="gr-sub">Côte bretonne · ~2 000 km</div><div class="gr-bar"><div class="gr-fill" id="fill-gr34"></div></div><div class="gr-pct" id="pct-gr34">Tracé non chargé</div></div>
-      <div class="gr-arrow">›</div>
-    </div>
-    <div class="gr-card" id="card-gr10" onclick="openTrail('gr10')">
-      <div class="gr-badge" id="badge-gr10">GR<br>10</div>
-      <div class="gr-body"><div class="gr-name">Pyrénées</div><div class="gr-sub">Méditerranée → Atlantique · ~900 km</div><div class="gr-bar"><div class="gr-fill" id="fill-gr10"></div></div><div class="gr-pct" id="pct-gr10">Tracé non chargé</div></div>
-      <div class="gr-arrow">›</div>
-    </div>
-    <div class="gr-card" id="card-gr20" onclick="openTrail('gr20')">
-      <div class="gr-badge" id="badge-gr20">GR<br>20</div>
-      <div class="gr-body"><div class="gr-name">Corse</div><div class="gr-sub">Nord–Sud · ~180 km</div><div class="gr-bar"><div class="gr-fill" id="fill-gr20"></div></div><div class="gr-pct" id="pct-gr20">Tracé non chargé</div></div>
-      <div class="gr-arrow">›</div>
-    </div>
-    <div class="gr-card" id="card-gr5" onclick="openTrail('gr5')">
-      <div class="gr-badge" id="badge-gr5">GR<br>5</div>
-      <div class="gr-body"><div class="gr-name">Alpes</div><div class="gr-sub">Lac Léman → Méditerranée · ~600 km</div><div class="gr-bar"><div class="gr-fill" id="fill-gr5"></div></div><div class="gr-pct" id="pct-gr5">Tracé non chargé</div></div>
-      <div class="gr-arrow">›</div>
-    </div>
-    <div class="gr-card" id="card-custom" onclick="openTrail('custom')">
-      <div class="gr-badge" id="badge-custom" style="font-size:22px;font-weight:200;color:var(--pale)">+</div>
-      <div class="gr-body"><div class="gr-name">Autre GR</div><div class="gr-sub">Chargez n'importe quel tracé GPX</div><div class="gr-bar"><div class="gr-fill" id="fill-custom"></div></div><div class="gr-pct" id="pct-custom">Tracé non chargé</div></div>
-      <div class="gr-arrow">›</div>
-    </div>
+    <div class="gr-card" id="card-gr34" onclick="openTrail('gr34')"><div class="gr-badge" id="badge-gr34">GR<br>34</div><div class="gr-body"><div class="gr-name">Bretagne</div><div class="gr-sub">Côte bretonne · ~2 000 km</div><div class="gr-bar"><div class="gr-fill" id="fill-gr34"></div></div><div class="gr-pct" id="pct-gr34">Tracé non chargé</div></div><div class="gr-arrow">›</div></div>
+    <div class="gr-card" id="card-gr10" onclick="openTrail('gr10')"><div class="gr-badge" id="badge-gr10">GR<br>10</div><div class="gr-body"><div class="gr-name">Pyrénées</div><div class="gr-sub">Méditerranée → Atlantique · ~900 km</div><div class="gr-bar"><div class="gr-fill" id="fill-gr10"></div></div><div class="gr-pct" id="pct-gr10">Tracé non chargé</div></div><div class="gr-arrow">›</div></div>
+    <div class="gr-card" id="card-gr20" onclick="openTrail('gr20')"><div class="gr-badge" id="badge-gr20">GR<br>20</div><div class="gr-body"><div class="gr-name">Corse</div><div class="gr-sub">Nord–Sud · ~180 km</div><div class="gr-bar"><div class="gr-fill" id="fill-gr20"></div></div><div class="gr-pct" id="pct-gr20">Tracé non chargé</div></div><div class="gr-arrow">›</div></div>
+    <div class="gr-card" id="card-gr5" onclick="openTrail('gr5')"><div class="gr-badge" id="badge-gr5">GR<br>5</div><div class="gr-body"><div class="gr-name">Alpes</div><div class="gr-sub">Lac Léman → Méditerranée · ~600 km</div><div class="gr-bar"><div class="gr-fill" id="fill-gr5"></div></div><div class="gr-pct" id="pct-gr5">Tracé non chargé</div></div><div class="gr-arrow">›</div></div>
+    <div class="gr-card" id="card-custom" onclick="openTrail('custom')"><div class="gr-badge" id="badge-custom" style="font-size:22px;font-weight:200;color:var(--pale)">+</div><div class="gr-body"><div class="gr-name">Autre GR</div><div class="gr-sub">Chargez n'importe quel tracé GPX</div><div class="gr-bar"><div class="gr-fill" id="fill-custom"></div></div><div class="gr-pct" id="pct-custom">Tracé non chargé</div></div><div class="gr-arrow">›</div></div>
   </div>
   <div class="home-footer">
     Fichiers GPX sur <a href="https://www.visorando.com" target="_blank">visorando.com</a> · <a href="https://www.openrunner.com" target="_blank">openrunner.com</a><br>
@@ -327,7 +342,7 @@ input[type=file]{display:none}
   </div>
 </div>
 
-<!-- ══════════ MAP SCREEN ══════════ -->
+<!-- ══════ MAP ══════ -->
 <div id="mapscreen">
   <div id="map"></div>
   <div id="topbar">
@@ -339,20 +354,16 @@ input[type=file]{display:none}
     <div id="progress-wrap">
       <svg width="46" height="46" viewBox="0 0 46 46">
         <circle cx="23" cy="23" r="19" fill="none" stroke="#e4e6d8" stroke-width="3"/>
-        <circle id="arc" cx="23" cy="23" r="19" fill="none" stroke="#889063" stroke-width="3"
-          stroke-linecap="round" stroke-dasharray="119.4" stroke-dashoffset="119.4"
-          style="transition:stroke-dashoffset .7s cubic-bezier(.4,0,.2,1)"/>
+        <circle id="arc" cx="23" cy="23" r="19" fill="none" stroke="#889063" stroke-width="3" stroke-linecap="round" stroke-dasharray="119.4" stroke-dashoffset="119.4" style="transition:stroke-dashoffset .7s cubic-bezier(.4,0,.2,1)"/>
       </svg>
       <div id="pct-label">0%</div>
     </div>
   </div>
-
   <div id="layer-switcher">
     <button class="layer-btn on" id="lb-positron" onclick="setLayer('positron')" title="Carte épurée">🗺</button>
     <button class="layer-btn" id="lb-topo" onclick="setLayer('topo')" title="Topographique">⛰</button>
     <button class="layer-btn" id="lb-satellite" onclick="setLayer('satellite')" title="Satellite">🛰</button>
   </div>
-
   <div id="sheet">
     <div class="sheet-handle"></div>
     <div class="tab-bar">
@@ -390,7 +401,7 @@ input[type=file]{display:none}
       </div>
     </div>
     <div class="tab-pane" id="tab-historique">
-      <div id="hist-list"><div class="hist-empty">Aucune sortie enregistrée.<br>Démarrez le suivi GPS ou importez vos fichiers Strava.</div></div>
+      <div id="hist-list"><div class="hist-empty">Aucune sortie enregistrée.</div></div>
     </div>
     <div class="tab-pane" id="tab-options">
       <div class="row"><button class="btn btn-secondary" onclick="document.getElementById('fi-ref').click()">⚙️ Changer le tracé GPX</button></div>
@@ -400,17 +411,13 @@ input[type=file]{display:none}
       </div>
     </div>
   </div>
-
   <div id="load-overlay">
     <svg class="lo-topo" viewBox="0 0 600 700" preserveAspectRatio="xMidYMid slice">
       <path d="M-50,620 C100,600 250,582 400,592 C550,602 700,578 800,589" fill="none" stroke="rgba(136,144,99,0.18)" stroke-width="1"/>
-      <path d="M-50,592 C105,569 255,549 406,560 C558,571 708,545 808,557" fill="none" stroke="rgba(136,144,99,0.16)" stroke-width="1"/>
-      <path d="M-50,562 C110,536 260,514 412,527 C564,540 718,511 816,524" fill="none" stroke="rgba(136,144,99,0.14)" stroke-width="1.1"/>
-      <path d="M-50,530 C115,501 265,476 418,492 C572,508 728,475 824,490" fill="none" stroke="rgba(136,144,99,0.13)" stroke-width="1"/>
-      <path d="M-50,496 C120,463 270,435 424,454 C578,473 738,436 832,453" fill="none" stroke="rgba(136,144,99,0.12)" stroke-width="1"/>
-      <path d="M100,540 C160,514 230,498 305,506 C380,514 450,494 530,502" fill="none" stroke="rgba(136,144,99,0.12)" stroke-width="0.8" stroke-dasharray="3 6"/>
-      <path d="M115,518 C174,490 244,472 318,481 C392,490 462,469 541,478" fill="none" stroke="rgba(136,144,99,0.10)" stroke-width="0.8" stroke-dasharray="3 6"/>
-      <path d="M132,494 C189,464 259,444 332,454 C405,464 476,442 554,452" fill="none" stroke="rgba(136,144,99,0.09)" stroke-width="0.8" stroke-dasharray="2 7"/>
+      <path d="M-50,590 C105,567 255,547 406,558 C558,569 708,543 808,555" fill="none" stroke="rgba(136,144,99,0.15)" stroke-width="1"/>
+      <path d="M-50,558 C110,532 260,510 412,523 C564,536 718,508 816,522" fill="none" stroke="rgba(136,144,99,0.13)" stroke-width="1.1"/>
+      <path d="M100,535 C160,509 230,493 305,501 C380,509 450,489 530,497" fill="none" stroke="rgba(136,144,99,0.11)" stroke-width="0.8" stroke-dasharray="3 6"/>
+      <path d="M115,512 C174,484 244,466 318,475 C392,484 462,463 541,472" fill="none" stroke="rgba(136,144,99,0.09)" stroke-width="0.8" stroke-dasharray="2 7"/>
     </svg>
     <div class="lo-content">
       <div class="lo-label" id="lo-label">GR34</div>
@@ -424,48 +431,223 @@ input[type=file]{display:none}
       <button class="lo-back" onclick="goHome()">← Retour</button>
     </div>
   </div>
-
-  <div id="loading">
-    <div class="spin"></div>
-    <div id="loading-msg">Chargement</div>
-  </div>
+  <div id="loading"><div class="spin"></div><div id="loading-msg">Chargement</div></div>
 </div>
 
 <div id="toast"></div>
-<input type="file" id="fi-ref"         accept=".gpx" onchange="loadRef(this)">
+<input type="file" id="fi-ref" accept=".gpx" onchange="loadRef(this)">
 <input type="file" id="fi-ref-overlay" accept=".gpx" onchange="loadRef(this)">
-<input type="file" id="fi-activity"    accept=".gpx" multiple onchange="loadActivities(this)">
+<input type="file" id="fi-activity" accept=".gpx" multiple onchange="loadActivities(this)">
 
 <script>
+/* ══════════════════════════════════════════════
+   SUPABASE INIT
+══════════════════════════════════════════════ */
+const SUPA_URL = 'https://emypgfgvaflffuusfnmp.supabase.co';
+const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVteXBnZmd2YWZsZmZ1dXNmbm1wIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk0NDIxMzAsImV4cCI6MjA5NTAxODEzMH0.xqth5vE8jucpvdvlw-s1VfRLRkrOG2ZsKFI3G98OmVk';
+const { createClient } = supabase;
+const sb = createClient(SUPA_URL, SUPA_KEY);
+
+/* ══════════════════════════════════════════════
+   CONSTANTS & STATE
+══════════════════════════════════════════════ */
 const TRAILS={
-  gr34:  {name:'GR34 — Bretagne',  sub:'Côte bretonne · ~2 000 km',          label:'GR34',title:'Bretagne',       center:[47.8,-3.2],zoom:9},
-  gr10:  {name:'GR10 — Pyrénées',  sub:'Méditerranée → Atlantique · ~900 km', label:'GR10',title:'Pyrénées',       center:[42.8,0.5], zoom:9},
-  gr20:  {name:'GR20 — Corse',     sub:'Nord–Sud · ~180 km',                  label:'GR20',title:'Corse',          center:[42.1,9.1], zoom:10},
-  gr5:   {name:'GR5 — Alpes',      sub:'Lac Léman → Méditerranée · ~600 km',  label:'GR5', title:'Alpes',          center:[45.5,6.8], zoom:9},
-  custom:{name:'GR Personnalisé',  sub:'Votre propre tracé GPX',              label:'+',   title:'GR personnalisé',center:[46.5,2.3], zoom:6}
+  gr34:{name:'GR34 — Bretagne',sub:'Côte bretonne · ~2 000 km',label:'GR34',title:'Bretagne',center:[47.8,-3.2],zoom:9},
+  gr10:{name:'GR10 — Pyrénées',sub:'Méditerranée → Atlantique · ~900 km',label:'GR10',title:'Pyrénées',center:[42.8,0.5],zoom:9},
+  gr20:{name:'GR20 — Corse',sub:'Nord–Sud · ~180 km',label:'GR20',title:'Corse',center:[42.1,9.1],zoom:10},
+  gr5:{name:'GR5 — Alpes',sub:'Lac Léman → Méditerranée · ~600 km',label:'GR5',title:'Alpes',center:[45.5,6.8],zoom:9},
+  custom:{name:'GR Personnalisé',sub:'Votre propre tracé GPX',label:'+',title:'GR personnalisé',center:[46.5,2.3],zoom:6}
 };
 const LAYERS={
-  positron: {url:'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', attr:'© OpenStreetMap © CARTO'},
-  topo:     {url:'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',               attr:'© OpenStreetMap © OpenTopoMap'},
-  satellite:{url:'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', attr:'© Esri'}
+  positron:{url:'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',attr:'© OpenStreetMap © CARTO'},
+  topo:{url:'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',attr:'© OpenStreetMap © OpenTopoMap'},
+  satellite:{url:'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',attr:'© Esri'}
 };
 const SEG=15, THRESH=35;
-let trail=null, refPts=[], refEle=[], done=new Set(), lines=[], poiMarkers=[],
-    tracking=false, wid=null, posMarker=null, mapObj=null, tileLayer=null, currentLayer='positron';
+let currentUser=null, trail=null, refPts=[], refEle=[], done=new Set(),
+    lines=[], poiMarkers=[], tracking=false, wid=null,
+    posMarker=null, mapObj=null, tileLayer=null, currentLayer='positron';
+let splashDone=false;
 
+/* ══════════════════════════════════════════════
+   LOCAL CACHE
+══════════════════════════════════════════════ */
 function sv(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
 function ld(k){try{const v=localStorage.getItem(k);return v?JSON.parse(v):null}catch(e){return null}}
 
-/* ── SPLASH ── */
-function exitSplash(){
-  const s=document.getElementById('splash');
-  s.classList.add('out');
-  document.getElementById('home').style.display='flex';
-  refreshHome();
-  setTimeout(()=>s.style.display='none', 650);
+/* ══════════════════════════════════════════════
+   SUPABASE DATA
+══════════════════════════════════════════════ */
+function setSyncDot(state){
+  const d=document.getElementById('sync-dot');
+  if(!d)return;
+  d.className='sync-dot'+(state==='syncing'?' syncing':state==='ok'?' ok':'');
 }
 
-/* ── GPX ── */
+async function cloudSaveProgress(t){
+  if(!currentUser)return;
+  setSyncDot('syncing');
+  const dd=ld('done_'+t)||[];
+  const rr=ld('ref_'+t)||[];
+  const ee=ld('ele_'+t)||[];
+  const pp=ld('poi_'+t)||[];
+  try{
+    await sb.from('trail_progress').upsert({
+      user_id:currentUser.id, trail_key:t,
+      done_segments:dd, ref_pts:rr, ele_pts:ee, poi_pts:pp,
+      updated_at:new Date().toISOString()
+    },{onConflict:'user_id,trail_key'});
+    setSyncDot('ok');
+  }catch(e){setSyncDot('');}
+}
+
+async function cloudSaveHistory(t){
+  if(!currentUser)return;
+  const hist=ld('hist_'+t)||[];
+  if(!hist.length)return;
+  const latest=hist[0];
+  try{
+    await sb.from('activity_history').insert({
+      user_id:currentUser.id, trail_key:t,
+      name:latest.name, date:latest.date,
+      source:latest.source, km:latest.km, new_segs:latest.newSegs||0
+    });
+  }catch(e){}
+}
+
+async function cloudLoadAll(){
+  if(!currentUser)return;
+  setSyncDot('syncing');
+  try{
+    // Load trail progress
+    const{data:progData}=await sb.from('trail_progress').select('*').eq('user_id',currentUser.id);
+    if(progData){
+      progData.forEach(row=>{
+        if(row.ref_pts&&row.ref_pts.length)sv('ref_'+row.trail_key,row.ref_pts);
+        if(row.done_segments)sv('done_'+row.trail_key,row.done_segments);
+        if(row.ele_pts)sv('ele_'+row.trail_key,row.ele_pts);
+        if(row.poi_pts)sv('poi_'+row.trail_key,row.poi_pts);
+      });
+    }
+    // Load history
+    const{data:histData}=await sb.from('activity_history').select('*').eq('user_id',currentUser.id).order('created_at',{ascending:false});
+    if(histData){
+      const byTrail={};
+      histData.forEach(row=>{
+        if(!byTrail[row.trail_key])byTrail[row.trail_key]=[];
+        byTrail[row.trail_key].push({id:row.id,name:row.name,date:row.date,source:row.source,km:row.km,newSegs:row.new_segs});
+      });
+      Object.entries(byTrail).forEach(([t,h])=>sv('hist_'+t,h));
+    }
+    setSyncDot('ok');
+  }catch(e){setSyncDot('');}
+}
+
+/* ══════════════════════════════════════════════
+   AUTH
+══════════════════════════════════════════════ */
+function switchAuthTab(tab){
+  document.querySelectorAll('.auth-tab').forEach((b,i)=>b.classList.toggle('on',['login','signup'][i]===tab));
+  document.querySelectorAll('.auth-pane').forEach(p=>p.classList.remove('on'));
+  document.getElementById('pane-'+tab).classList.add('on');
+}
+
+async function loginEmail(){
+  const email=document.getElementById('login-email').value.trim();
+  const pwd=document.getElementById('login-pwd').value;
+  const err=document.getElementById('login-error');
+  err.textContent='';
+  if(!email||!pwd){err.textContent='Email et mot de passe requis.';return;}
+  const{error}=await sb.auth.signInWithPassword({email,password:pwd});
+  if(error)err.textContent=error.message;
+}
+
+async function signupEmail(){
+  const email=document.getElementById('signup-email').value.trim();
+  const pwd=document.getElementById('signup-pwd').value;
+  const err=document.getElementById('signup-error');
+  err.textContent='';
+  if(!email||!pwd){err.textContent='Email et mot de passe requis.';return;}
+  if(pwd.length<8){err.textContent='Mot de passe : 8 caractères minimum.';return;}
+  const{error}=await sb.auth.signUp({email,password:pwd});
+  if(error)err.textContent=error.message;
+  else err.style.color='#2d5a27',err.textContent='Compte créé ! Vérifiez vos emails pour confirmer.';
+}
+
+async function loginGoogle(){
+  await sb.auth.signInWithOAuth({
+    provider:'google',
+    options:{redirectTo:window.location.href}
+  });
+}
+
+async function logout(){
+  await sb.auth.signOut();
+  currentUser=null;
+  document.getElementById('home').style.display='none';
+  document.getElementById('mapscreen').style.display='none';
+  document.getElementById('authscreen').style.display='block';
+  toast('Déconnectée');
+}
+
+function showUserMenu(){
+  if(confirm('Se déconnecter de Cairn ?'))logout();
+}
+
+function updateUserUI(user){
+  const email=user.email||'';
+  const initials=email.charAt(0).toUpperCase();
+  document.getElementById('user-avatar').textContent=initials;
+  document.getElementById('user-email-short').textContent=email.split('@')[0];
+}
+
+/* ══════════════════════════════════════════════
+   AUTH STATE LISTENER
+══════════════════════════════════════════════ */
+sb.auth.onAuthStateChange(async(event,session)=>{
+  if(session?.user){
+    currentUser=session.user;
+    updateUserUI(currentUser);
+    document.getElementById('authscreen').style.display='none';
+    if(splashDone){
+      await cloudLoadAll();
+      document.getElementById('home').style.display='flex';
+      refreshHome();
+    }
+  }else{
+    currentUser=null;
+    if(splashDone){
+      document.getElementById('home').style.display='none';
+      document.getElementById('mapscreen').style.display='none';
+      document.getElementById('authscreen').style.display='block';
+    }
+  }
+});
+
+/* ══════════════════════════════════════════════
+   SPLASH
+══════════════════════════════════════════════ */
+async function exitSplash(){
+  splashDone=true;
+  const s=document.getElementById('splash');
+  s.classList.add('out');
+  setTimeout(()=>s.style.display='none',650);
+  // Check session
+  const{data:{session}}=await sb.auth.getSession();
+  if(session?.user){
+    currentUser=session.user;
+    updateUserUI(currentUser);
+    await cloudLoadAll();
+    document.getElementById('home').style.display='flex';
+    refreshHome();
+  }else{
+    document.getElementById('authscreen').style.display='block';
+  }
+}
+
+/* ══════════════════════════════════════════════
+   GPX
+══════════════════════════════════════════════ */
 function parseGPX(txt){
   const doc=new DOMParser().parseFromString(txt,'text/xml');
   const pts=[],ele=[],pois=[];
@@ -481,7 +663,6 @@ function parseGPX(txt){
   });
   return{pts,ele,pois};
 }
-
 function dist(a,b){
   const R=6371000,dL=(b[0]-a[0])*Math.PI/180,dG=(b[1]-a[1])*Math.PI/180,
     la=a[0]*Math.PI/180,lb=b[0]*Math.PI/180,
@@ -504,7 +685,9 @@ function matchPts(up,rp,ds){
 }
 function totalKm(pts){let d=0;for(let i=1;i<pts.length;i++)d+=dist(pts[i-1],pts[i]);return d/1000;}
 
-/* ── MAP ── */
+/* ══════════════════════════════════════════════
+   MAP
+══════════════════════════════════════════════ */
 function ensureMap(){
   if(mapObj)return;
   mapObj=L.map('map',{zoomControl:true});
@@ -520,8 +703,6 @@ function setLayer(name){
   document.querySelectorAll('.layer-btn').forEach(b=>b.classList.remove('on'));
   document.getElementById('lb-'+name).classList.add('on');
 }
-
-/* ── DRAW ── */
 function draw(){
   lines.forEach(l=>mapObj.removeLayer(l));lines=[];
   const n=Math.ceil(refPts.length/SEG);
@@ -538,12 +719,10 @@ function drawPOIs(pois){
   const icon=L.divIcon({html:'<div style="width:7px;height:7px;border-radius:50%;background:#354024;border:2px solid white;box-shadow:0 1px 4px rgba(0,0,0,.22)"></div>',className:'',iconSize:[7,7],iconAnchor:[3.5,3.5]});
   pois.forEach(p=>{
     const m=L.marker(p.latlng,{icon}).addTo(mapObj);
-    if(p.name)m.bindPopup(`<span style="font-family:'Helvetica Neue',sans-serif;font-size:12px;color:#1a1f12">${p.name}</span>`);
+    if(p.name)m.bindPopup(`<span style="font-family:'Helvetica Neue',sans-serif;font-size:12px">${p.name}</span>`);
     poiMarkers.push(m);
   });
 }
-
-/* ── ALTITUDE ── */
 function drawAltitude(ele){
   const valid=ele.filter(e=>e!==null);
   if(valid.length<2){
@@ -574,7 +753,9 @@ function drawAltitude(ele){
   document.getElementById('a-down').textContent='-'+Math.round(down);
 }
 
-/* ── STATS ── */
+/* ══════════════════════════════════════════════
+   STATS & HOME
+══════════════════════════════════════════════ */
 function updateStats(){
   const total=Math.max(1,Math.ceil(refPts.length/SEG));
   const n=done.size,pct=Math.round(n/total*100);
@@ -586,8 +767,6 @@ function updateStats(){
   document.getElementById('pct-label').textContent=pct+'%';
   document.getElementById('arc').setAttribute('stroke-dashoffset',119.4-(pct/100)*119.4);
 }
-
-/* ── HOME ── */
 function refreshHome(){
   let kAll=0,gAll=0,sAll=0;
   Object.keys(TRAILS).forEach(t=>{
@@ -613,7 +792,9 @@ function refreshHome(){
   document.getElementById('total-sorties').textContent=sAll;
 }
 
-/* ── NAVIGATION ── */
+/* ══════════════════════════════════════════════
+   NAVIGATION
+══════════════════════════════════════════════ */
 function openTrail(t){
   trail=t;const info=TRAILS[t];
   document.getElementById('trail-name').textContent=info.name;
@@ -621,23 +802,15 @@ function openTrail(t){
   document.getElementById('lo-label').textContent=info.label;
   document.getElementById('lo-title').textContent=info.title;
   document.getElementById('home').style.display='none';
-
-  // Show map screen FIRST, then init map so Leaflet gets correct dimensions
-  const ms=document.getElementById('mapscreen');
-  ms.style.display='block';
-
-  // Small delay ensures the DOM has painted before Leaflet measures
+  document.getElementById('mapscreen').style.display='block';
   setTimeout(()=>{
     ensureMap();
     if(mapObj)mapObj.invalidateSize();
-
     lines.forEach(l=>mapObj.removeLayer(l));lines=[];
     poiMarkers.forEach(m=>mapObj.removeLayer(m));poiMarkers=[];
     if(posMarker){mapObj.removeLayer(posMarker);posMarker=null;}
-
     const rr=ld('ref_'+t),dd=ld('done_'+t),re=ld('ele_'+t)||[];
     switchTab('suivi');
-
     if(rr&&rr.length>0){
       refPts=rr;refEle=re;done=new Set(dd||[]);
       const pois=ld('poi_'+t)||[];
@@ -649,9 +822,8 @@ function openTrail(t){
       mapObj.setView(info.center,info.zoom);
       document.getElementById('load-overlay').style.display='flex';
     }
-  }, 50);
+  },50);
 }
-
 function goHome(){
   if(tracking)stopGPS();
   document.getElementById('mapscreen').style.display='none';
@@ -659,7 +831,9 @@ function goHome(){
   refreshHome();
 }
 
-/* ── LOAD REF ── */
+/* ══════════════════════════════════════════════
+   LOAD GPX
+══════════════════════════════════════════════ */
 async function loadRef(inp){
   const f=inp.files[0];if(!f)return;
   showLoading(true,'Analyse du tracé');
@@ -674,10 +848,9 @@ async function loadRef(inp){
   mapObj.fitBounds(L.latLngBounds(ds.pts));
   document.getElementById('load-overlay').style.display='none';
   showLoading(false);inp.value='';
+  await cloudSaveProgress(trail);
   toast('Tracé chargé · '+Math.round(totalKm(ds.pts))+' km'+(pois.length?' · '+pois.length+' PDI':''));
 }
-
-/* ── LOAD ACTIVITIES ── */
 async function loadActivities(inp){
   if(!refPts.length){toast('Chargez d\'abord le tracé de référence');inp.value='';return;}
   showLoading(true,'Analyse des activités');
@@ -694,10 +867,14 @@ async function loadActivities(inp){
   }
   sv('done_'+trail,[...done]);sv('hist_'+trail,hist);
   draw();updateStats();renderHistory();showLoading(false);inp.value='';
+  await cloudSaveProgress(trail);
+  await cloudSaveHistory(trail);
   toast(count+' activité'+(count>1?'s':'')+' importée'+(count>1?'s':''));
 }
 
-/* ── HISTORY ── */
+/* ══════════════════════════════════════════════
+   HISTORY
+══════════════════════════════════════════════ */
 function renderHistory(){
   const hist=ld('hist_'+trail)||[];
   const el=document.getElementById('hist-list');
@@ -713,7 +890,9 @@ function renderHistory(){
     </div>`).join('');
 }
 
-/* ── GPS ── */
+/* ══════════════════════════════════════════════
+   GPS
+══════════════════════════════════════════════ */
 function toggleTracking(){if(tracking)stopGPS();else startGPS();}
 function startGPS(){
   if(!refPts.length){toast('Chargez d\'abord le tracé');return;}
@@ -735,7 +914,7 @@ function startGPS(){
     document.getElementById('gps-msg').textContent='GPS actif · ±'+Math.round(pos.coords.accuracy)+'m';
   },err=>toast('GPS : '+err.message),{enableHighAccuracy:true,maximumAge:4000,timeout:12000});
 }
-function stopGPS(){
+async function stopGPS(){
   if(wid!==null)navigator.geolocation.clearWatch(wid);
   tracking=false;wid=null;
   document.getElementById('btn-gps').innerHTML='📍 Démarrer le suivi';
@@ -751,10 +930,14 @@ function stopGPS(){
     date:new Date().toLocaleDateString('fr-FR',{day:'numeric',month:'short',year:'numeric'}),
     km:Math.round(km/1000),newSegs:0});
   sv('hist_'+trail,hist);renderHistory();
-  toast('Suivi arrêté · progression sauvegardée');
+  await cloudSaveProgress(trail);
+  await cloudSaveHistory(trail);
+  toast('Suivi arrêté · progression sauvegardée ☁️');
 }
 
-/* ── UTILS ── */
+/* ══════════════════════════════════════════════
+   UTILS
+══════════════════════════════════════════════ */
 function switchTab(name){
   const names=['suivi','altitude','historique','options'];
   document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('on',names[i]===name));
@@ -766,10 +949,12 @@ function centerMap(){
   if(refPts.length)mapObj.fitBounds(L.latLngBounds(refPts));
   else mapObj.setView(TRAILS[trail].center,TRAILS[trail].zoom);
 }
-function doReset(){
+async function doReset(){
   if(!confirm('Réinitialiser la progression pour '+TRAILS[trail].name+' ?'))return;
   done=new Set();sv('done_'+trail,[]);sv('hist_'+trail,[]);
-  draw();updateStats();renderHistory();toast('Progression réinitialisée');
+  draw();updateStats();renderHistory();
+  await cloudSaveProgress(trail);
+  toast('Progression réinitialisée');
 }
 function showLoading(v,msg='Chargement'){
   document.getElementById('loading').style.display=v?'flex':'none';
@@ -779,14 +964,10 @@ function toast(msg){
   const t=document.getElementById('toast');t.textContent=msg;t.style.display='block';
   clearTimeout(t._t);t._t=setTimeout(()=>t.style.display='none',3000);
 }
-</script>
-<script>
+
+/* ── PWA Service Worker ── */
 if('serviceWorker' in navigator){
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js')
-      .then(r => console.log('Cairn SW enregistré'))
-      .catch(e => console.log('SW erreur:', e));
-  });
+  window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
 }
 </script>
 </body>
