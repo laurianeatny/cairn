@@ -58,10 +58,10 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;o
 @keyframes draw{to{stroke-dashoffset:0}}
 #landing-content{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;text-align:center;padding:0 32px}
 #l-eye{font-family:var(--sans);font-size:11px;font-weight:400;letter-spacing:.38em;text-transform:uppercase;color:var(--accent);margin-bottom:32px;opacity:0;animation:fup 1.2s var(--ease) 2.8s forwards}
-#l-word{font-family:var(--serif);font-size:clamp(160px,24vw,340px);font-weight:700;color:var(--ink);letter-spacing:-.04em;line-height:.85;opacity:0;animation:fup 1.8s var(--ease) 3.0s forwards}
+#l-word{font-family:var(--serif);font-size:clamp(160px,24vw,340px);font-weight:700;color:var(--ink);letter-spacing:.06em;line-height:.85;opacity:0;animation:fup 1.8s var(--ease) 3.0s forwards}
 #l-sub{font-family:var(--serif);font-size:clamp(20px,2.6vw,32px);font-weight:400;font-style:italic;color:var(--ink);margin-top:28px;letter-spacing:.05em;opacity:0;animation:fup 1.4s var(--ease) 3.6s forwards}
-#l-rule{width:0;height:1px;background:var(--accent);margin:40px auto;animation:gwidth 1s var(--ease) 4.2s forwards}
-@keyframes gwidth{from{width:0;opacity:0}to{width:44px;opacity:1}}
+#l-rule{width:1px;height:0;background:var(--accent);margin:36px auto;animation:gline 1s var(--ease) 4.2s forwards}
+@keyframes gline{from{height:0;opacity:0}to{height:48px;opacity:1}}
 #l-cta{font-family:var(--sans);font-size:10px;font-weight:400;letter-spacing:.32em;text-transform:uppercase;color:var(--stone);opacity:0;display:flex;align-items:center;gap:14px;animation:fup 1s var(--ease) 4.4s forwards,breathe 3s ease-in-out 5.6s infinite}
 #l-cta::before,#l-cta::after{content:'';width:22px;height:1px;background:var(--accent);opacity:.5}
 @keyframes fup{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
@@ -100,7 +100,7 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;o
 .auth-ok{color:var(--gr-green)}
 
 /* ━━━━━━━━━━━━ LIBRARY ━━━━━━━━━━━━ */
-#library{flex-direction:column;background:var(--paper);overflow-y:auto;-webkit-overflow-scrolling:touch}
+#library{flex-direction:column;overflow-y:auto;-webkit-overflow-scrolling:touch;background-color:var(--paper);background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.65' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23p)'/%3E%3C/svg%3E");background-size:256px 256px}
 .lib-top{padding:56px 56px 0;display:flex;align-items:flex-end;justify-content:space-between;flex-shrink:0;gap:24px;flex-wrap:wrap}
 @media(max-width:640px){.lib-top{padding:36px 24px 0}}
 .lib-left{}
@@ -754,7 +754,7 @@ let splashDone = false;
 ═══════════════════════════════════════ */
 const STRAVA_CLIENT_ID     = '249836';
 const STRAVA_CLIENT_SECRET = '6e6dcac5aded94b033e3ec76ca610322dcbf6869';
-const STRAVA_REDIRECT_URI  = window.location.origin + window.location.pathname;
+const STRAVA_REDIRECT_URI  = window.location.origin + window.location.pathname.replace(/\/index\.html$/,'') + '/';
 const STRAVA_SCOPE         = 'activity:read_all';
 
 /* ═══════════════════════════════════════
@@ -1039,13 +1039,14 @@ function drawLibMap(){
     const doneSet=new Set(dd||[]);
     const n=Math.ceil(rr.length/SEG);
     for(let s=0;s<n;s++){
+      if(!doneSet.has(s)) continue; // seulement les segments validés
       const seg=rr.slice(s*SEG,Math.min(s*SEG+SEG+1,rr.length));
       if(seg.length<2) continue;
-      L.polyline(seg,{color:doneSet.has(s)?'#556B57':'#B14B3F',weight:2,opacity:.7}).addTo(libMapObj);
+      L.polyline(seg,{color:'#4a6050',weight:2.5,opacity:.85}).addTo(libMapObj);
       seg.forEach(p=>bounds.push(p));
     }
   });
-  if(bounds.length>1) libMapObj.fitBounds(L.latLngBounds(bounds),{padding:[12,12]});
+  if(bounds.length>1) libMapObj.fitBounds(L.latLngBounds(bounds),{padding:[16,16]});
 }
 
 /* ═══════════════════════════════════════
@@ -1300,7 +1301,7 @@ function renderHistory(){
   const el=document.getElementById('hist-list');
   if(!hist.length){el.innerHTML='<div class="hist-empty">Aucune sortie enregistrée.<br>Démarrez le suivi GPS ou importez vos activités.</div>';return;}
   el.innerHTML=hist.map(h=>`
-    <div class="hist-item">
+    <div class="hist-item" style="cursor:pointer" onclick="openPhotoPanelFromJournal(${h.segIdx||0},'${h.date||''}','${h.name||''}')">
       <div class="hist-dot ${h.source}"></div>
       <div class="hist-body">
         <div class="hist-name">${h.name}</div>
@@ -1561,9 +1562,9 @@ async function stravaSyncCurrentTrail(){
 
   try{
     const activities=await stravaFetchActivities(after);
-    const relevant=activities.filter(a=>
-      ['Run','Walk','Hike','TrailRun','Ride'].includes(a.type)
-    );
+    // Uniquement activités pédestres — pas vélo, natation, etc.
+    const WALK_TYPES=['Walk','Hike','TrailRun','Run','Snowshoe','NordicSki'];
+    const relevant=activities.filter(a=>WALK_TYPES.includes(a.type));
 
     if(!relevant.length){
       showLoading(false);
