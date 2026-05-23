@@ -27,6 +27,9 @@
   --mist:     #E8E3DA;
   --gr-red:   #B14B3F;
   --gr-green: #4a6050;
+  --accent:   #31465A;
+  --accent-2: #456080;
+  --accent-pale: #dde4ea;
   --white:    #FFFFFF;
   --serif: 'Cormorant Garamond', Georgia, serif;
   --sans:  'DM Sans', 'Helvetica Neue', sans-serif;
@@ -34,27 +37,33 @@
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;font-family:var(--sans);overflow:hidden;background:var(--paper);color:var(--ink);-webkit-font-smoothing:antialiased}
-body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;opacity:.028;
+body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;opacity:.038;
   background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   background-size:160px 160px}
 .screen{position:absolute;inset:0;display:none}
 .screen.active{display:flex}
 
 /* ━━━━━━━━━━━━ LANDING ━━━━━━━━━━━━ */
-#landing{flex-direction:column;align-items:center;justify-content:center;background:var(--paper);cursor:pointer;overflow:hidden}
+#landing{
+  flex-direction:column;align-items:center;justify-content:center;
+  cursor:pointer;overflow:hidden;background-color:var(--paper);
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.65' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23p)'/%3E%3C/svg%3E");
+  background-size:256px 256px}
+#landing::before{content:'';position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:radial-gradient(ellipse 80% 80% at 50% 50%,transparent 40%,rgba(43,42,40,.18) 100%)}
 #topo-svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 .tl{fill:none;stroke:#9B9388;stroke-linecap:round;stroke-linejoin:round;
   stroke-dasharray:var(--len,3000);stroke-dashoffset:var(--len,3000);
   animation:draw var(--dur,5s) var(--ease) var(--del,0s) forwards}
 @keyframes draw{to{stroke-dashoffset:0}}
 #landing-content{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;text-align:center;padding:0 32px}
-#l-eye{font-family:var(--sans);font-size:10px;font-weight:400;letter-spacing:.28em;text-transform:uppercase;color:var(--stone);margin-bottom:24px;opacity:0;animation:fup 1.2s var(--ease) 2.8s forwards}
-#l-word{font-family:var(--serif);font-size:clamp(120px,18vw,220px);font-weight:700;color:var(--ink);letter-spacing:-.03em;line-height:.88;opacity:0;animation:fup 1.6s var(--ease) 3.0s forwards}
-#l-sub{font-family:var(--serif);font-size:clamp(15px,1.9vw,20px);font-weight:500;font-style:italic;color:var(--ink-mid);margin-top:18px;letter-spacing:.04em;opacity:0;animation:fup 1.2s var(--ease) 3.5s forwards}
-#l-rule{width:1px;height:0;background:var(--ghost);margin:36px auto;animation:gline 1s var(--ease) 4.0s forwards}
-@keyframes gline{to{height:44px}}
+#l-eye{font-family:var(--sans);font-size:11px;font-weight:400;letter-spacing:.38em;text-transform:uppercase;color:var(--accent);margin-bottom:32px;opacity:0;animation:fup 1.2s var(--ease) 2.8s forwards}
+#l-word{font-family:var(--serif);font-size:clamp(160px,24vw,340px);font-weight:700;color:var(--ink);letter-spacing:-.04em;line-height:.85;opacity:0;animation:fup 1.8s var(--ease) 3.0s forwards}
+#l-sub{font-family:var(--serif);font-size:clamp(20px,2.6vw,32px);font-weight:400;font-style:italic;color:var(--ink);margin-top:28px;letter-spacing:.05em;opacity:0;animation:fup 1.4s var(--ease) 3.6s forwards}
+#l-rule{width:0;height:1px;background:var(--accent);margin:40px auto;animation:gwidth 1s var(--ease) 4.2s forwards}
+@keyframes gwidth{from{width:0;opacity:0}to{width:44px;opacity:1}}
 #l-cta{font-family:var(--sans);font-size:10px;font-weight:400;letter-spacing:.32em;text-transform:uppercase;color:var(--stone);opacity:0;display:flex;align-items:center;gap:14px;animation:fup 1s var(--ease) 4.4s forwards,breathe 3s ease-in-out 5.6s infinite}
-#l-cta::before,#l-cta::after{content:'';width:18px;height:1px;background:var(--ghost)}
+#l-cta::before,#l-cta::after{content:'';width:22px;height:1px;background:var(--accent);opacity:.5}
 @keyframes fup{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 @keyframes breathe{0%,100%{opacity:.45}50%{opacity:1}}
 
@@ -73,12 +82,12 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;o
 .auth-card{max-width:420px;margin:0 auto;padding:40px 24px 56px;width:100%}
 .auth-tabs{display:flex;gap:0;margin-bottom:28px;border-bottom:1px solid var(--ghost)}
 .auth-tab{flex:1;padding:12px 8px;font-family:var(--sans);font-size:10px;font-weight:400;letter-spacing:.16em;text-transform:uppercase;color:var(--stone);background:none;border:none;cursor:pointer;border-bottom:1px solid transparent;margin-bottom:-1px;transition:all .15s}
-.auth-tab.on{color:var(--ink);border-bottom-color:var(--ink)}
+.auth-tab.on{color:var(--accent);border-bottom-color:var(--accent)}
 .auth-pane{display:none}.auth-pane.on{display:block}
 .auth-field{margin-bottom:16px}
 .auth-field label{display:block;font-family:var(--sans);font-size:9px;font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:var(--stone);margin-bottom:7px}
 .auth-field input{width:100%;padding:12px 14px;border:1px solid var(--ghost);background:var(--white);font-family:var(--sans);font-size:13px;color:var(--ink);outline:none;transition:border-color .15s}
-.auth-field input:focus{border-color:var(--stone)}
+.auth-field input:focus{border-color:var(--accent);outline:2px solid var(--accent-pale)}
 .auth-btn{width:100%;padding:13px 14px;border:1px solid var(--ghost);font-family:var(--sans);font-size:10px;font-weight:400;letter-spacing:.2em;text-transform:uppercase;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:all .18s;margin-bottom:10px}
 .auth-btn:active{transform:scale(.98)}
 .auth-btn-primary{background:var(--ink);color:var(--white);border-color:var(--ink)}
@@ -120,7 +129,7 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;o
 @media(max-width:640px){.gr-list{padding:0 24px 16px}}
 .gr-row{display:grid;grid-template-columns:64px 1fr auto;align-items:center;gap:24px;padding:20px 0;border-bottom:1px solid var(--ghost);cursor:pointer;transition:background .2s}
 .gr-row:first-child{border-top:1px solid var(--ghost)}
-.gr-row:hover .gr-row-name{color:var(--ink-mid)}
+.gr-row:hover .gr-row-name{color:var(--accent)}
 .gr-row:hover .gr-num-big{opacity:.7}
 /* Carte Générale row */
 .gr-row.general-row .gr-num-big{font-size:9px;letter-spacing:.18em;text-transform:uppercase;font-family:var(--sans);font-weight:500}
@@ -171,7 +180,7 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;o
 .sb-tabs{flex:1;display:flex;flex-direction:column;overflow:hidden;min-height:0}
 .sb-tab-bar{display:flex;border-bottom:1px solid var(--ghost);flex-shrink:0}
 .stb{flex:1;padding:11px 2px;font-family:var(--sans);font-size:9px;font-weight:400;letter-spacing:.16em;text-transform:uppercase;color:var(--stone);background:none;border:none;cursor:pointer;border-bottom:2px solid transparent;transition:color .2s,border-color .2s;margin-bottom:-1px}
-.stb.on{color:var(--ink);border-bottom-color:var(--ink)}
+.stb.on{color:var(--accent);border-bottom-color:var(--accent)}
 .sb-pane{display:none;flex-direction:column;overflow-y:auto;padding:16px 22px 28px;flex:1;-webkit-overflow-scrolling:touch}
 .sb-pane.on{display:flex}
 .sb-btn{width:100%;padding:11px 14px;border:1px solid var(--ghost);font-family:var(--sans);font-size:10px;font-weight:400;letter-spacing:.18em;text-transform:uppercase;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .18s;margin-bottom:8px}
@@ -224,6 +233,33 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;o
 @keyframes spin{to{transform:rotate(360deg)}}
 #loading-msg{font-family:var(--sans);font-size:10px;font-weight:300;letter-spacing:.18em;text-transform:uppercase;color:var(--stone)}
 #toast{display:none;position:fixed;bottom:28px;left:50%;transform:translateX(-50%);z-index:999;background:var(--ink);color:var(--white);padding:9px 20px;font-family:var(--sans);font-size:11px;font-weight:300;letter-spacing:.06em;white-space:nowrap;pointer-events:none}
+
+/* ━━━━━━━━━━━━ PHOTO PANEL ━━━━━━━━━━━━ */
+#photo-panel{
+  display:none;position:absolute;z-index:550;
+  background:rgba(246,243,236,.98);backdrop-filter:blur(12px);
+  border:1px solid var(--ghost);
+  box-shadow:0 8px 40px rgba(43,42,40,.18);
+  min-width:260px;max-width:320px;overflow:hidden;
+  animation:ppIn .22s var(--ease) both;
+}
+@keyframes ppIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.pp-head{padding:12px 14px 10px;border-bottom:1px solid var(--ghost);display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+.pp-head-left{flex:1;min-width:0}
+.pp-title{font-family:var(--serif);font-size:15px;font-weight:600;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pp-sub{font-family:var(--sans);font-size:9px;font-weight:400;letter-spacing:.14em;text-transform:uppercase;color:var(--stone);margin-top:2px}
+.pp-close{background:none;border:none;cursor:pointer;font-size:18px;color:var(--stone);padding:0;line-height:1;flex-shrink:0;transition:color .15s;margin-top:-2px}
+.pp-close:hover{color:var(--ink)}
+.pp-photos{display:flex;gap:6px;padding:10px 12px;overflow-x:auto;min-height:90px;align-items:center;scroll-snap-type:x mandatory}
+.pp-photo{width:82px;height:82px;flex-shrink:0;object-fit:cover;border:1px solid var(--ghost);cursor:pointer;transition:opacity .15s;scroll-snap-align:start}
+.pp-photo:hover{opacity:.82}
+.pp-empty{font-family:var(--sans);font-size:11px;font-weight:300;color:var(--stone);text-align:center;padding:20px 12px;width:100%}
+.pp-add{padding:8px 12px;border-top:1px solid var(--ghost)}
+.pp-add-btn{width:100%;padding:8px;border:1px dashed var(--ghost);background:none;cursor:pointer;font-family:var(--sans);font-size:9px;font-weight:400;letter-spacing:.18em;text-transform:uppercase;color:var(--stone);transition:all .15s;display:flex;align-items:center;justify-content:center;gap:6px}
+.pp-add-btn:hover{border-color:var(--accent);color:var(--accent)}
+/* Lightbox photo */
+#photo-lightbox{display:none;position:fixed;inset:0;z-index:800;background:rgba(43,42,40,.92);align-items:center;justify-content:center;cursor:pointer}
+#photo-lightbox img{max-width:90vw;max-height:90vh;object-fit:contain;box-shadow:0 8px 60px rgba(0,0,0,.5)}
 input[type=file]{display:none}
 .leaflet-control-attribution{font-size:8px!important;font-family:var(--sans)!important}
 .leaflet-control-zoom{border:1px solid var(--ghost)!important;border-radius:0!important;overflow:hidden!important;box-shadow:0 1px 6px rgba(43,42,40,.08)!important}
@@ -339,6 +375,25 @@ input[type=file]{display:none}
     <path class="tl" style="--len:680;--dur:4.8s;--del:.70s" stroke-width=".74" opacity=".18"
       d="M 244,782 C 268,746 316,718 376,700 C 432,684 494,682 546,700 C 592,716 622,748 622,784 C 620,818 598,846 562,864 C 522,884 474,888 428,880 C 384,870 342,848 310,818 C 278,788 224,816 244,782 Z"/>
 
+
+    <!-- ═════════════════════════
+         TRACÉS GR ANIMÉS
+         Chemins sinueux style GR qui se dessinent après les courbes topo
+    ══════════════════════════ -->
+    <!-- Tracé 1 — style GR côtier (rouge) — traverse de gauche à droite en bas -->
+    <path style="--len:2800;--dur:3.5s;--del:5.2s" 
+      fill="none" stroke="#B14B3F" stroke-width="2.2" opacity=".55"
+      stroke-dasharray="2800" stroke-dashoffset="2800"
+      stroke-linecap="round" stroke-linejoin="round"
+      animation="draw 3.5s cubic-bezier(0.4,0,0.2,1) 5.2s forwards"
+      d="M -20,820 C 80,808 160,792 240,798 C 320,804 380,782 460,774 C 540,766 610,772 680,760 C 750,748 820,730 900,728 C 970,726 1040,738 1110,730 C 1180,722 1250,708 1320,712 C 1370,715 1410,720 1460,718"/>
+    <!-- Tracé 2 — style GR montagne (bleu-ardoise) — traverse plus haut -->
+    <path style="--len:2600;--dur:3.2s;--del:5.8s"
+      fill="none" stroke="#31465A" stroke-width="2.2" opacity=".5"
+      stroke-dasharray="2600" stroke-dashoffset="2600"
+      stroke-linecap="round" stroke-linejoin="round"
+      animation="draw 3.2s cubic-bezier(0.4,0,0.2,1) 5.8s forwards"
+      d="M -20,480 C 40,472 100,460 180,448 C 260,436 340,428 420,438 C 500,448 560,464 630,452 C 700,440 770,418 850,412 C 920,407 990,416 1060,408 C 1130,400 1200,388 1280,392 C 1340,395 1400,402 1460,400"/>
   </svg>
 
   <div id="landing-content">
@@ -450,8 +505,8 @@ input[type=file]{display:none}
     <div class="gr-row general-row" onclick="openGeneralMap()">
       <div class="gr-num-big" style="font-size:9px;letter-spacing:.14em;font-family:var(--sans);font-weight:500;color:var(--stone)">Vue<br>générale</div>
       <div class="gr-row-body">
-        <div class="gr-row-name">Carte générale</div>
-        <div class="gr-row-sub">Tous vos sentiers chargés sur une seule carte</div>
+        <div class="gr-row-name">Le grand chemin</div>
+        <div class="gr-row-sub">Tous les territoires, une seule vue</div>
         <div class="gr-row-bar"><div class="gr-row-fill" id="fill-general" style="width:0%"></div></div>
         <div class="gr-row-pct" id="pct-general">—</div>
       </div>
@@ -562,7 +617,7 @@ input[type=file]{display:none}
       <div class="prw">
         <svg width="50" height="50" viewBox="0 0 50 50">
           <circle cx="25" cy="25" r="20" fill="none" stroke="#D8D3CA" stroke-width="2"/>
-          <circle id="arc" cx="25" cy="25" r="20" fill="none" stroke="#556B57" stroke-width="2"
+          <circle id="arc" cx="25" cy="25" r="20" fill="none" stroke="#31465A" stroke-width="2"
             stroke-linecap="round" stroke-dasharray="125.7" stroke-dashoffset="125.7"/>
         </svg>
         <div id="pct-label">0%</div>
@@ -656,6 +711,26 @@ input[type=file]{display:none}
     </div>
   </div>
 
+
+  <!-- Photo panel flottant -->
+  <div id="photo-panel">
+    <div class="pp-head">
+      <div class="pp-head-left">
+        <div class="pp-title" id="pp-title">Segment</div>
+        <div class="pp-sub" id="pp-sub">—</div>
+      </div>
+      <button class="pp-close" onclick="closePhotoPanel()">×</button>
+    </div>
+    <div class="pp-photos" id="pp-photos"></div>
+    <div class="pp-add">
+      <label class="pp-add-btn" for="fi-photo">+ Ajouter une photo</label>
+    </div>
+  </div>
+  <!-- Lightbox -->
+  <div id="photo-lightbox" onclick="document.getElementById('photo-lightbox').style.display='none'">
+    <img id="lightbox-img" src="" alt="">
+  </div>
+  <input type="file" id="fi-photo" accept="image/*" onchange="addPhotoToSegment(this)">
   <div id="loading"><div class="spin"></div><div id="loading-msg">Chargement</div></div>
 </div>
 
@@ -1037,8 +1112,9 @@ function draw(){
     const seg=refPts.slice(s*SEG,Math.min(s*SEG+SEG+1,refPts.length));
     if(seg.length<2) continue;
     const ok=done.has(s);
-    lines.push(L.polyline(seg,{color:ok?'#556B57':'#B14B3F',weight:ok?5:3.5,opacity:ok?.90:.65}).addTo(mapObj));
+    lines.push(L.polyline(seg,{color:ok?'#4a6050':'#B14B3F',weight:ok?5:3.5,opacity:ok?.90:.65}).addTo(mapObj));
   }
+  setTimeout(attachSegmentClicks,100);
 }
 function drawPOIs(pois){
   poiMarkers.forEach(m=>mapObj.removeLayer(m));poiMarkers=[];
@@ -1543,6 +1619,117 @@ async function stravaSyncCurrentTrail(){
 
 /* ── Ajouter "strava" comme source dans l'historique ── */
 // (les points hist de type strava sont identifiés par h.source==='strava')
+
+
+/* ═══════════════════════════════════════
+   PHOTOS sur segments validés
+═══════════════════════════════════════ */
+let currentSegKey = null; // "trailKey_segIndex"
+
+/* Attacher le clic sur chaque polyline validé */
+function attachSegmentClicks(){
+  lines.forEach((line, idx)=>{
+    if(!done.has(idx)) return;
+    line.on('click', function(e){
+      L.DomEvent.stopPropagation(e);
+      openPhotoPanel(idx, e.containerPoint);
+    });
+    line.getElement && line.getElement()?.style && (line.getElement().style.cursor='pointer');
+  });
+}
+
+function openPhotoPanel(segIdx, containerPoint){
+  currentSegKey = trail+'_'+segIdx;
+  const panel = document.getElementById('photo-panel');
+  const map = document.getElementById('map');
+  const rect = map.getBoundingClientRect();
+
+  // Position : à côté du clic, dans les limites de la carte
+  let x = containerPoint.x + 14;
+  let y = containerPoint.y - 20;
+  if(x + 330 > rect.width)  x = containerPoint.x - 330;
+  if(y + 220 > rect.height) y = containerPoint.y - 220;
+  if(y < 0) y = 10;
+  if(x < 0) x = 10;
+
+  panel.style.left = x+'px';
+  panel.style.top  = y+'px';
+  panel.style.display='block';
+
+  // Info segment
+  const total = Math.ceil(refPts.length/SEG);
+  const pct   = Math.round((segIdx+1)/total*100);
+  const kmPt  = refPts[segIdx*SEG];
+  document.getElementById('pp-title').textContent =
+    TRAILS[trail]?.num + ' — segment '+(segIdx+1)+'/'+total;
+  document.getElementById('pp-sub').textContent = pct+'% du tracé · validé ✓';
+
+  renderPhotoPanel();
+}
+
+function closePhotoPanel(){
+  document.getElementById('photo-panel').style.display='none';
+  currentSegKey=null;
+}
+
+function renderPhotoPanel(){
+  const photos = ld('photos_'+currentSegKey)||[];
+  const el = document.getElementById('pp-photos');
+  if(!photos.length){
+    el.innerHTML='<div class="pp-empty">Aucune photo pour ce segment.<br>Ajoutez un souvenir.</div>';
+    return;
+  }
+  el.innerHTML = photos.map((p,i)=>
+    `<img class="pp-photo" src="${p.dataUrl}" title="${p.date||''}" 
+      onclick="openLightbox('${currentSegKey}',${i})">`
+  ).join('');
+}
+
+function openLightbox(key, idx){
+  const photos=ld('photos_'+key)||[];
+  if(!photos[idx]) return;
+  document.getElementById('lightbox-img').src=photos[idx].dataUrl;
+  document.getElementById('photo-lightbox').style.display='flex';
+}
+
+async function addPhotoToSegment(inp){
+  if(!currentSegKey||!inp.files[0]) return;
+  const file=inp.files[0];
+  // Resize to max 800px, compress to JPEG
+  const dataUrl = await resizeImage(file, 800, .82);
+  const photos  = ld('photos_'+currentSegKey)||[];
+  if(photos.length >= 6){ toast('Maximum 6 photos par segment'); return; }
+  photos.push({ dataUrl, date: new Date().toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'}) });
+  sv('photos_'+currentSegKey, photos);
+  renderPhotoPanel();
+  inp.value='';
+  toast('Photo ajoutée');
+}
+
+function resizeImage(file, maxPx, quality){
+  return new Promise(resolve=>{
+    const img=new Image();
+    const url=URL.createObjectURL(file);
+    img.onload=()=>{
+      URL.revokeObjectURL(url);
+      const ratio=Math.min(maxPx/img.width, maxPx/img.height, 1);
+      const w=Math.round(img.width*ratio), h=Math.round(img.height*ratio);
+      const canvas=document.createElement('canvas');
+      canvas.width=w; canvas.height=h;
+      canvas.getContext('2d').drawImage(img,0,0,w,h);
+      resolve(canvas.toDataURL('image/jpeg', quality));
+    };
+    img.src=url;
+  });
+}
+
+// Fermer panel si clic sur la carte hors panel
+document.addEventListener('click', e=>{
+  const panel=document.getElementById('photo-panel');
+  if(panel.style.display==='block' && !panel.contains(e.target)){
+    closePhotoPanel();
+  }
+});
 
 /* PWA */
 if('serviceWorker' in navigator){
