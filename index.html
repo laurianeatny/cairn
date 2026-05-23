@@ -194,7 +194,7 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;o
 .hist-item{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid var(--ghost)}
 .hist-item:last-child{border-bottom:none}
 .hist-dot{width:6px;height:6px;border-radius:50%;background:var(--ghost);flex-shrink:0;margin-top:4px}
-.hist-dot.gps{background:var(--ink)}.hist-dot.gpx{background:var(--stone)}
+.hist-dot.gps{background:var(--ink)}.hist-dot.gpx{background:var(--stone)}.hist-dot.strava{background:#FC4C02}
 .hist-body{flex:1;min-width:0}
 .hist-name{font-family:var(--sans);font-size:11px;font-weight:400;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .hist-meta{font-family:var(--sans);font-size:10px;font-weight:300;color:var(--stone);margin-top:2px}
@@ -522,6 +522,18 @@ input[type=file]{display:none}
     Tracés GPX · <a href="https://www.visorando.com" target="_blank">visorando.com</a> · <a href="https://www.openrunner.com" target="_blank">openrunner.com</a> · <a href="https://www.ffrandonnee.fr" target="_blank">ffrandonnee.fr</a><br>
     Strava : activité → ··· → Exporter le fichier GPX
   </div>
+
+  <!-- Strava connect band -->
+  <div id="strava-band" style="margin:0 56px 48px;border:1px solid var(--ghost);padding:18px 22px;display:flex;align-items:center;gap:18px;flex-shrink:0">
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="#FC4C02"><path d="M15.387 17.944l-2.089-4.116h-3.065L15.387 24l5.15-10.172h-3.066m-7.008-5.599l2.836 5.599h4.172L10.463 0l-7 13.828h4.169"/></svg>
+    <div style="flex:1">
+      <div id="strava-status-text" style="font-family:var(--sans);font-size:13px;font-weight:500;color:var(--ink)">Connecter Strava</div>
+      <div id="strava-status-sub" style="font-family:var(--sans);font-size:11px;font-weight:300;color:var(--stone);margin-top:2px">Importez vos activités automatiquement</div>
+    </div>
+    <button id="strava-action-btn" onclick="stravaAction()" style="font-family:var(--sans);font-size:10px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;padding:9px 16px;border:1px solid var(--ghost);background:var(--white);color:var(--ink);cursor:pointer;transition:all .18s;white-space:nowrap">
+      Connecter
+    </button>
+  </div>
 </div>
 
 <!-- ━━━━━━━━━━━━━━━━━━ MAP SCREEN ━━━━━━━━━━━━━━━━━━ -->
@@ -582,6 +594,10 @@ input[type=file]{display:none}
         <div id="gps-status"><div id="gps-dot"></div><span id="gps-msg">GPS actif</span></div>
         <button class="sb-btn sb-primary" id="btn-gps" onclick="toggleTracking()">Démarrer le suivi</button>
         <button class="sb-btn sb-secondary" onclick="document.getElementById('fi-activity').click()">Importer des activités GPX</button>
+        <button class="sb-btn sb-secondary" id="btn-strava-sync" onclick="stravaSyncCurrentTrail()" style="display:none;align-items:center;gap:8px">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="#FC4C02"><path d="M15.387 17.944l-2.089-4.116h-3.065L15.387 24l5.15-10.172h-3.066m-7.008-5.599l2.836 5.599h4.172L10.463 0l-7 13.828h4.169"/></svg>
+          Synchroniser Strava
+        </button>
       </div>
 
       <div class="sb-pane" id="tab-altitude">
@@ -657,6 +673,14 @@ const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsI
 const sb = supabase.createClient(SUPA_URL, SUPA_KEY);
 let currentUser = null;
 let splashDone = false;
+
+/* ═══════════════════════════════════════
+   STRAVA CONFIG
+═══════════════════════════════════════ */
+const STRAVA_CLIENT_ID     = '249836';
+const STRAVA_CLIENT_SECRET = '6e6dcac5aded94b033e3ec76ca610322dcbf6869';
+const STRAVA_REDIRECT_URI  = window.location.origin + window.location.pathname;
+const STRAVA_SCOPE         = 'activity:read_all';
 
 /* ═══════════════════════════════════════
    CONFIG
@@ -1292,10 +1316,247 @@ function checkMobile(){
 window.addEventListener('resize',checkMobile);
 checkMobile();
 
+/* ═══════════════════════════════════════
+   STRAVA — OAuth + Sync
+═══════════════════════════════════════ */
+
+/* ── Tokens (localStorage) ── */
+function stravaGetTokens(){
+  return ld('strava_tokens'); // {access_token, refresh_token, expires_at, athlete}
+}
+function stravaSetTokens(t){ sv('strava_tokens',t); }
+function stravaClearTokens(){ localStorage.removeItem('strava_tokens'); }
+function stravaIsConnected(){
+  const t=stravaGetTokens();
+  return !!(t && t.access_token);
+}
+
+/* ── Refresh token if expired ── */
+async function stravaGetValidToken(){
+  let tokens=stravaGetTokens();
+  if(!tokens) return null;
+  const now=Math.floor(Date.now()/1000);
+  if(tokens.expires_at < now + 60){
+    // Refresh
+    try{
+      const res=await fetch('https://www.strava.com/oauth/token',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({
+          client_id:STRAVA_CLIENT_ID,
+          client_secret:STRAVA_CLIENT_SECRET,
+          grant_type:'refresh_token',
+          refresh_token:tokens.refresh_token
+        })
+      });
+      const data=await res.json();
+      if(data.access_token){
+        tokens={...tokens,...data};
+        stravaSetTokens(tokens);
+      }else{ stravaClearTokens(); return null; }
+    }catch(e){ return null; }
+  }
+  return tokens.access_token;
+}
+
+/* ── OAuth login ── */
+function stravaConnect(){
+  const url=`https://www.strava.com/oauth/authorize?client_id=${STRAVA_CLIENT_ID}`
+    +`&redirect_uri=${encodeURIComponent(STRAVA_REDIRECT_URI)}`
+    +`&response_type=code&approval_prompt=auto&scope=${STRAVA_SCOPE}`;
+  window.location.href=url;
+}
+
+/* ── Handle OAuth callback ── */
+async function stravaHandleCallback(){
+  const params=new URLSearchParams(window.location.search);
+  const code=params.get('code');
+  const error=params.get('error');
+  if(error){ toast('Connexion Strava annulée'); cleanURL(); return; }
+  if(!code) return;
+  cleanURL();
+  showLoading(true,'Connexion à Strava…');
+  try{
+    const res=await fetch('https://www.strava.com/oauth/token',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        client_id:STRAVA_CLIENT_ID,
+        client_secret:STRAVA_CLIENT_SECRET,
+        code,
+        grant_type:'authorization_code'
+      })
+    });
+    const data=await res.json();
+    if(data.access_token){
+      stravaSetTokens({
+        access_token:data.access_token,
+        refresh_token:data.refresh_token,
+        expires_at:data.expires_at,
+        athlete:data.athlete
+      });
+      updateStravaUI();
+      toast('Strava connecté · Bienvenue '+data.athlete?.firstname+' !');
+    }else{
+      toast('Erreur Strava : '+JSON.stringify(data));
+    }
+  }catch(e){ toast('Erreur connexion Strava'); }
+  showLoading(false);
+}
+
+function cleanURL(){
+  window.history.replaceState({},document.title,window.location.pathname);
+}
+
+/* ── Disconnect ── */
+function stravaDisconnect(){
+  stravaClearTokens();
+  updateStravaUI();
+  toast('Strava déconnecté');
+}
+
+/* ── Action button (connect / disconnect) ── */
+function stravaAction(){
+  if(stravaIsConnected()){
+    if(confirm('Déconnecter Strava ?')) stravaDisconnect();
+  }else{
+    stravaConnect();
+  }
+}
+
+/* ── Update UI ── */
+function updateStravaUI(){
+  const connected=stravaIsConnected();
+  const tokens=stravaGetTokens();
+  const btn=document.getElementById('strava-action-btn');
+  const txt=document.getElementById('strava-status-text');
+  const sub=document.getElementById('strava-status-sub');
+  const syncBtn=document.getElementById('btn-strava-sync');
+  if(connected && tokens?.athlete){
+    txt.textContent=tokens.athlete.firstname+' '+tokens.athlete.lastname;
+    sub.textContent='Compte Strava connecté · synchronisation disponible';
+    btn.textContent='Déconnecter';
+    btn.style.borderColor='var(--gr-red)';
+    btn.style.color='var(--gr-red)';
+    if(syncBtn) syncBtn.style.display='flex';
+  }else{
+    txt.textContent='Connecter Strava';
+    sub.textContent='Importez vos activités automatiquement';
+    btn.textContent='Connecter';
+    btn.style.borderColor='var(--ghost)';
+    btn.style.color='var(--ink)';
+    if(syncBtn) syncBtn.style.display='none';
+  }
+}
+
+/* ── Fetch activities from Strava API ── */
+async function stravaFetchActivities(afterTimestamp=null){
+  const token=await stravaGetValidToken();
+  if(!token) return [];
+  let url='https://www.strava.com/api/v3/athlete/activities?per_page=50';
+  if(afterTimestamp) url+=`&after=${afterTimestamp}`;
+  const res=await fetch(url,{headers:{Authorization:'Bearer '+token}});
+  if(!res.ok) return [];
+  return await res.json();
+}
+
+/* ── Fetch GPS stream for one activity ── */
+async function stravaFetchStream(activityId){
+  const token=await stravaGetValidToken();
+  if(!token) return null;
+  const res=await fetch(
+    `https://www.strava.com/api/v3/activities/${activityId}/streams?keys=latlng&key_by_type=true`,
+    {headers:{Authorization:'Bearer '+token}}
+  );
+  if(!res.ok) return null;
+  const data=await res.json();
+  return data?.latlng?.data || null; // [[lat,lng], ...]
+}
+
+/* ── Sync current trail ── */
+async function stravaSyncCurrentTrail(){
+  if(!stravaIsConnected()){ toast('Connectez d\'abord votre compte Strava'); return; }
+  if(!refPts.length){ toast('Chargez d\'abord le tracé de référence'); return; }
+  showLoading(true,'Récupération des activités Strava…');
+
+  // Chercher depuis la dernière sync (ou 90 jours)
+  const lastSync=ld('strava_last_sync_'+trail)||null;
+  const after=lastSync || Math.floor((Date.now()-90*24*60*60*1000)/1000);
+
+  try{
+    const activities=await stravaFetchActivities(after);
+    const relevant=activities.filter(a=>
+      ['Run','Walk','Hike','TrailRun','Ride'].includes(a.type)
+    );
+
+    if(!relevant.length){
+      showLoading(false);
+      toast('Aucune nouvelle activité Strava trouvée');
+      return;
+    }
+
+    const hist=ld('hist_'+trail)||[];
+    let newSegsTotal=0, count=0;
+
+    for(const act of relevant){
+      document.getElementById('loading-msg').textContent=
+        `Import ${count+1}/${relevant.length} — ${act.name}`;
+
+      const pts=await stravaFetchStream(act.id);
+      if(!pts||pts.length<2){ count++; continue; }
+
+      // Vérifier si déjà importée
+      const alreadyImported=hist.some(h=>h.stravaId===act.id);
+      if(alreadyImported){ count++; continue; }
+
+      const prev=done.size;
+      matchPts(pts, refPts, done);
+      const newSegs=done.size-prev;
+      newSegsTotal+=newSegs;
+
+      hist.unshift({
+        id:Date.now()+count,
+        stravaId:act.id,
+        name:act.name,
+        date:new Date(act.start_date).toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'}),
+        source:'strava',
+        km:Math.round((act.distance||0)/1000),
+        newSegs
+      });
+      count++;
+    }
+
+    sv('done_'+trail,[...done]);
+    sv('hist_'+trail,hist);
+    sv('strava_last_sync_'+trail, Math.floor(Date.now()/1000));
+
+    draw(); updateStats(); renderHistory();
+    await cloudSaveProgress(trail);
+    showLoading(false);
+    toast(`${count} activité${count>1?'s':''} Strava · +${newSegsTotal} segment${newSegsTotal>1?'s':''} validés`);
+
+  }catch(e){
+    showLoading(false);
+    toast('Erreur sync Strava : '+e.message);
+  }
+}
+
+/* ── Ajouter "strava" comme source dans l'historique ── */
+// (les points hist de type strava sont identifiés par h.source==='strava')
+
 /* PWA */
 if('serviceWorker' in navigator){
   window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
 }
+
+/* ── Initialisation : gérer callback OAuth Strava ── */
+(async()=>{
+  // Si on revient de Strava OAuth
+  if(window.location.search.includes('code=') && window.location.search.includes('scope=')){
+    await stravaHandleCallback();
+  }
+  updateStravaUI();
+})();
 </script>
 </body>
 </html>
