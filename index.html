@@ -9,1762 +9,1292 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Cairn">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-/* ══════════════════════════════════════════
-   TOKENS
-══════════════════════════════════════════ */
 :root {
-  --paper:     #F6F3EC;
-  --paper-2:   #EFE9DD;
-  --ink:       #2B2A28;
-  --ink-soft:  #4a4844;
-  --stone:     #9B9388;
-  --ghost:     #D8D3CA;
-  --mist:      #EAE6DE;
-  --gr-red:    #B14B3F;
-  --gr-green:  #556B57;
-  --clay:      #A06A4B;
-  --slate:     #6D7C83;
-  --white:     #FFFFFF;
+  --paper:    #F6F3EC;
+  --paper-2:  #EFE9DD;
+  --ink:      #2B2A28;
+  --ink-mid:  #3d3c3a;
+  --stone:    #7a6f68;
+  --ghost:    #C8C2B8;
+  --mist:     #E8E3DA;
+  --gr-red:   #B14B3F;
+  --gr-green: #4a6050;
+  --white:    #FFFFFF;
+  --serif: 'Cormorant Garamond', Georgia, serif;
+  --sans:  'DM Sans', 'Helvetica Neue', sans-serif;
+  --ease:  cubic-bezier(0.4,0,0.2,1);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;font-family:var(--sans);overflow:hidden;background:var(--paper);color:var(--ink);-webkit-font-smoothing:antialiased}
+body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;opacity:.028;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size:160px 160px}
+.screen{position:absolute;inset:0;display:none}
+.screen.active{display:flex}
 
-  --serif:  'Cormorant Garamond', Georgia, serif;
-  --sans:   'DM Sans', 'Helvetica Neue', sans-serif;
+/* ━━━━━━━━━━━━ LANDING ━━━━━━━━━━━━ */
+#landing{flex-direction:column;align-items:center;justify-content:center;background:var(--paper);cursor:pointer;overflow:hidden}
+#topo-svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.tl{fill:none;stroke:#9B9388;stroke-linecap:round;stroke-linejoin:round;
+  stroke-dasharray:var(--len,3000);stroke-dashoffset:var(--len,3000);
+  animation:draw var(--dur,5s) var(--ease) var(--del,0s) forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+#landing-content{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;text-align:center;padding:0 32px}
+#l-eye{font-family:var(--sans);font-size:10px;font-weight:400;letter-spacing:.28em;text-transform:uppercase;color:var(--stone);margin-bottom:24px;opacity:0;animation:fup 1.2s var(--ease) 2.8s forwards}
+#l-word{font-family:var(--serif);font-size:clamp(120px,18vw,220px);font-weight:700;color:var(--ink);letter-spacing:-.03em;line-height:.88;opacity:0;animation:fup 1.6s var(--ease) 3.0s forwards}
+#l-sub{font-family:var(--serif);font-size:clamp(15px,1.9vw,20px);font-weight:500;font-style:italic;color:var(--ink-mid);margin-top:18px;letter-spacing:.04em;opacity:0;animation:fup 1.2s var(--ease) 3.5s forwards}
+#l-rule{width:1px;height:0;background:var(--ghost);margin:36px auto;animation:gline 1s var(--ease) 4.0s forwards}
+@keyframes gline{to{height:44px}}
+#l-cta{font-family:var(--sans);font-size:10px;font-weight:400;letter-spacing:.32em;text-transform:uppercase;color:var(--stone);opacity:0;display:flex;align-items:center;gap:14px;animation:fup 1s var(--ease) 4.4s forwards,breathe 3s ease-in-out 5.6s infinite}
+#l-cta::before,#l-cta::after{content:'';width:18px;height:1px;background:var(--ghost)}
+@keyframes fup{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes breathe{0%,100%{opacity:.45}50%{opacity:1}}
 
-  --ease-slow: cubic-bezier(0.4, 0, 0.2, 1);
+/* ━━━━━━━━━━━━ AUTH SCREEN ━━━━━━━━━━━━ */
+#authscreen{flex-direction:column;background:var(--paper);overflow-y:auto}
+.auth-hero{
+  background:var(--ink);padding:52px 56px 44px;flex-shrink:0;
+  position:relative;overflow:hidden;min-height:220px;
+  display:flex;flex-direction:column;justify-content:flex-end;
 }
+.auth-topo{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.auth-hero-content{position:relative;z-index:2}
+.auth-hero-eye{font-family:var(--sans);font-size:10px;font-weight:300;letter-spacing:.28em;text-transform:uppercase;color:rgba(155,147,136,.6);margin-bottom:12px}
+.auth-hero-word{font-family:var(--serif);font-size:clamp(44px,6vw,72px);font-weight:700;color:var(--white);letter-spacing:-.03em;line-height:.88;margin-bottom:14px}
+.auth-hero-sub{font-family:var(--serif);font-size:clamp(13px,1.5vw,16px);font-style:italic;font-weight:300;color:rgba(155,147,136,.7);letter-spacing:.04em}
+.auth-card{max-width:420px;margin:0 auto;padding:40px 24px 56px;width:100%}
+.auth-tabs{display:flex;gap:0;margin-bottom:28px;border-bottom:1px solid var(--ghost)}
+.auth-tab{flex:1;padding:12px 8px;font-family:var(--sans);font-size:10px;font-weight:400;letter-spacing:.16em;text-transform:uppercase;color:var(--stone);background:none;border:none;cursor:pointer;border-bottom:1px solid transparent;margin-bottom:-1px;transition:all .15s}
+.auth-tab.on{color:var(--ink);border-bottom-color:var(--ink)}
+.auth-pane{display:none}.auth-pane.on{display:block}
+.auth-field{margin-bottom:16px}
+.auth-field label{display:block;font-family:var(--sans);font-size:9px;font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:var(--stone);margin-bottom:7px}
+.auth-field input{width:100%;padding:12px 14px;border:1px solid var(--ghost);background:var(--white);font-family:var(--sans);font-size:13px;color:var(--ink);outline:none;transition:border-color .15s}
+.auth-field input:focus{border-color:var(--stone)}
+.auth-btn{width:100%;padding:13px 14px;border:1px solid var(--ghost);font-family:var(--sans);font-size:10px;font-weight:400;letter-spacing:.2em;text-transform:uppercase;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:all .18s;margin-bottom:10px}
+.auth-btn:active{transform:scale(.98)}
+.auth-btn-primary{background:var(--ink);color:var(--white);border-color:var(--ink)}
+.auth-btn-primary:hover{background:var(--ink-mid)}
+.auth-btn-google{background:var(--white);color:var(--ink);border-color:var(--ghost)}
+.auth-btn-google:hover{background:var(--mist)}
+.auth-divider{display:flex;align-items:center;gap:14px;margin:14px 0;font-family:var(--sans);font-size:9px;font-weight:300;color:var(--stone);letter-spacing:.1em;text-transform:uppercase}
+.auth-divider::before,.auth-divider::after{content:'';flex:1;height:1px;background:var(--ghost)}
+.auth-error{font-family:var(--sans);font-size:11px;font-weight:300;color:var(--gr-red);text-align:center;margin-top:8px;min-height:16px}
+.auth-ok{color:var(--gr-green)}
 
-* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+/* ━━━━━━━━━━━━ LIBRARY ━━━━━━━━━━━━ */
+#library{flex-direction:column;background:var(--paper);overflow-y:auto;-webkit-overflow-scrolling:touch}
+.lib-top{padding:56px 56px 0;display:flex;align-items:flex-end;justify-content:space-between;flex-shrink:0;gap:24px;flex-wrap:wrap}
+@media(max-width:640px){.lib-top{padding:36px 24px 0}}
+.lib-left{}
+.lib-wordmark{font-family:var(--serif);font-size:clamp(52px,8vw,96px);font-weight:700;color:var(--ink);letter-spacing:-.03em;line-height:.88;margin-bottom:12px}
+.lib-desc{font-family:var(--serif);font-size:clamp(15px,1.6vw,18px);font-weight:400;font-style:italic;color:var(--ink-mid);line-height:1.5;letter-spacing:.01em}
+.lib-stats-right{display:flex;gap:36px;padding-bottom:6px;flex-shrink:0;align-items:flex-end}
+.lib-stat-v{font-family:var(--serif);font-size:36px;font-weight:500;color:var(--ink);letter-spacing:-.02em;line-height:1}
+.lib-stat-l{font-family:var(--sans);font-size:10px;font-weight:400;letter-spacing:.16em;text-transform:uppercase;color:var(--stone);margin-top:4px}
+/* user pill */
+.user-pill{display:flex;align-items:center;gap:8px;padding:7px 12px 7px 9px;border:1px solid var(--ghost);background:var(--white);cursor:pointer;font-family:var(--sans);font-size:10px;font-weight:400;color:var(--stone);letter-spacing:.06em;transition:all .15s;align-self:flex-start;margin-top:8px}
+.user-pill:hover{border-color:var(--stone);color:var(--ink)}
+.user-avatar{width:22px;height:22px;background:var(--mist);border:1px solid var(--ghost);display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:13px;font-weight:600;color:var(--ink);flex-shrink:0}
+.sync-dot{width:5px;height:5px;border-radius:50%;background:var(--ghost);flex-shrink:0;margin-left:2px}
+.sync-dot.ok{background:var(--gr-green)}
+.sync-dot.syncing{background:var(--stone);animation:breathe .8s ease-in-out infinite}
+.lib-rule{width:calc(100% - 112px);height:1px;background:var(--ghost);margin:32px 56px 0;flex-shrink:0}
+@media(max-width:640px){.lib-rule{width:calc(100% - 48px);margin:24px 24px 0}}
+.lib-map-wrap{margin:28px 56px 0;height:240px;border:1px solid var(--ghost);overflow:hidden;flex-shrink:0;position:relative}
+@media(max-width:640px){.lib-map-wrap{margin:20px 24px 0;height:180px}}
+#lib-map{width:100%;height:100%}
+.lib-map-label{position:absolute;top:12px;left:12px;z-index:500;font-family:var(--sans);font-size:9px;font-weight:400;letter-spacing:.22em;text-transform:uppercase;color:var(--ink);background:rgba(246,243,236,.92);padding:5px 10px;border:1px solid var(--ghost);pointer-events:none}
+/* Section label — ligne droite retirée */
+.lib-section-label{padding:36px 56px 20px;font-family:var(--sans);font-size:10px;font-weight:500;letter-spacing:.24em;text-transform:uppercase;color:var(--ink-mid);flex-shrink:0}
+@media(max-width:640px){.lib-section-label{padding:28px 24px 16px}}
+.gr-list{padding:0 56px 20px;display:flex;flex-direction:column;flex-shrink:0}
+@media(max-width:640px){.gr-list{padding:0 24px 16px}}
+.gr-row{display:grid;grid-template-columns:64px 1fr auto;align-items:center;gap:24px;padding:20px 0;border-bottom:1px solid var(--ghost);cursor:pointer;transition:background .2s}
+.gr-row:first-child{border-top:1px solid var(--ghost)}
+.gr-row:hover .gr-row-name{color:var(--ink-mid)}
+.gr-row:hover .gr-num-big{opacity:.7}
+/* Carte Générale row */
+.gr-row.general-row .gr-num-big{font-size:9px;letter-spacing:.18em;text-transform:uppercase;font-family:var(--sans);font-weight:500}
+.gr-num-big{font-family:var(--serif);font-size:12px;font-weight:500;letter-spacing:.08em;color:var(--stone);text-align:center;line-height:1.4;transition:opacity .2s}
+.gr-row-body{min-width:0}
+.gr-row-name{font-family:var(--serif);font-size:clamp(20px,2.4vw,26px);font-weight:500;color:var(--ink);letter-spacing:-.01em;line-height:1.1;margin-bottom:3px;transition:color .2s}
+.gr-row-sub{font-family:var(--sans);font-size:12px;font-weight:400;color:var(--stone);line-height:1.5;margin-bottom:10px}
+/* Progress bar — épaissie et différenciée */
+.gr-row-bar{height:3px;background:var(--ghost);overflow:hidden;max-width:360px;border-radius:1px}
+.gr-row-fill{height:100%;background:var(--gr-green);transition:width 1.2s var(--ease);width:0;border-radius:1px}
+.gr-row-pct{font-family:var(--sans);font-size:11px;font-weight:400;color:var(--stone);margin-top:5px;letter-spacing:.02em}
+.gr-row.loaded .gr-row-pct{color:var(--ink-mid);font-weight:500}
+.gr-row-right{display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0}
+.gr-status-dot{width:6px;height:6px;border-radius:50%;background:var(--ghost)}
+.gr-row.loaded .gr-status-dot{background:var(--gr-green)}
+.gr-arrow{font-family:var(--serif);font-size:20px;font-weight:300;color:var(--ghost)}
+.gr-row.loaded .gr-arrow{color:var(--stone)}
+.lib-footer{padding:20px 56px 56px;font-family:var(--sans);font-size:12px;font-weight:400;color:var(--stone);line-height:2.2;flex-shrink:0}
+@media(max-width:640px){.lib-footer{padding:16px 24px 48px}}
+.lib-footer a{color:var(--ink);text-decoration:none;border-bottom:1px solid var(--ghost)}
 
-html, body {
-  height: 100%;
-  font-family: var(--sans);
-  overflow: hidden;
-  background: var(--paper);
-  color: var(--ink);
-  -webkit-font-smoothing: antialiased;
-}
-
-/* ══════════════════════════════════════════
-   GRAIN TEXTURE
-══════════════════════════════════════════ */
-body::after {
-  content: '';
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 9999;
-  opacity: 0.025;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
-  background-repeat: repeat;
-  background-size: 128px 128px;
-}
-
-/* ══════════════════════════════════════════
-   TOPO SVG HELPER
-══════════════════════════════════════════ */
-.topo-bg {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  overflow: hidden;
-}
-
-/* ══════════════════════════════════════════
-   SCREEN SYSTEM
-══════════════════════════════════════════ */
-.screen {
-  position: absolute;
-  inset: 0;
-  display: none;
-}
-.screen.active { display: flex; }
-
-/* ══════════════════════════════════════════
-   LANDING
-══════════════════════════════════════════ */
-#landing {
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background: var(--paper);
-  cursor: pointer;
-  overflow: hidden;
-}
-
-/* Topo lines draw-on animation */
-.topo-line {
-  stroke-dasharray: 2000;
-  stroke-dashoffset: 2000;
-  animation: draw-line 4s var(--ease-slow) forwards;
-}
-.topo-line:nth-child(1)  { animation-delay: 0.0s; }
-.topo-line:nth-child(2)  { animation-delay: 0.15s; }
-.topo-line:nth-child(3)  { animation-delay: 0.30s; }
-.topo-line:nth-child(4)  { animation-delay: 0.45s; }
-.topo-line:nth-child(5)  { animation-delay: 0.60s; }
-.topo-line:nth-child(6)  { animation-delay: 0.75s; }
-.topo-line:nth-child(7)  { animation-delay: 0.90s; }
-.topo-line:nth-child(8)  { animation-delay: 1.05s; }
-.topo-line:nth-child(9)  { animation-delay: 1.20s; }
-.topo-line:nth-child(10) { animation-delay: 1.35s; }
-.topo-line:nth-child(11) { animation-delay: 1.50s; }
-.topo-line:nth-child(12) { animation-delay: 1.65s; }
-.topo-line:nth-child(13) { animation-delay: 1.80s; }
-.topo-line:nth-child(14) { animation-delay: 1.95s; }
-.topo-line:nth-child(15) { animation-delay: 2.10s; }
-.topo-line:nth-child(16) { animation-delay: 2.25s; }
-.topo-line:nth-child(17) { animation-delay: 2.40s; }
-.topo-line:nth-child(18) { animation-delay: 2.55s; }
-
-@keyframes draw-line {
-  to { stroke-dashoffset: 0; }
-}
-
-#landing-content {
-  position: relative;
-  z-index: 2;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  padding: 0 32px;
-}
-
-#landing-eyebrow {
-  font-family: var(--sans);
-  font-size: 10px;
-  font-weight: 400;
-  letter-spacing: 0.28em;
-  text-transform: uppercase;
-  color: var(--stone);
-  margin-bottom: 20px;
-  opacity: 0;
-  animation: fade-up 1.2s var(--ease-slow) 1.0s forwards;
-}
-
-#landing-wordmark {
-  font-family: var(--serif);
-  font-size: clamp(96px, 16vw, 180px);
-  font-weight: 300;
-  color: var(--ink);
-  letter-spacing: -0.02em;
-  line-height: 0.9;
-  opacity: 0;
-  animation: fade-up 1.4s var(--ease-slow) 1.2s forwards;
-}
-
-#landing-subtitle {
-  font-family: var(--serif);
-  font-size: clamp(15px, 2vw, 19px);
-  font-weight: 300;
-  font-style: italic;
-  color: var(--stone);
-  margin-top: 20px;
-  letter-spacing: 0.04em;
-  opacity: 0;
-  animation: fade-up 1.2s var(--ease-slow) 1.6s forwards;
-}
-
-#landing-rule {
-  width: 1px;
-  height: 0;
-  background: var(--ghost);
-  margin: 40px auto;
-  animation: grow-line 1.0s var(--ease-slow) 2.2s forwards;
-}
-@keyframes grow-line { to { height: 48px; } }
-
-#landing-cta {
-  font-family: var(--sans);
-  font-size: 10px;
-  font-weight: 400;
-  letter-spacing: 0.32em;
-  text-transform: uppercase;
-  color: var(--stone);
-  opacity: 0;
-  animation: fade-up 1.0s var(--ease-slow) 2.6s forwards;
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  margin-top: 0;
-}
-#landing-cta::before,
-#landing-cta::after {
-  content: '';
-  width: 20px;
-  height: 1px;
-  background: var(--ghost);
-}
-
-@keyframes breathe { 0%,100%{opacity:.4} 50%{opacity:1} }
-#landing-cta { animation: fade-up 1.0s var(--ease-slow) 2.6s forwards, breathe 2.8s ease-in-out 3.8s infinite; }
-
-@keyframes fade-up {
-  from { opacity: 0; transform: translateY(12px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-#landing.out {
-  animation: fade-out 0.8s var(--ease-slow) forwards;
-}
-@keyframes fade-out {
-  to { opacity: 0; pointer-events: none; }
-}
-
-/* ══════════════════════════════════════════
-   LIBRARY (GR list)
-══════════════════════════════════════════ */
-#library {
-  flex-direction: column;
-  background: var(--paper);
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-}
-
-/* Library header */
-.lib-header {
-  position: relative;
-  background: var(--ink);
-  flex-shrink: 0;
-  overflow: hidden;
-  min-height: 280px;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  padding: 48px 48px 40px;
-}
-@media (max-width: 600px) {
-  .lib-header { padding: 40px 24px 32px; min-height: 220px; }
-}
-
-.lib-header-topo { opacity: 0.07; }
-
-.lib-header-content {
-  position: relative;
-  z-index: 2;
-}
-
-.lib-eyebrow {
-  font-family: var(--sans);
-  font-size: 9px;
-  font-weight: 400;
-  letter-spacing: 0.3em;
-  text-transform: uppercase;
-  color: var(--stone);
-  margin-bottom: 12px;
-}
-
-.lib-wordmark {
-  font-family: var(--serif);
-  font-size: clamp(48px, 7vw, 80px);
-  font-weight: 300;
-  color: var(--white);
-  letter-spacing: -0.02em;
-  line-height: 0.9;
-  margin-bottom: 28px;
-}
-
-.lib-rule {
-  width: 100%;
-  height: 1px;
-  background: rgba(155,147,136,0.2);
-  margin-bottom: 24px;
-}
-
-.lib-stats {
-  display: flex;
-  gap: 40px;
-  flex-wrap: wrap;
-}
-.lib-stat-v {
-  font-family: var(--serif);
-  font-size: 28px;
-  font-weight: 400;
-  color: var(--white);
-  line-height: 1;
-  letter-spacing: -0.02em;
-}
-.lib-stat-l {
-  font-family: var(--sans);
-  font-size: 9px;
-  font-weight: 300;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--stone);
-  margin-top: 4px;
-}
-
-/* Section label */
-.section-label {
-  padding: 36px 48px 16px;
-  font-family: var(--sans);
-  font-size: 9px;
-  font-weight: 400;
-  letter-spacing: 0.26em;
-  text-transform: uppercase;
-  color: var(--stone);
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  flex-shrink: 0;
-}
-.section-label::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: var(--ghost);
-}
-@media (max-width: 600px) {
-  .section-label { padding: 28px 24px 12px; }
-}
-
-/* GR Grid */
-.gr-grid {
-  padding: 0 48px 20px;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 1px;
-  background: var(--ghost);
-  border: 1px solid var(--ghost);
-  margin: 0 48px 16px;
-  flex-shrink: 0;
-}
-@media (max-width: 600px) {
-  .gr-grid { margin: 0 24px 16px; padding: 0; }
-}
-
-.gr-card {
-  background: var(--paper);
-  padding: 28px 26px;
-  cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-  transition: background 0.3s var(--ease-slow);
-  position: relative;
-  overflow: hidden;
-}
-.gr-card:hover { background: var(--mist); }
-.gr-card:active { background: var(--paper-2); }
-
-.gr-card-top {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  margin-bottom: 20px;
-}
-
-.gr-num {
-  font-family: var(--serif);
-  font-size: 11px;
-  font-weight: 400;
-  letter-spacing: 0.12em;
-  color: var(--stone);
-}
-
-.gr-status-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--ghost);
-  margin-top: 4px;
-  transition: background 0.3s;
-}
-.gr-card.loaded .gr-status-dot { background: var(--gr-green); }
-
-.gr-name {
-  font-family: var(--serif);
-  font-size: 22px;
-  font-weight: 400;
-  color: var(--ink);
-  letter-spacing: -0.01em;
-  line-height: 1.1;
-  margin-bottom: 4px;
-}
-.gr-sub {
-  font-family: var(--sans);
-  font-size: 11px;
-  font-weight: 300;
-  color: var(--stone);
-  line-height: 1.6;
-}
-
-.gr-card-bottom {
-  margin-top: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-.gr-bar {
-  height: 1px;
-  background: var(--ghost);
-  overflow: hidden;
-}
-.gr-fill {
-  height: 100%;
-  background: var(--gr-green);
-  transition: width 1.2s var(--ease-slow);
-  width: 0%;
-}
-.gr-pct-label {
-  font-family: var(--sans);
-  font-size: 10px;
-  font-weight: 300;
-  color: var(--stone);
-  letter-spacing: 0.04em;
-}
-.gr-card.loaded .gr-pct-label { color: var(--ink-soft); }
-
-/* Library footer */
-.lib-footer {
-  padding: 24px 48px 48px;
-  font-family: var(--sans);
-  font-size: 11px;
-  font-weight: 300;
-  color: var(--stone);
-  line-height: 2.2;
-  flex-shrink: 0;
-  text-align: center;
-}
-.lib-footer a {
-  color: var(--ink);
-  text-decoration: none;
-  border-bottom: 1px solid var(--ghost);
-  transition: border-color 0.2s;
-}
-.lib-footer a:hover { border-color: var(--ink); }
-@media (max-width: 600px) { .lib-footer { padding: 24px 24px 48px; } }
-
-/* ══════════════════════════════════════════
-   MAP SCREEN
-══════════════════════════════════════════ */
-#mapscreen {
-  flex-direction: row;
-  background: var(--paper);
-}
-
-#map {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-}
-
-/* ── SIDEBAR ── */
-#sidebar {
-  position: relative;
-  z-index: 500;
-  width: 280px;
-  flex-shrink: 0;
-  background: rgba(246,243,236,0.97);
-  backdrop-filter: blur(16px);
-  border-right: 1px solid var(--ghost);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  box-shadow: 2px 0 24px rgba(43,42,40,0.06);
-}
-@media (max-width: 700px) {
-  #sidebar {
-    position: absolute;
-    left: 0; top: 0; bottom: 0;
-    width: 240px;
-    transform: translateX(-100%);
-    transition: transform 0.4s var(--ease-slow);
-    z-index: 600;
-  }
-  #sidebar.open { transform: translateX(0); }
-}
-
-.sidebar-head {
-  padding: 28px 24px 20px;
-  border-bottom: 1px solid var(--ghost);
-  flex-shrink: 0;
-}
-
-.sidebar-logo {
-  font-family: var(--serif);
-  font-size: 22px;
-  font-weight: 400;
-  color: var(--ink);
-  letter-spacing: -0.01em;
-  margin-bottom: 4px;
-}
-
-.sidebar-back {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-family: var(--sans);
-  font-size: 10px;
-  font-weight: 400;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--stone);
-  cursor: pointer;
-  margin-top: 14px;
-  padding: 8px 0;
-  border: none;
-  background: none;
-  transition: color 0.2s;
-  font-family: var(--sans);
-}
-.sidebar-back:hover { color: var(--ink); }
-.sidebar-back svg { flex-shrink: 0; }
-
-/* Current trail info */
-.sidebar-trail {
-  padding: 20px 24px;
-  border-bottom: 1px solid var(--ghost);
-  flex-shrink: 0;
-}
-.sidebar-trail-num {
-  font-family: var(--sans);
-  font-size: 9px;
-  font-weight: 400;
-  letter-spacing: 0.26em;
-  text-transform: uppercase;
-  color: var(--stone);
-  margin-bottom: 6px;
-}
-.sidebar-trail-name {
-  font-family: var(--serif);
-  font-size: 18px;
-  font-weight: 400;
-  color: var(--ink);
-  letter-spacing: -0.01em;
-  line-height: 1.2;
-  margin-bottom: 4px;
-}
-.sidebar-trail-sub {
-  font-family: var(--sans);
-  font-size: 10px;
-  font-weight: 300;
-  color: var(--stone);
-  line-height: 1.5;
-}
-
-/* Progress ring */
-.sidebar-progress {
-  padding: 20px 24px;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  border-bottom: 1px solid var(--ghost);
-  flex-shrink: 0;
-}
-.progress-ring-wrap {
-  position: relative;
-  width: 52px;
-  height: 52px;
-  flex-shrink: 0;
-}
-.progress-ring-wrap svg { transform: rotate(-90deg); }
-#pct-label {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: var(--sans);
-  font-size: 11px;
-  font-weight: 500;
-  color: var(--ink);
-}
-.progress-info { flex: 1; }
-.progress-label {
-  font-family: var(--sans);
-  font-size: 10px;
-  font-weight: 300;
-  color: var(--stone);
-  letter-spacing: 0.04em;
-  line-height: 1.8;
-}
-.progress-label strong {
-  font-weight: 500;
-  color: var(--ink);
-}
-
-/* Stats in sidebar */
-.sidebar-stats {
-  padding: 16px 24px;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1px;
-  background: var(--ghost);
-  border-bottom: 1px solid var(--ghost);
-  flex-shrink: 0;
-}
-.s-stat {
-  background: var(--paper);
-  padding: 12px 10px;
-  text-align: center;
-}
-.s-stat-v {
-  font-family: var(--serif);
-  font-size: 22px;
-  font-weight: 400;
-  color: var(--ink);
-  letter-spacing: -0.02em;
-  line-height: 1;
-}
-.s-stat-l {
-  font-family: var(--sans);
-  font-size: 8px;
-  font-weight: 300;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--stone);
-  margin-top: 3px;
-}
-
-/* Sidebar tabs */
-.sidebar-tabs {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  min-height: 0;
-}
-
-.sidebar-tab-bar {
-  display: flex;
-  border-bottom: 1px solid var(--ghost);
-  flex-shrink: 0;
-}
-.s-tab-btn {
-  flex: 1;
-  padding: 12px 4px;
-  font-family: var(--sans);
-  font-size: 9px;
-  font-weight: 400;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--stone);
-  background: none;
-  border: none;
-  cursor: pointer;
-  border-bottom: 2px solid transparent;
-  transition: color 0.2s, border-color 0.2s;
-  margin-bottom: -1px;
-}
-.s-tab-btn.on {
-  color: var(--ink);
-  border-bottom-color: var(--ink);
-}
-
-.sidebar-pane {
-  display: none;
-  flex-direction: column;
-  overflow-y: auto;
-  padding: 16px 24px 24px;
-  flex: 1;
-  -webkit-overflow-scrolling: touch;
-}
-.sidebar-pane.on { display: flex; }
-
-/* Actions */
-.s-btn {
-  width: 100%;
-  padding: 12px 14px;
-  border-radius: 4px;
-  border: 1px solid var(--ghost);
-  font-family: var(--sans);
-  font-size: 10px;
-  font-weight: 400;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  transition: all 0.2s;
-  margin-bottom: 8px;
-}
-.s-btn-primary {
-  background: var(--ink);
-  color: var(--white);
-  border-color: var(--ink);
-}
-.s-btn-primary:hover { background: var(--ink-soft); }
-.s-btn-secondary { background: transparent; color: var(--ink); }
-.s-btn-secondary:hover { background: var(--mist); }
-.s-btn-stop { background: var(--gr-red); color: var(--white); border-color: var(--gr-red); }
-.s-btn:active { transform: scale(0.98); }
-
-/* GPS status */
-#gps-status {
-  display: none;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 12px;
-  background: rgba(85,107,87,0.08);
-  border: 1px solid rgba(85,107,87,0.2);
-  border-radius: 4px;
-  margin-bottom: 10px;
-  font-family: var(--sans);
-  font-size: 10px;
-  font-weight: 300;
-  color: var(--ink);
-}
-#gps-dot { width:5px;height:5px;border-radius:50%;background:var(--gr-green);flex-shrink:0; }
-#gps-dot.on { animation: pulse 1.6s ease-in-out infinite; }
-@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.2;transform:scale(1.4)} }
-
-/* Altitude */
-.alti-wrap {
-  background: var(--mist);
-  border: 1px solid var(--ghost);
-  padding: 12px 12px 8px;
-  margin-bottom: 12px;
-}
-.alti-label {
-  font-family: var(--sans);
-  font-size: 9px;
-  font-weight: 400;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--stone);
-  margin-bottom: 8px;
-}
-#alti-svg { width: 100%; height: 52px; display: block; }
-.alti-range {
-  display: flex;
-  justify-content: space-between;
-  font-family: var(--sans);
-  font-size: 9px;
-  font-weight: 300;
-  color: var(--stone);
-  margin-top: 4px;
-}
-
-/* History */
-.hist-empty {
-  font-family: var(--sans);
-  font-size: 11px;
-  font-weight: 300;
-  color: var(--stone);
-  line-height: 1.9;
-  text-align: center;
-  padding: 16px 0;
-}
-.hist-item {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  padding: 10px 0;
-  border-bottom: 1px solid var(--ghost);
-}
-.hist-item:last-child { border-bottom: none; }
-.hist-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--ghost);
-  flex-shrink: 0;
-  margin-top: 4px;
-}
-.hist-dot.gps { background: var(--ink); }
-.hist-dot.gpx { background: var(--stone); }
-.hist-body { flex: 1; min-width: 0; }
-.hist-name {
-  font-family: var(--sans);
-  font-size: 11px;
-  font-weight: 400;
-  color: var(--ink);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.hist-meta {
-  font-family: var(--sans);
-  font-size: 10px;
-  font-weight: 300;
-  color: var(--stone);
-  margin-top: 2px;
-}
-.hist-tag {
-  font-family: var(--sans);
-  font-size: 9px;
-  font-weight: 400;
-  color: var(--gr-green);
-  flex-shrink: 0;
-  padding-top: 3px;
-}
-
-/* ── MAP CONTROLS ── */
-#map-controls {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  z-index: 499;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-@media (max-width: 700px) {
-  #map-controls { top: 14px; right: 14px; }
-}
-
-.map-btn {
-  width: 36px;
-  height: 36px;
-  background: rgba(246,243,236,0.95);
-  backdrop-filter: blur(8px);
-  border: 1px solid var(--ghost);
-  border-radius: 2px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 14px;
-  transition: all 0.15s;
-  box-shadow: 0 1px 8px rgba(43,42,40,0.08);
-  font-family: var(--sans);
-}
-.map-btn.on { background: var(--ink); border-color: var(--ink); }
-.map-btn:active { transform: scale(0.94); }
-
-/* mobile toggle sidebar */
-#sidebar-toggle {
-  display: none;
-  position: absolute;
-  top: 14px;
-  left: 14px;
-  z-index: 601;
-}
-@media (max-width: 700px) { #sidebar-toggle { display: flex; } }
-
-/* ── LOAD OVERLAY ── */
-#load-overlay {
-  display: none;
-  position: absolute;
-  inset: 0;
-  z-index: 600;
-  background: rgba(246,243,236,0.98);
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 40px 32px;
-  text-align: center;
-  overflow: hidden;
-}
-.lo-topo { opacity: 0.4; }
-.lo-content {
-  position: relative;
-  z-index: 2;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  max-width: 320px;
-}
-.lo-eyebrow {
-  font-family: var(--sans);
-  font-size: 9px;
-  font-weight: 400;
-  letter-spacing: 0.28em;
-  text-transform: uppercase;
-  color: var(--stone);
-  margin-bottom: 10px;
-}
-.lo-title {
-  font-family: var(--serif);
-  font-size: 36px;
-  font-weight: 300;
-  color: var(--ink);
-  letter-spacing: -0.02em;
-  margin-bottom: 10px;
-}
-.lo-sub {
-  font-family: var(--sans);
-  font-size: 12px;
-  font-weight: 300;
-  color: var(--stone);
-  line-height: 1.8;
-  margin-bottom: 36px;
-}
-.drop-zone {
-  width: 100%;
-  border: 1px solid var(--ghost);
-  padding: 28px 24px;
-  background: var(--white);
-  cursor: pointer;
-  margin-bottom: 20px;
-  display: block;
-  text-align: center;
-  transition: all 0.25s;
-}
-.drop-zone:hover { border-color: var(--ink); background: var(--mist); }
-.drop-title {
-  font-family: var(--serif);
-  font-size: 16px;
-  font-weight: 400;
-  color: var(--ink);
-}
-.drop-sub {
-  font-family: var(--sans);
-  font-size: 10px;
-  font-weight: 300;
-  color: var(--stone);
-  margin-top: 4px;
-  letter-spacing: 0.04em;
-}
-.lo-links {
-  font-family: var(--sans);
-  font-size: 11px;
-  font-weight: 300;
-  color: var(--stone);
-  line-height: 2.4;
-}
-.lo-links a { color: var(--ink); text-decoration: none; border-bottom: 1px solid var(--ghost); }
-.lo-back {
-  margin-top: 24px;
-  font-family: var(--sans);
-  font-size: 10px;
-  font-weight: 300;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: var(--stone);
-  background: none;
-  border: none;
-  cursor: pointer;
-  transition: color 0.2s;
-}
-.lo-back:hover { color: var(--ink); }
-
-/* ── LOADING ── */
-#loading {
-  display: none;
-  position: absolute;
-  inset: 0;
-  z-index: 700;
-  background: rgba(246,243,236,0.92);
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  gap: 14px;
-}
-.spin {
-  width: 22px;
-  height: 22px;
-  border: 1px solid var(--ghost);
-  border-top-color: var(--ink);
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
-#loading-msg {
-  font-family: var(--sans);
-  font-size: 10px;
-  font-weight: 300;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--stone);
-}
-
-/* ── TOAST ── */
-#toast {
-  display: none;
-  position: fixed;
-  bottom: 32px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 999;
-  background: var(--ink);
-  color: var(--white);
-  padding: 9px 22px;
-  font-family: var(--sans);
-  font-size: 11px;
-  font-weight: 300;
-  letter-spacing: 0.06em;
-  white-space: nowrap;
-  pointer-events: none;
-  border-radius: 2px;
-}
-
-/* ── LEAFLET OVERRIDES ── */
-input[type=file] { display: none; }
-.leaflet-control-attribution { font-size: 8px !important; font-family: var(--sans) !important; }
-.leaflet-control-zoom {
-  border: 1px solid var(--ghost) !important;
-  border-radius: 2px !important;
-  overflow: hidden !important;
-  box-shadow: 0 1px 8px rgba(43,42,40,0.08) !important;
-}
-.leaflet-control-zoom a {
-  color: var(--ink) !important;
-  background: rgba(246,243,236,0.95) !important;
-  font-family: var(--sans) !important;
-  border-bottom-color: var(--ghost) !important;
-}
+/* ━━━━━━━━━━━━ MAP SCREEN ━━━━━━━━━━━━ */
+#mapscreen{flex-direction:row}
+#map{position:absolute;inset:0;z-index:0}
+#sidebar{position:relative;z-index:500;width:272px;flex-shrink:0;background:rgba(246,243,236,.97);backdrop-filter:blur(16px);border-right:1px solid var(--ghost);display:flex;flex-direction:column;overflow:hidden;box-shadow:2px 0 20px rgba(43,42,40,.06)}
+@media(max-width:700px){#sidebar{position:absolute;left:0;top:0;bottom:0;width:240px;transform:translateX(-100%);transition:transform .4s var(--ease);z-index:600}#sidebar.open{transform:translateX(0)}}
+.sb-head{padding:24px 22px 18px;border-bottom:1px solid var(--ghost);flex-shrink:0}
+.sb-logo{font-family:var(--serif);font-size:24px;font-weight:700;color:var(--ink);letter-spacing:-.02em}
+.sb-back{display:flex;align-items:center;gap:7px;font-family:var(--sans);font-size:10px;font-weight:400;letter-spacing:.2em;text-transform:uppercase;color:var(--stone);cursor:pointer;margin-top:12px;padding:6px 0;border:none;background:none;transition:color .2s}
+.sb-back:hover{color:var(--ink)}
+.sb-trail{padding:18px 22px;border-bottom:1px solid var(--ghost);flex-shrink:0}
+.sb-trail-num{font-family:var(--sans);font-size:9px;font-weight:400;letter-spacing:.26em;text-transform:uppercase;color:var(--stone);margin-bottom:5px}
+.sb-trail-name{font-family:var(--serif);font-size:18px;font-weight:600;color:var(--ink);letter-spacing:-.01em;line-height:1.15;margin-bottom:3px}
+.sb-trail-sub{font-family:var(--sans);font-size:11px;font-weight:400;color:var(--stone);line-height:1.5}
+.sb-progress{padding:16px 22px;display:flex;align-items:center;gap:14px;border-bottom:1px solid var(--ghost);flex-shrink:0}
+.prw{position:relative;width:50px;height:50px;flex-shrink:0}
+.prw svg{transform:rotate(-90deg)}
+#arc{transition:stroke-dashoffset 1.1s var(--ease)}
+#pct-label{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--sans);font-size:11px;font-weight:600;color:var(--ink)}
+.sb-prog-info{flex:1}
+.sb-prog-l{font-family:var(--sans);font-size:11px;font-weight:400;color:var(--stone);line-height:2.0}
+.sb-prog-l strong{font-weight:600;color:var(--ink)}
+.sb-stats{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid var(--ghost);flex-shrink:0}
+.ss{padding:12px 22px;text-align:center;border-right:1px solid var(--ghost)}
+.ss:nth-child(even){border-right:none}
+.ss-v{font-family:var(--serif);font-size:26px;font-weight:500;color:var(--ink);letter-spacing:-.02em;line-height:1}
+.ss-l{font-family:var(--sans);font-size:9px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--stone);margin-top:3px}
+.sb-tabs{flex:1;display:flex;flex-direction:column;overflow:hidden;min-height:0}
+.sb-tab-bar{display:flex;border-bottom:1px solid var(--ghost);flex-shrink:0}
+.stb{flex:1;padding:11px 2px;font-family:var(--sans);font-size:9px;font-weight:400;letter-spacing:.16em;text-transform:uppercase;color:var(--stone);background:none;border:none;cursor:pointer;border-bottom:2px solid transparent;transition:color .2s,border-color .2s;margin-bottom:-1px}
+.stb.on{color:var(--ink);border-bottom-color:var(--ink)}
+.sb-pane{display:none;flex-direction:column;overflow-y:auto;padding:16px 22px 28px;flex:1;-webkit-overflow-scrolling:touch}
+.sb-pane.on{display:flex}
+.sb-btn{width:100%;padding:11px 14px;border:1px solid var(--ghost);font-family:var(--sans);font-size:10px;font-weight:400;letter-spacing:.18em;text-transform:uppercase;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .18s;margin-bottom:8px}
+.sb-btn:active{transform:scale(.98)}
+.sb-primary{background:var(--ink);color:var(--white);border-color:var(--ink)}
+.sb-primary:hover{background:var(--ink-mid)}
+.sb-secondary{background:transparent;color:var(--ink)}
+.sb-secondary:hover{background:var(--mist)}
+.sb-stop{background:var(--gr-red);color:var(--white);border-color:var(--gr-red)}
+.sb-danger{background:transparent;color:var(--gr-red);border-color:var(--gr-red)}
+#gps-status{display:none;align-items:center;gap:8px;padding:9px 12px;background:rgba(85,107,87,.07);border:1px solid rgba(85,107,87,.2);margin-bottom:10px;font-family:var(--sans);font-size:10px;font-weight:300;color:var(--ink)}
+#gps-dot{width:5px;height:5px;border-radius:50%;background:var(--gr-green);flex-shrink:0}
+#gps-dot.on{animation:pulse 1.6s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.2;transform:scale(1.4)}}
+.alti-wrap{background:var(--mist);border:1px solid var(--ghost);padding:11px 11px 7px;margin-bottom:12px}
+.alti-lbl{font-family:var(--sans);font-size:9px;font-weight:400;letter-spacing:.18em;text-transform:uppercase;color:var(--stone);margin-bottom:7px}
+#alti-svg{width:100%;height:50px;display:block}
+.alti-rng{display:flex;justify-content:space-between;font-family:var(--sans);font-size:9px;font-weight:300;color:var(--stone);margin-top:3px}
+.hist-empty{font-family:var(--sans);font-size:11px;font-weight:300;color:var(--stone);line-height:1.9;text-align:center;padding:14px 0}
+.hist-item{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid var(--ghost)}
+.hist-item:last-child{border-bottom:none}
+.hist-dot{width:6px;height:6px;border-radius:50%;background:var(--ghost);flex-shrink:0;margin-top:4px}
+.hist-dot.gps{background:var(--ink)}.hist-dot.gpx{background:var(--stone)}
+.hist-body{flex:1;min-width:0}
+.hist-name{font-family:var(--sans);font-size:11px;font-weight:400;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hist-meta{font-family:var(--sans);font-size:10px;font-weight:300;color:var(--stone);margin-top:2px}
+.hist-tag{font-family:var(--sans);font-size:9px;font-weight:400;color:var(--gr-green);flex-shrink:0;padding-top:3px}
+#map-controls{position:absolute;top:20px;right:20px;z-index:499;display:flex;flex-direction:column;gap:5px}
+.mcb{width:34px;height:34px;background:rgba(246,243,236,.95);backdrop-filter:blur(8px);border:1px solid var(--ghost);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;transition:all .15s;box-shadow:0 1px 6px rgba(43,42,40,.08);font-family:var(--sans)}
+.mcb.on{background:var(--ink);border-color:var(--ink)}
+.mcb:active{transform:scale(.93)}
+#sb-toggle{display:none;position:absolute;top:14px;left:14px;z-index:601}
+@media(max-width:700px){#sb-toggle{display:flex}}
+#load-overlay{display:none;position:absolute;inset:0;z-index:600;background:rgba(246,243,236,.97);flex-direction:column;align-items:center;justify-content:center;padding:40px 32px;text-align:center;overflow:hidden}
+.lo-topo{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:.35}
+.lo-content{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;max-width:300px}
+.lo-eye{font-family:var(--sans);font-size:9px;font-weight:400;letter-spacing:.28em;text-transform:uppercase;color:var(--stone);margin-bottom:9px}
+.lo-title{font-family:var(--serif);font-size:34px;font-weight:400;color:var(--ink);letter-spacing:-.02em;margin-bottom:9px}
+.lo-sub{font-family:var(--sans);font-size:12px;font-weight:300;color:var(--stone);line-height:1.8;margin-bottom:32px}
+.drop-zone{width:100%;border:1px solid var(--ghost);padding:26px 22px;background:var(--white);cursor:pointer;margin-bottom:18px;display:block;text-align:center;transition:all .22s}
+.drop-zone:hover{border-color:var(--ink);background:var(--mist)}
+.drop-title{font-family:var(--serif);font-size:16px;font-weight:400;color:var(--ink)}
+.drop-sub{font-family:var(--sans);font-size:10px;font-weight:300;color:var(--stone);margin-top:3px}
+.lo-links{font-family:var(--sans);font-size:11px;font-weight:300;color:var(--stone);line-height:2.4}
+.lo-links a{color:var(--ink);text-decoration:none;border-bottom:1px solid var(--ghost)}
+.lo-back{margin-top:22px;font-family:var(--sans);font-size:10px;font-weight:300;letter-spacing:.22em;text-transform:uppercase;color:var(--stone);background:none;border:none;cursor:pointer;transition:color .2s}
+.lo-back:hover{color:var(--ink)}
+#loading{display:none;position:absolute;inset:0;z-index:700;background:rgba(246,243,236,.92);align-items:center;justify-content:center;flex-direction:column;gap:14px}
+.spin{width:20px;height:20px;border:1px solid var(--ghost);border-top-color:var(--ink);border-radius:50%;animation:spin .9s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+#loading-msg{font-family:var(--sans);font-size:10px;font-weight:300;letter-spacing:.18em;text-transform:uppercase;color:var(--stone)}
+#toast{display:none;position:fixed;bottom:28px;left:50%;transform:translateX(-50%);z-index:999;background:var(--ink);color:var(--white);padding:9px 20px;font-family:var(--sans);font-size:11px;font-weight:300;letter-spacing:.06em;white-space:nowrap;pointer-events:none}
+input[type=file]{display:none}
+.leaflet-control-attribution{font-size:8px!important;font-family:var(--sans)!important}
+.leaflet-control-zoom{border:1px solid var(--ghost)!important;border-radius:0!important;overflow:hidden!important;box-shadow:0 1px 6px rgba(43,42,40,.08)!important}
+.leaflet-control-zoom a{color:var(--ink)!important;background:rgba(246,243,236,.95)!important;font-family:var(--sans)!important;border-bottom-color:var(--ghost)!important}
 </style>
 </head>
 <body>
 
-<!-- ══════════════════════════════════════
-     LANDING
-══════════════════════════════════════ -->
+<!-- ━━━━━━━━━━━━━━━━━━ LANDING ━━━━━━━━━━━━━━━━━━ -->
 <div id="landing" class="screen active" onclick="exitLanding()">
 
-  <!-- Topo lines : courbes qui se dessinent progressivement -->
-  <svg class="topo-bg" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice">
-    <!-- Masse principale — massif gauche -->
-    <ellipse class="topo-line" cx="240" cy="500" rx="320" ry="230" fill="none" stroke="#9B9388" stroke-width="0.7" stroke-dasharray="2100"/>
-    <ellipse class="topo-line" cx="252" cy="488" rx="268" ry="186" fill="none" stroke="#9B9388" stroke-width="0.65" stroke-dasharray="1900"/>
-    <ellipse class="topo-line" cx="264" cy="474" rx="216" ry="146" fill="none" stroke="#9B9388" stroke-width="0.6" stroke-dasharray="1600"/>
-    <ellipse class="topo-line" cx="276" cy="460" rx="168" ry="110" fill="none" stroke="#9B9388" stroke-width="0.6" stroke-dasharray="1300"/>
-    <ellipse class="topo-line" cx="286" cy="447" rx="124" ry="80" fill="none" stroke="#9B9388" stroke-width="0.55" stroke-dasharray="1000"/>
-    <ellipse class="topo-line" cx="294" cy="436" rx="86" ry="54" fill="none" stroke="#9B9388" stroke-width="0.5" stroke-dasharray="750"/>
-    <ellipse class="topo-line" cx="300" cy="427" rx="54" ry="34" fill="none" stroke="#9B9388" stroke-width="0.5" stroke-dasharray="500"/>
-    <ellipse class="topo-line" cx="304" cy="421" rx="30" ry="19" fill="none" stroke="#9B9388" stroke-width="0.45" stroke-dasharray="300"/>
+  <!--
+    SVG topo 2D — vraies courbes de niveau planométriques (vue de dessus, comme carte IGN).
+    Toutes les courbes sont FERMÉES et ne touchent pas les bords.
+    Espacement variable : serré = versant raide, large = replat ou vallée.
+    Deux massifs principaux + un col + des contreforts.
+    Aucun effet 3D ou perspectif — lecture plate comme un calque IGN.
+  -->
+  <svg id="topo-svg" viewBox="0 0 1400 900" preserveAspectRatio="xMidYMid slice">
 
-    <!-- Massif droit — décalé -->
-    <path class="topo-line" d="M820,100 C930,68 1060,78 1160,118 C1220,142 1240,190 1210,248 C1180,306 1100,338 1000,348 C880,360 760,330 710,268 C668,214 706,140 820,100 Z" fill="none" stroke="#9B9388" stroke-width="0.65" stroke-dasharray="1800"/>
-    <path class="topo-line" d="M848,126 C946,98 1058,106 1148,142 C1200,164 1216,206 1186,258 C1156,310 1082,338 990,346 C876,356 766,326 720,270 C680,222 716,152 848,126 Z" fill="none" stroke="#9B9388" stroke-width="0.6" stroke-dasharray="1600"/>
-    <path class="topo-line" d="M878,154 C964,130 1058,136 1138,168 C1182,188 1194,224 1164,268 C1134,312 1066,336 982,344 C874,354 772,324 730,272 C694,228 728,166 878,154 Z" fill="none" stroke="#9B9388" stroke-width="0.55" stroke-dasharray="1400"/>
-    <path class="topo-line" d="M910,184 C984,162 1058,168 1128,196 C1164,212 1172,242 1144,280 C1114,318 1052,338 974,344 C870,352 778,322 740,276 C706,234 742,200 910,184 Z" fill="none" stroke="#9B9388" stroke-width="0.5" stroke-dasharray="1100"/>
-    <path class="topo-line" d="M942,214 C1004,196 1060,200 1118,224 C1146,236 1150,260 1122,292 C1094,324 1038,340 966,344 C866,350 784,320 750,278 C718,240 758,226 942,214 Z" fill="none" stroke="#9B9388" stroke-width="0.5" stroke-dasharray="900"/>
+    <!-- ╔══════════════════════════════════════
+         MASSIF OUEST — courbes concentriques irrégulières
+         Versant NE raide (courbes serrées à droite)
+         Versant SW doux (courbes écartées à gauche)
+    ══════════════════════════════════════╗ -->
+    <!-- Courbe base 1 — large emprise -->
+    <path class="tl" style="--len:5400;--dur:7s;--del:0s" stroke-width="1.1" opacity=".11"
+      d="M 38,612 C 52,548 94,484 164,432 C 248,370 368,324 502,300 C 626,278 752,278 858,302 C 950,322 1022,360 1062,412 C 1098,458 1104,514 1074,566 C 1040,622 968,666 872,696 C 760,730 622,744 494,740 C 380,736 270,716 184,680 C 108,648 30,682 38,612 Z"/>
+    <!-- Courbe 2 — légèrement rétrécie, décalée -->
+    <path class="tl" style="--len:4800;--dur:6.8s;--del:.14s" stroke-width="1" opacity=".13"
+      d="M 74,598 C 90,538 134,478 204,428 C 288,368 406,322 536,300 C 652,280 772,282 872,308 C 958,330 1026,370 1060,422 C 1090,468 1092,526 1060,578 C 1024,636 948,678 848,706 C 740,736 606,748 480,742 C 370,736 264,714 180,678 C 104,644 62,656 74,598 Z"/>
+    <!-- Courbe 3 -->
+    <path class="tl" style="--len:4200;--dur:6.6s;--del:.27s" stroke-width="1" opacity=".15"
+      d="M 116,582 C 134,524 180,466 252,418 C 336,362 452,318 576,298 C 692,280 804,284 898,314 C 980,340 1044,382 1072,436 C 1096,484 1094,542 1060,594 C 1020,650 940,692 836,718 C 724,746 592,756 470,748 C 360,740 256,716 176,678 C 106,644 100,636 116,582 Z"/>
+    <!-- Courbe 4 — resserrement NE commence -->
+    <path class="tl" style="--len:3640;--dur:6.4s;--del:.40s" stroke-width=".95" opacity=".17"
+      d="M 168,562 C 190,506 238,450 312,404 C 396,352 508,308 626,292 C 736,278 844,284 934,316 C 1012,344 1070,388 1090,444 C 1108,496 1100,554 1060,606 C 1014,662 930,702 820,726 C 706,750 576,756 458,748 C 352,740 252,714 178,676 C 114,644 148,614 168,562 Z"/>
+    <!-- Courbe 5 -->
+    <path class="tl" style="--len:3100;--dur:6.2s;--del:.52s" stroke-width=".95" opacity=".19"
+      d="M 228,542 C 254,488 304,432 378,388 C 462,338 568,298 678,284 C 782,272 882,280 966,316 C 1040,348 1090,396 1104,452 C 1116,504 1102,562 1056,614 C 1002,672 910,712 796,734 C 678,756 550,758 438,750 C 338,742 246,716 180,678 C 126,648 206,592 228,542 Z"/>
+    <!-- Courbe 6 — versant NE très serré désormais -->
+    <path class="tl" style="--len:2600;--dur:6s;--del:.63s" stroke-width=".9" opacity=".21"
+      d="M 298,520 C 328,468 380,412 454,370 C 534,324 634,288 736,278 C 830,270 920,280 994,318 C 1060,352 1104,404 1112,460 C 1118,514 1098,568 1048,618 C 990,672 896,710 778,730 C 658,750 532,748 424,738 C 332,728 252,704 198,670 C 150,642 270,566 298,520 Z"/>
+    <!-- Courbe 7 -->
+    <path class="tl" style="--len:2160;--dur:5.8s;--del:.74s" stroke-width=".88" opacity=".23"
+      d="M 374,498 C 408,448 462,394 534,354 C 610,310 702,278 792,272 C 874,268 950,280 1014,318 C 1068,350 1102,406 1104,462 C 1104,518 1078,570 1022,618 C 956,672 858,708 740,726 C 620,742 498,738 398,724 C 316,712 254,688 216,658 C 344,608 346,542 374,498 Z"/>
+    <!-- Courbe 8 — crête principale commence -->
+    <path class="tl" style="--len:1760;--dur:5.6s;--del:.84s" stroke-width=".85" opacity=".25"
+      d="M 458,476 C 496,428 552,376 620,340 C 692,302 774,278 852,278 C 924,278 988,300 1034,340 C 1072,374 1090,422 1082,476 C 1072,528 1038,576 980,616 C 910,658 818,682 716,692 C 618,700 522,692 442,670 C 376,650 382,550 390,514 C 426,486 424,522 458,476 Z"/>
+    <!-- Courbe 9 — serrement fort NE -->
+    <path class="tl" style="--len:1400;--dur:5.4s;--del:.94s" stroke-width=".82" opacity=".27"
+      d="M 546,454 C 586,408 640,360 704,326 C 764,296 830,278 892,282 C 948,286 996,310 1024,352 C 1048,390 1048,438 1022,484 C 990,534 936,572 864,592 C 792,612 710,614 638,598 C 572,582 516,548 486,508 C 546,472 510,498 546,454 Z"/>
+    <!-- Courbe 10 — quasi-crête -->
+    <path class="tl" style="--len:1080;--dur:5.2s;--del:1.03s" stroke-width=".8" opacity=".29"
+      d="M 624,436 C 664,394 716,352 774,326 C 826,302 880,292 928,300 C 972,308 1004,334 1014,374 C 1022,410 1006,454 968,490 C 922,530 856,556 782,566 C 710,576 638,566 580,542 C 612,504 590,472 624,436 Z"/>
+    <!-- Sommet Ouest — deux lobes distincts -->
+    <path class="tl" style="--len:760;--dur:5s;--del:1.12s" stroke-width=".78" opacity=".31"
+      d="M 692,424 C 724,390 768,360 814,346 C 856,334 896,338 920,362 C 942,384 938,418 906,448 C 870,480 820,498 768,502 C 718,506 672,490 652,464 C 686,440 664,452 692,424 Z"/>
+    <path class="tl" style="--len:490;--dur:4.8s;--del:1.20s" stroke-width=".74" opacity=".33"
+      d="M 742,416 C 766,392 798,372 830,364 C 858,358 882,364 892,384 C 900,402 888,424 864,440 C 836,458 800,464 768,458 C 740,452 722,432 742,416 Z"/>
+    <path class="tl" style="--len:280;--dur:4.6s;--del:1.28s" stroke-width=".7" opacity=".35"
+      d="M 778,410 C 794,396 816,388 836,390 C 854,392 862,406 852,422 C 840,438 816,446 792,442 C 770,438 762,422 778,410 Z"/>
 
-    <!-- Vallée centrale — courbes de fond -->
-    <path class="topo-line" d="M-50,740 C140,718 340,704 560,710 C780,716 980,700 1200,708 C1280,712 1320,718 1350,726" fill="none" stroke="#9B9388" stroke-width="0.55" stroke-dasharray="2000"/>
-    <path class="topo-line" d="M-50,762 C140,740 340,726 560,732 C780,738 980,722 1200,730 C1280,734 1320,740 1350,748" fill="none" stroke="#9B9388" stroke-width="0.45" stroke-dasharray="2000"/>
-    <path class="topo-line" d="M-50,782 C140,762 340,748 560,754 C780,760 980,744 1200,752" fill="none" stroke="#9B9388" stroke-width="0.4" stroke-dasharray="2000"/>
+    <!-- ╔══════════════════════════════════════
+         MASSIF EST — plus allongé, crête N-S
+         Versant W très raide, versant E doux
+    ══════════════════════════════════════╗ -->
+    <path class="tl" style="--len:3200;--dur:7.2s;--del:.10s" stroke-width="1" opacity=".10"
+      d="M 1090,88 C 1130,56 1194,34 1264,30 C 1326,28 1384,46 1408,84 C 1430,120 1418,170 1378,212 C 1332,258 1260,290 1180,302 C 1100,314 1016,302 954,270 C 898,240 866,196 876,152 C 886,112 940,80 1010,68 C 1048,62 1068,82 1090,88 Z"/>
+    <path class="tl" style="--len:2740;--dur:7s;--del:.22s" stroke-width=".95" opacity=".13"
+      d="M 1106,106 C 1148,76 1208,56 1272,54 C 1330,54 1382,74 1402,112 C 1420,148 1406,196 1368,236 C 1322,280 1252,310 1174,320 C 1096,330 1016,318 956,288 C 902,260 874,218 886,174 C 898,136 946,106 1010,96 C 1054,88 1078,106 1106,106 Z"/>
+    <path class="tl" style="--len:2340;--dur:6.8s;--del:.34s" stroke-width=".92" opacity=".15"
+      d="M 1126,126 C 1168,96 1224,78 1280,78 C 1332,80 1378,100 1394,138 C 1408,174 1392,220 1354,260 C 1308,302 1242,330 1168,338 C 1094,346 1018,334 960,306 C 908,280 882,240 896,196 C 910,158 954,130 1010,122 C 1058,114 1096,128 1126,126 Z"/>
+    <path class="tl" style="--len:1960;--dur:6.6s;--del:.45s" stroke-width=".9" opacity=".17"
+      d="M 1148,148 C 1188,120 1240,102 1292,104 C 1340,106 1382,128 1392,166 C 1402,202 1384,248 1344,286 C 1296,326 1230,352 1158,358 C 1088,362 1018,348 964,322 C 918,298 896,258 912,216 C 928,178 968,152 1018,146 C 1066,140 1118,150 1148,148 Z"/>
+    <path class="tl" style="--len:1620;--dur:6.4s;--del:.56s" stroke-width=".88" opacity=".19"
+      d="M 1174,170 C 1210,144 1256,128 1302,130 C 1346,132 1382,156 1390,194 C 1396,230 1376,274 1336,310 C 1288,348 1222,370 1152,374 C 1082,376 1018,362 966,338 C 924,316 906,278 924,238 C 940,202 978,178 1022,172 C 1068,166 1140,172 1174,170 Z"/>
+    <path class="tl" style="--len:1320;--dur:6.2s;--del:.67s" stroke-width=".85" opacity=".21"
+      d="M 1198,194 C 1230,170 1270,154 1310,158 C 1348,162 1378,186 1382,222 C 1386,258 1364,298 1324,332 C 1278,368 1214,388 1148,390 C 1082,390 1020,374 972,352 C 932,332 918,296 938,258 C 956,224 992,202 1032,198 C 1072,194 1164,196 1198,194 Z"/>
+    <!-- Crête allongée N-S du massif Est -->
+    <path class="tl" style="--len:1020;--dur:6s;--del:.78s" stroke-width=".82" opacity=".23"
+      d="M 1224,218 C 1252,196 1284,182 1316,188 C 1344,194 1364,218 1362,252 C 1360,286 1336,316 1298,338 C 1256,362 1204,374 1152,372 C 1104,368 1062,350 1038,322 C 1016,298 1022,266 1048,244 C 1072,224 1108,214 1148,216 C 1182,218 1202,224 1224,218 Z"/>
+    <path class="tl" style="--len:740;--dur:5.8s;--del:.88s" stroke-width=".8" opacity=".25"
+      d="M 1248,242 C 1268,224 1292,214 1314,220 C 1334,226 1344,248 1338,276 C 1330,306 1308,330 1272,346 C 1232,364 1186,368 1144,360 C 1108,352 1080,330 1070,304 C 1062,280 1074,258 1100,244 C 1124,232 1152,230 1180,236 C 1210,244 1232,258 1248,242 Z"/>
+    <path class="tl" style="--len:500;--dur:5.6s;--del:.97s" stroke-width=".76" opacity=".28"
+      d="M 1268,264 C 1282,250 1300,244 1314,252 C 1326,260 1328,280 1316,300 C 1302,322 1276,338 1244,344 C 1212,350 1182,338 1164,316 C 1150,298 1154,274 1174,260 C 1194,248 1220,250 1244,262 C 1256,268 1260,272 1268,264 Z"/>
+    <path class="tl" style="--len:290;--dur:5.4s;--del:1.06s" stroke-width=".72" opacity=".30"
+      d="M 1284,282 C 1292,272 1304,268 1314,274 C 1322,280 1320,296 1306,308 C 1292,320 1272,326 1254,320 C 1238,314 1232,300 1242,288 C 1254,278 1272,280 1284,282 Z"/>
+
+    <!-- ╔══════════════════════════════════════
+         COL entre les deux massifs
+         Courbes qui s'étirent latéralement = selle de pression
+    ══════════════════════════════════════╗ -->
+    <path class="tl" style="--len:1800;--dur:5.8s;--del:.38s" stroke-width=".82" opacity=".12"
+      d="M 920,300 C 962,268 1018,244 1076,238 C 1128,234 1178,248 1204,278 C 1228,306 1224,344 1194,374 C 1160,406 1108,424 1052,426 C 998,426 946,408 916,378 C 888,352 888,322 920,300 Z"/>
+    <path class="tl" style="--len:1380;--dur:5.6s;--del:.50s" stroke-width=".78" opacity=".14"
+      d="M 940,316 C 978,286 1028,264 1078,260 C 1124,258 1168,274 1190,304 C 1210,330 1202,368 1170,396 C 1132,426 1078,442 1022,440 C 970,438 922,420 898,392 C 876,366 898,342 940,316 Z"/>
+    <path class="tl" style="--len:980;--dur:5.4s;--del:.61s" stroke-width=".74" opacity=".16"
+      d="M 964,332 C 996,304 1040,284 1082,282 C 1120,282 1154,300 1170,328 C 1184,354 1174,386 1146,410 C 1112,436 1064,448 1016,444 C 970,440 928,422 908,396 C 888,370 932,354 964,332 Z"/>
+
+    <!-- ╔══════════════════════════════════════
+         CONTREFORTS SUD-OUEST
+         Formes en éperon allongées
+    ══════════════════════════════════════╗ -->
+    <path class="tl" style="--len:2200;--dur:5.6s;--del:.26s" stroke-width=".85" opacity=".10"
+      d="M 60,740 C 88,696 148,658 228,634 C 308,610 402,604 486,620 C 558,634 614,664 636,706 C 656,746 640,790 600,820 C 554,854 488,868 416,864 C 344,858 272,836 214,800 C 164,768 36,778 60,740 Z"/>
+    <path class="tl" style="--len:1780;--dur:5.4s;--del:.38s" stroke-width=".82" opacity=".12"
+      d="M 92,752 C 120,710 178,674 254,652 C 328,630 416,626 494,644 C 562,660 612,690 630,730 C 646,768 628,808 590,836 C 546,866 482,878 412,872 C 344,866 278,844 222,810 C 172,778 68,790 92,752 Z"/>
+    <path class="tl" style="--len:1380;--dur:5.2s;--del:.49s" stroke-width=".8" opacity=".14"
+      d="M 134,762 C 162,722 218,688 290,666 C 360,646 442,642 514,662 C 578,680 624,710 636,750 C 646,786 626,822 590,848 C 548,876 488,886 420,880 C 356,874 292,852 240,818 C 194,788 110,798 134,762 Z"/>
+    <path class="tl" style="--len:1020;--dur:5s;--del:.60s" stroke-width=".77" opacity=".16"
+      d="M 186,772 C 212,734 264,702 332,682 C 396,664 468,660 532,680 C 588,698 628,730 634,768 C 638,802 618,834 582,858 C 542,882 488,890 428,882 C 372,874 312,852 266,820 C 224,792 162,808 186,772 Z"/>
+    <path class="tl" style="--len:680;--dur:4.8s;--del:.70s" stroke-width=".74" opacity=".18"
+      d="M 244,782 C 268,746 316,718 376,700 C 432,684 494,682 546,700 C 592,716 622,748 622,784 C 620,818 598,846 562,864 C 522,884 474,888 428,880 C 384,870 342,848 310,818 C 278,788 224,816 244,782 Z"/>
+
   </svg>
 
   <div id="landing-content">
-    <div id="landing-eyebrow">Lauriane &nbsp;·&nbsp; Mémoire cartographique</div>
-    <div id="landing-wordmark">CAIRN</div>
-    <div id="landing-subtitle">Atlas des souvenirs</div>
-    <div id="landing-rule"></div>
-    <div id="landing-cta">Ouvrir l'atlas</div>
+    <div id="l-eye">Mémoire cartographique</div>
+    <div id="l-word">CAIRN</div>
+    <div id="l-sub">Atlas des souvenirs</div>
+    <div id="l-rule"></div>
+    <div id="l-cta">Ouvrir l'atlas</div>
   </div>
 </div>
 
-<!-- ══════════════════════════════════════
-     LIBRARY
-══════════════════════════════════════ -->
-<div id="library" class="screen">
-
-  <div class="lib-header">
-    <!-- Topo subtile dans le header sombre -->
-    <svg class="topo-bg lib-header-topo" viewBox="0 0 1200 300" preserveAspectRatio="xMidYMid slice">
-      <path d="M-100,280 C150,258 380,240 600,248 C820,256 1040,234 1300,244" fill="none" stroke="#F6F3EC" stroke-width="0.8"/>
-      <path d="M-100,256 C155,232 384,212 606,221 C828,230 1048,206 1308,217" fill="none" stroke="#F6F3EC" stroke-width="0.7"/>
-      <path d="M-100,230 C160,203 388,181 612,192 C836,203 1056,176 1316,188" fill="none" stroke="#F6F3EC" stroke-width="0.7"/>
-      <path d="M-100,202 C165,172 392,147 618,160 C844,173 1064,143 1324,157" fill="none" stroke="#F6F3EC" stroke-width="0.65"/>
-      <path d="M-100,172 C170,139 396,111 624,126 C852,141 1072,107 1332,123" fill="none" stroke="#F6F3EC" stroke-width="0.6"/>
-      <path d="M-100,140 C175,103 400,72 630,90 C860,108 1080,70 1340,88" fill="none" stroke="#F6F3EC" stroke-width="0.55"/>
-      <path d="M200,200 C270,174 356,158 450,165 C544,172 630,153 720,160" fill="none" stroke="#F6F3EC" stroke-width="0.5" stroke-dasharray="3 6"/>
-      <path d="M218,180 C286,152 372,135 466,143 C560,151 646,131 736,139" fill="none" stroke="#F6F3EC" stroke-width="0.45" stroke-dasharray="2 7"/>
+<!-- ━━━━━━━━━━━━━━━━━━ AUTH ━━━━━━━━━━━━━━━━━━ -->
+<div id="authscreen" class="screen">
+  <div class="auth-hero">
+    <!-- Topo mini dans le bandeau sombre -->
+    <svg class="auth-topo" viewBox="0 0 1000 220" preserveAspectRatio="xMidYMid slice">
+      <path fill="none" stroke="rgba(155,147,136,0.18)" stroke-width="1"
+        d="M 50,200 C 120,174 240,152 390,146 C 530,140 660,152 780,174 C 880,192 960,208 1020,210"/>
+      <path fill="none" stroke="rgba(155,147,136,0.15)" stroke-width="1"
+        d="M 30,178 C 104,150 228,126 382,120 C 526,116 660,130 778,154 C 876,174 958,194 1020,196"/>
+      <path fill="none" stroke="rgba(155,147,136,0.13)" stroke-width="1"
+        d="M 10,154 C 88,124 216,98 372,92 C 520,88 658,104 778,132 C 876,154 958,178 1020,182"/>
+      <path fill="none" stroke="rgba(155,147,136,0.11)" stroke-width=".9" stroke-dasharray="4 6"
+        d="M 200,148 C 264,128 348,112 440,108 C 528,106 612,116 688,136 C 752,152 804,172 840,180"/>
+      <path fill="none" stroke="rgba(155,147,136,0.09)" stroke-width=".9" stroke-dasharray="4 6"
+        d="M 220,128 C 282,108 364,92 454,88 C 540,86 622,96 696,116 C 758,134 808,156 842,164"/>
     </svg>
+    <div class="auth-hero-content">
+      <div class="auth-hero-eye">Lauriane · Mémoire cartographique</div>
+      <div class="auth-hero-word">CAIRN</div>
+      <div class="auth-hero-sub">Atlas des souvenirs</div>
+    </div>
+  </div>
+  <div class="auth-card">
+    <div class="auth-tabs">
+      <button class="auth-tab on" onclick="switchAuthTab('login')">Connexion</button>
+      <button class="auth-tab" onclick="switchAuthTab('signup')">Créer un compte</button>
+    </div>
+    <!-- LOGIN -->
+    <div class="auth-pane on" id="pane-login">
+      <div class="auth-field"><label>Email</label><input type="email" id="login-email" placeholder="vous@exemple.com" autocomplete="email"></div>
+      <div class="auth-field"><label>Mot de passe</label><input type="password" id="login-pwd" placeholder="••••••••" autocomplete="current-password"></div>
+      <button class="auth-btn auth-btn-primary" onclick="loginEmail()">Se connecter</button>
+      <div class="auth-divider">ou</div>
+      <button class="auth-btn auth-btn-google" onclick="loginGoogle()">
+        <svg width="16" height="16" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844a4.14 4.14 0 0 1-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615Z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18Z"/><path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332Z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58Z"/></svg>
+        Continuer avec Google
+      </button>
+      <div class="auth-error" id="login-error"></div>
+    </div>
+    <!-- SIGNUP -->
+    <div class="auth-pane" id="pane-signup">
+      <div class="auth-field"><label>Email</label><input type="email" id="signup-email" placeholder="vous@exemple.com" autocomplete="email"></div>
+      <div class="auth-field"><label>Mot de passe</label><input type="password" id="signup-pwd" placeholder="8 caractères minimum" autocomplete="new-password"></div>
+      <button class="auth-btn auth-btn-primary" onclick="signupEmail()">Créer mon compte</button>
+      <div class="auth-divider">ou</div>
+      <button class="auth-btn auth-btn-google" onclick="loginGoogle()">
+        <svg width="16" height="16" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844a4.14 4.14 0 0 1-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615Z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18Z"/><path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332Z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58Z"/></svg>
+        Continuer avec Google
+      </button>
+      <div class="auth-error" id="signup-error"></div>
+    </div>
+  </div>
+</div>
 
-    <div class="lib-header-content">
-      <div class="lib-eyebrow">Lauriane &nbsp;·&nbsp; Atlas personnel</div>
+<!-- ━━━━━━━━━━━━━━━━━━ LIBRARY ━━━━━━━━━━━━━━━━━━ -->
+<div id="library" class="screen">
+  <div class="lib-top">
+    <div class="lib-left">
       <div class="lib-wordmark">CAIRN</div>
-      <div class="lib-rule"></div>
-      <div class="lib-stats">
-        <div>
-          <div class="lib-stat-v" id="total-km">0</div>
-          <div class="lib-stat-l">km parcourus</div>
-        </div>
-        <div>
-          <div class="lib-stat-v" id="total-gr">0</div>
-          <div class="lib-stat-l">sentiers actifs</div>
-        </div>
-        <div>
-          <div class="lib-stat-v" id="total-sorties">0</div>
-          <div class="lib-stat-l">sorties</div>
-        </div>
+      <div class="lib-desc">Atlas des souvenirs</div>
+    </div>
+    <div class="lib-stats-right">
+      <div class="lib-stat">
+        <div class="lib-stat-v" id="total-km">0</div>
+        <div class="lib-stat-l">km parcourus</div>
       </div>
+      <div class="lib-stat">
+        <div class="lib-stat-v" id="total-gr">0</div>
+        <div class="lib-stat-l">sentiers</div>
+      </div>
+      <div class="lib-stat">
+        <div class="lib-stat-v" id="total-sorties">0</div>
+        <div class="lib-stat-l">sorties</div>
+      </div>
+      <!-- User pill -->
+      <button class="user-pill" onclick="showUserMenu()">
+        <div class="user-avatar" id="user-avatar">?</div>
+        <span id="user-email-short">—</span>
+        <span class="sync-dot" id="sync-dot"></span>
+      </button>
     </div>
   </div>
 
-  <div class="section-label">Sentiers</div>
+  <div class="lib-rule"></div>
 
-  <div class="gr-grid">
-    <div class="gr-card" id="card-gr34" onclick="openTrail('gr34')">
-      <div class="gr-card-top">
-        <div class="gr-num">GR 34</div>
-        <div class="gr-status-dot"></div>
+  <!-- Carte générale -->
+  <div class="lib-map-wrap">
+    <div class="lib-map-label">Vue d'ensemble</div>
+    <div id="lib-map"></div>
+  </div>
+
+  <!-- Section sentiers — sans ligne à droite -->
+  <div class="lib-section-label">Sentiers</div>
+
+  <div class="gr-list">
+
+    <!-- CARTE GÉNÉRALE — entrée spéciale en tête de liste -->
+    <div class="gr-row general-row" onclick="openGeneralMap()">
+      <div class="gr-num-big" style="font-size:9px;letter-spacing:.14em;font-family:var(--sans);font-weight:500;color:var(--stone)">Vue<br>générale</div>
+      <div class="gr-row-body">
+        <div class="gr-row-name">Carte générale</div>
+        <div class="gr-row-sub">Tous vos sentiers chargés sur une seule carte</div>
+        <div class="gr-row-bar"><div class="gr-row-fill" id="fill-general" style="width:0%"></div></div>
+        <div class="gr-row-pct" id="pct-general">—</div>
       </div>
-      <div class="gr-name">Sentier des Douaniers</div>
-      <div class="gr-sub">Tour de Bretagne · ~2 000 km<br>Côte bretonne, de Saint-Malo à Saint-Nazaire</div>
-      <div class="gr-card-bottom">
-        <div class="gr-bar"><div class="gr-fill" id="fill-gr34"></div></div>
-        <div class="gr-pct-label" id="pct-gr34">Tracé non chargé</div>
+      <div class="gr-row-right">
+        <div class="gr-status-dot" id="dot-general"></div>
+        <div class="gr-arrow">›</div>
       </div>
     </div>
 
-    <div class="gr-card" id="card-gr10" onclick="openTrail('gr10')">
-      <div class="gr-card-top">
-        <div class="gr-num">GR 10</div>
-        <div class="gr-status-dot"></div>
+    <div class="gr-row" id="card-gr34" onclick="openTrail('gr34')">
+      <div class="gr-num-big">GR<br>34</div>
+      <div class="gr-row-body">
+        <div class="gr-row-name">Le Sentier des Douaniers</div>
+        <div class="gr-row-sub">GR 34 · ~2 000 km · Saint-Malo → Saint-Nazaire</div>
+        <div class="gr-row-bar"><div class="gr-row-fill" id="fill-gr34"></div></div>
+        <div class="gr-row-pct" id="pct-gr34">Tracé non chargé</div>
       </div>
-      <div class="gr-name">Sentier des Pyrénées</div>
-      <div class="gr-sub">Méditerranée → Atlantique · ~900 km<br>Traversée intégrale en versant français</div>
-      <div class="gr-card-bottom">
-        <div class="gr-bar"><div class="gr-fill" id="fill-gr10"></div></div>
-        <div class="gr-pct-label" id="pct-gr10">Tracé non chargé</div>
-      </div>
+      <div class="gr-row-right"><div class="gr-status-dot" id="dot-gr34"></div><div class="gr-arrow">›</div></div>
     </div>
 
-    <div class="gr-card" id="card-gr20" onclick="openTrail('gr20')">
-      <div class="gr-card-top">
-        <div class="gr-num">GR 20</div>
-        <div class="gr-status-dot"></div>
+    <div class="gr-row" id="card-gr10" onclick="openTrail('gr10')">
+      <div class="gr-num-big">GR<br>10</div>
+      <div class="gr-row-body">
+        <div class="gr-row-name">La Grande Traversée des Pyrénées</div>
+        <div class="gr-row-sub">GR 10 · ~900 km · Hendaye → Banyuls-sur-Mer</div>
+        <div class="gr-row-bar"><div class="gr-row-fill" id="fill-gr10"></div></div>
+        <div class="gr-row-pct" id="pct-gr10">Tracé non chargé</div>
       </div>
-      <div class="gr-name">Alta Via di Corsica</div>
-      <div class="gr-sub">Traversée Nord–Sud · ~180 km<br>Calenzana → Conca, le sentier le plus difficile</div>
-      <div class="gr-card-bottom">
-        <div class="gr-bar"><div class="gr-fill" id="fill-gr20"></div></div>
-        <div class="gr-pct-label" id="pct-gr20">Tracé non chargé</div>
-      </div>
+      <div class="gr-row-right"><div class="gr-status-dot" id="dot-gr10"></div><div class="gr-arrow">›</div></div>
     </div>
 
-    <div class="gr-card" id="card-gr5" onclick="openTrail('gr5')">
-      <div class="gr-card-top">
-        <div class="gr-num">GR 5</div>
-        <div class="gr-status-dot"></div>
+    <div class="gr-row" id="card-gr20" onclick="openTrail('gr20')">
+      <div class="gr-num-big">GR<br>20</div>
+      <div class="gr-row-body">
+        <div class="gr-row-name">Fra Li Monti</div>
+        <div class="gr-row-sub">GR 20 · ~180 km · Calenzana → Conca · Corse</div>
+        <div class="gr-row-bar"><div class="gr-row-fill" id="fill-gr20"></div></div>
+        <div class="gr-row-pct" id="pct-gr20">Tracé non chargé</div>
       </div>
-      <div class="gr-name">Sentier des Alpes</div>
-      <div class="gr-sub">Lac Léman → Méditerranée · ~600 km<br>Traversée des Alpes du Nord au Sud</div>
-      <div class="gr-card-bottom">
-        <div class="gr-bar"><div class="gr-fill" id="fill-gr5"></div></div>
-        <div class="gr-pct-label" id="pct-gr5">Tracé non chargé</div>
-      </div>
+      <div class="gr-row-right"><div class="gr-status-dot" id="dot-gr20"></div><div class="gr-arrow">›</div></div>
     </div>
 
-    <div class="gr-card" id="card-custom" onclick="openTrail('custom')">
-      <div class="gr-card-top">
-        <div class="gr-num">—</div>
-        <div class="gr-status-dot"></div>
+    <div class="gr-row" id="card-gr5" onclick="openTrail('gr5')">
+      <div class="gr-num-big">GR<br>5</div>
+      <div class="gr-row-body">
+        <div class="gr-row-name">Le Sentier des Alpes</div>
+        <div class="gr-row-sub">Lac Léman → Méditerranée · ~600 km</div>
+        <div class="gr-row-bar"><div class="gr-row-fill" id="fill-gr5"></div></div>
+        <div class="gr-row-pct" id="pct-gr5">Tracé non chargé</div>
       </div>
-      <div class="gr-name" style="color:var(--stone)">Sentier libre</div>
-      <div class="gr-sub">Chargez n'importe quel tracé GPX<br>Votre propre géographie</div>
-      <div class="gr-card-bottom">
-        <div class="gr-bar"><div class="gr-fill" id="fill-custom"></div></div>
-        <div class="gr-pct-label" id="pct-custom">Tracé non chargé</div>
-      </div>
+      <div class="gr-row-right"><div class="gr-status-dot" id="dot-gr5"></div><div class="gr-arrow">›</div></div>
     </div>
+
+    <div class="gr-row" id="card-custom" onclick="openTrail('custom')">
+      <div class="gr-num-big" style="color:var(--ghost);font-size:20px;font-family:var(--serif);font-weight:300">+</div>
+      <div class="gr-row-body">
+        <div class="gr-row-name" style="color:var(--stone)">Sentier libre</div>
+        <div class="gr-row-sub">Chargez n'importe quel tracé GPX · votre propre géographie</div>
+        <div class="gr-row-bar"><div class="gr-row-fill" id="fill-custom"></div></div>
+        <div class="gr-row-pct" id="pct-custom">Tracé non chargé</div>
+      </div>
+      <div class="gr-row-right"><div class="gr-status-dot" id="dot-custom"></div><div class="gr-arrow">›</div></div>
+    </div>
+
   </div>
 
   <div class="lib-footer">
-    Fichiers GPX · <a href="https://www.visorando.com" target="_blank">visorando.com</a> · <a href="https://www.openrunner.com" target="_blank">openrunner.com</a><br>
+    Tracés GPX · <a href="https://www.visorando.com" target="_blank">visorando.com</a> · <a href="https://www.openrunner.com" target="_blank">openrunner.com</a> · <a href="https://www.ffrandonnee.fr" target="_blank">ffrandonnee.fr</a><br>
     Strava : activité → ··· → Exporter le fichier GPX
   </div>
 </div>
 
-<!-- ══════════════════════════════════════
-     MAP SCREEN
-══════════════════════════════════════ -->
+<!-- ━━━━━━━━━━━━━━━━━━ MAP SCREEN ━━━━━━━━━━━━━━━━━━ -->
 <div id="mapscreen" class="screen">
-
   <div id="map"></div>
 
-  <!-- Mobile sidebar toggle -->
-  <button class="map-btn" id="sidebar-toggle" onclick="toggleSidebar()">☰</button>
+  <button class="mcb" id="sb-toggle" onclick="toggleSidebar()" style="position:absolute;top:14px;left:14px;z-index:601;display:none">☰</button>
 
-  <!-- Sidebar -->
   <div id="sidebar">
-    <div class="sidebar-head">
-      <div class="sidebar-logo">Cairn</div>
-      <button class="sidebar-back" onclick="goLibrary()">
-        <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-          <path d="M8 2L4 6L8 10" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        Tous les sentiers
+    <div class="sb-head">
+      <div class="sb-logo">Cairn</div>
+      <button class="sb-back" onclick="goLibrary()">
+        <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M7.5 1.5L3.5 5.5L7.5 9.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Atlas
       </button>
     </div>
 
-    <div class="sidebar-trail">
-      <div class="sidebar-trail-num" id="s-trail-num">GR 34</div>
-      <div class="sidebar-trail-name" id="s-trail-name">Sentier des Douaniers</div>
-      <div class="sidebar-trail-sub" id="s-trail-sub">Tour de Bretagne · ~2 000 km</div>
+    <div class="sb-trail">
+      <div class="sb-trail-num" id="s-num">GR 34</div>
+      <div class="sb-trail-name" id="s-name">Le Sentier des Douaniers</div>
+      <div class="sb-trail-sub" id="s-sub">~2 000 km</div>
     </div>
 
-    <div class="sidebar-progress">
-      <div class="progress-ring-wrap">
-        <svg width="52" height="52" viewBox="0 0 52 52">
-          <circle cx="26" cy="26" r="21" fill="none" stroke="#D8D3CA" stroke-width="2.5"/>
-          <circle id="arc" cx="26" cy="26" r="21" fill="none" stroke="#556B57" stroke-width="2.5"
-            stroke-linecap="round" stroke-dasharray="131.9" stroke-dashoffset="131.9"
-            style="transition:stroke-dashoffset 1.0s cubic-bezier(0.4,0,0.2,1)"/>
+    <!-- Progress ring — masqué en mode général -->
+    <div class="sb-progress" id="sb-progress-wrap">
+      <div class="prw">
+        <svg width="50" height="50" viewBox="0 0 50 50">
+          <circle cx="25" cy="25" r="20" fill="none" stroke="#D8D3CA" stroke-width="2"/>
+          <circle id="arc" cx="25" cy="25" r="20" fill="none" stroke="#556B57" stroke-width="2"
+            stroke-linecap="round" stroke-dasharray="125.7" stroke-dashoffset="125.7"/>
         </svg>
         <div id="pct-label">0%</div>
       </div>
-      <div class="progress-info">
-        <div class="progress-label">
+      <div class="sb-prog-info">
+        <div class="sb-prog-l">
           <strong id="p-km">0 km</strong> parcourus<br>
-          <span id="p-rest">— restants</span>
+          <span id="p-rest">—</span>
         </div>
       </div>
     </div>
 
-    <div class="sidebar-stats" style="background:var(--ghost)">
-      <div class="s-stat">
-        <div class="s-stat-v" id="s-km">0</div>
-        <div class="s-stat-l">km validés</div>
-      </div>
-      <div class="s-stat">
-        <div class="s-stat-v" id="s-seg">0</div>
-        <div class="s-stat-l">segments</div>
-      </div>
-      <div class="s-stat">
-        <div class="s-stat-v" id="s-pct">0%</div>
-        <div class="s-stat-l">complété</div>
-      </div>
-      <div class="s-stat">
-        <div class="s-stat-v" id="s-sorties">0</div>
-        <div class="s-stat-l">sorties</div>
-      </div>
+    <div class="sb-stats">
+      <div class="ss"><div class="ss-v" id="s-km">0</div><div class="ss-l">km validés</div></div>
+      <div class="ss"><div class="ss-v" id="s-seg">0</div><div class="ss-l">segments</div></div>
+      <div class="ss"><div class="ss-v" id="s-pct">0%</div><div class="ss-l">complété</div></div>
+      <div class="ss"><div class="ss-v" id="s-sorties">0</div><div class="ss-l">sorties</div></div>
     </div>
 
-    <div class="sidebar-tabs">
-      <div class="sidebar-tab-bar">
-        <button class="s-tab-btn on" onclick="switchTab('suivi')">Suivi</button>
-        <button class="s-tab-btn" onclick="switchTab('altitude')">Altitude</button>
-        <button class="s-tab-btn" onclick="switchTab('journal')">Journal</button>
-        <button class="s-tab-btn" onclick="switchTab('options')">Options</button>
+    <div class="sb-tabs">
+      <div class="sb-tab-bar">
+        <button class="stb on" onclick="switchTab('suivi')">Suivi</button>
+        <button class="stb" onclick="switchTab('altitude')">Altitude</button>
+        <button class="stb" onclick="switchTab('journal')">Journal</button>
+        <button class="stb" onclick="switchTab('options')">Options</button>
       </div>
 
-      <div class="sidebar-pane on" id="tab-suivi">
-        <div id="gps-status" style="margin-bottom:10px">
-          <div id="gps-dot"></div>
-          <span id="gps-msg">GPS actif</span>
-        </div>
-        <button class="s-btn s-btn-primary" id="btn-gps" onclick="toggleTracking()">
-          Démarrer le suivi
-        </button>
-        <button class="s-btn s-btn-secondary" onclick="document.getElementById('fi-activity').click()">
-          Importer des activités GPX
-        </button>
+      <div class="sb-pane on" id="tab-suivi">
+        <div id="gps-status"><div id="gps-dot"></div><span id="gps-msg">GPS actif</span></div>
+        <button class="sb-btn sb-primary" id="btn-gps" onclick="toggleTracking()">Démarrer le suivi</button>
+        <button class="sb-btn sb-secondary" onclick="document.getElementById('fi-activity').click()">Importer des activités GPX</button>
       </div>
 
-      <div class="sidebar-pane" id="tab-altitude">
+      <div class="sb-pane" id="tab-altitude">
         <div class="alti-wrap">
-          <div class="alti-label">Profil altimétrique</div>
-          <svg id="alti-svg" viewBox="0 0 240 52" preserveAspectRatio="none">
-            <text x="120" y="30" text-anchor="middle" font-size="10" fill="#9B9388" font-family="DM Sans,sans-serif" font-weight="300">Chargez un tracé GPX</text>
+          <div class="alti-lbl">Profil altimétrique</div>
+          <svg id="alti-svg" viewBox="0 0 228 50" preserveAspectRatio="none">
+            <text x="114" y="29" text-anchor="middle" font-size="9" fill="#9B9388" font-family="DM Sans,sans-serif" font-weight="300">Chargez un tracé GPX</text>
           </svg>
-          <div class="alti-range">
-            <span id="alti-min">—</span>
-            <span id="alti-max">—</span>
-          </div>
+          <div class="alti-rng"><span id="alti-min">—</span><span id="alti-max">—</span></div>
         </div>
-        <div class="sidebar-stats" style="background:var(--ghost);margin:0 -24px">
-          <div class="s-stat"><div class="s-stat-v" id="a-min">—</div><div class="s-stat-l">Alt. min</div></div>
-          <div class="s-stat"><div class="s-stat-v" id="a-max">—</div><div class="s-stat-l">Alt. max</div></div>
-          <div class="s-stat"><div class="s-stat-v" id="a-up">—</div><div class="s-stat-l">D+</div></div>
-          <div class="s-stat"><div class="s-stat-v" id="a-down">—</div><div class="s-stat-l">D−</div></div>
+        <div class="sb-stats" style="margin:0 -22px">
+          <div class="ss"><div class="ss-v" id="a-min">—</div><div class="ss-l">Alt. min</div></div>
+          <div class="ss"><div class="ss-v" id="a-max">—</div><div class="ss-l">Alt. max</div></div>
+          <div class="ss"><div class="ss-v" id="a-up">—</div><div class="ss-l">D+</div></div>
+          <div class="ss"><div class="ss-v" id="a-down">—</div><div class="ss-l">D−</div></div>
         </div>
       </div>
 
-      <div class="sidebar-pane" id="tab-journal">
-        <div id="hist-list">
-          <div class="hist-empty">Aucune sortie enregistrée.<br>Démarrez le suivi GPS ou importez vos fichiers Strava.</div>
-        </div>
+      <div class="sb-pane" id="tab-journal">
+        <div id="hist-list"><div class="hist-empty">Aucune sortie enregistrée.<br>Démarrez le suivi GPS ou importez vos activités.</div></div>
       </div>
 
-      <div class="sidebar-pane" id="tab-options">
-        <button class="s-btn s-btn-secondary" onclick="document.getElementById('fi-ref').click()">
-          Changer le tracé de référence
-        </button>
-        <button class="s-btn s-btn-secondary" onclick="centerMap()">
-          Recentrer la carte
-        </button>
-        <button class="s-btn s-btn-secondary" onclick="doReset()" style="color:var(--gr-red);border-color:var(--gr-red)">
-          Réinitialiser la progression
-        </button>
+      <div class="sb-pane" id="tab-options">
+        <button class="sb-btn sb-secondary" id="btn-change-ref" onclick="document.getElementById('fi-ref').click()">Changer le tracé de référence</button>
+        <button class="sb-btn sb-secondary" onclick="centerMap()">Recentrer la carte</button>
+        <button class="sb-btn sb-danger" onclick="doReset()">Réinitialiser la progression</button>
       </div>
     </div>
   </div>
 
-  <!-- Layer switcher (right side of map) -->
   <div id="map-controls">
-    <button class="map-btn on" id="lb-topo"      onclick="setLayer('topo')"      title="Topographique">⛰</button>
-    <button class="map-btn"    id="lb-outdoor"   onclick="setLayer('outdoor')"   title="Sentiers">🥾</button>
-    <button class="map-btn"    id="lb-satellite" onclick="setLayer('satellite')" title="Satellite">🛰</button>
+    <button class="mcb on" id="lb-topo"      onclick="setLayer('topo')"      title="Topographique">⛰</button>
+    <button class="mcb"    id="lb-outdoor"   onclick="setLayer('outdoor')"   title="Sentiers balisés">🥾</button>
+    <button class="mcb"    id="lb-satellite" onclick="setLayer('satellite')" title="Satellite">🛰</button>
   </div>
 
-  <!-- Load overlay -->
   <div id="load-overlay">
-    <svg class="topo-bg lo-topo" viewBox="0 0 600 700" preserveAspectRatio="xMidYMid slice">
-      <ellipse cx="300" cy="350" rx="280" ry="200" fill="none" stroke="#9B9388" stroke-width="0.8"/>
-      <ellipse cx="300" cy="350" rx="228" ry="158" fill="none" stroke="#9B9388" stroke-width="0.7"/>
-      <ellipse cx="300" cy="349" rx="178" ry="120" fill="none" stroke="#9B9388" stroke-width="0.65"/>
-      <ellipse cx="300" cy="348" rx="132" ry="86"  fill="none" stroke="#9B9388" stroke-width="0.6"/>
-      <ellipse cx="300" cy="347" rx="90"  cy="57"  fill="none" stroke="#9B9388" stroke-width="0.55"/>
-      <ellipse cx="300" cy="347" rx="90"  ry="57"  fill="none" stroke="#9B9388" stroke-width="0.55"/>
-      <ellipse cx="300" cy="346" rx="52"  ry="32"  fill="none" stroke="#9B9388" stroke-width="0.5"/>
+    <svg class="lo-topo" viewBox="0 0 500 600" preserveAspectRatio="xMidYMid slice">
+      <ellipse cx="250" cy="300" rx="220" ry="155" fill="none" stroke="#9B9388" stroke-width=".9"/>
+      <ellipse cx="248" cy="299" rx="178" ry="122" fill="none" stroke="#9B9388" stroke-width=".8"/>
+      <ellipse cx="247" cy="298" rx="138" ry="94"  fill="none" stroke="#9B9388" stroke-width=".7"/>
+      <ellipse cx="246" cy="297" rx="100" ry="68"  fill="none" stroke="#9B9388" stroke-width=".65"/>
+      <ellipse cx="245" cy="296" rx="66"  ry="44"  fill="none" stroke="#9B9388" stroke-width=".6"/>
+      <ellipse cx="244" cy="295" rx="36"  ry="24"  fill="none" stroke="#9B9388" stroke-width=".55"/>
     </svg>
     <div class="lo-content">
-      <div class="lo-eyebrow" id="lo-label">GR34</div>
-      <div class="lo-title"   id="lo-title">Sentier des Douaniers</div>
-      <div class="lo-sub">Chargez le fichier GPX du tracé une seule fois — Cairn s'en souviendra.</div>
+      <div class="lo-eye" id="lo-label">GR 34</div>
+      <div class="lo-title" id="lo-title">Sentier des Douaniers</div>
+      <div class="lo-sub">Chargez le fichier GPX du tracé — Cairn s'en souviendra.</div>
       <label class="drop-zone" for="fi-ref-overlay">
         <div class="drop-title">Charger le tracé GPX</div>
         <div class="drop-sub">Cliquez pour choisir le fichier</div>
       </label>
-      <div class="lo-links">
-        <a href="https://www.visorando.com" target="_blank">visorando.com</a>
-        &nbsp;·&nbsp;
-        <a href="https://www.openrunner.com" target="_blank">openrunner.com</a>
-      </div>
+      <div class="lo-links"><a href="https://www.visorando.com" target="_blank">visorando.com</a> · <a href="https://www.openrunner.com" target="_blank">openrunner.com</a></div>
       <button class="lo-back" onclick="goLibrary()">← Retour à l'atlas</button>
     </div>
   </div>
 
-  <div id="loading">
-    <div class="spin"></div>
-    <div id="loading-msg">Chargement</div>
-  </div>
+  <div id="loading"><div class="spin"></div><div id="loading-msg">Chargement</div></div>
 </div>
 
-<!-- Toast -->
 <div id="toast"></div>
-
-<!-- File inputs -->
 <input type="file" id="fi-ref"         accept=".gpx" onchange="loadRef(this)">
 <input type="file" id="fi-ref-overlay" accept=".gpx" onchange="loadRef(this)">
 <input type="file" id="fi-activity"    accept=".gpx" multiple onchange="loadActivities(this)">
 
 <script>
-/* ══════════════════════════════════════
+/* ═══════════════════════════════════════
+   SUPABASE
+═══════════════════════════════════════ */
+const SUPA_URL = 'https://emypgfgvaflffuusfnmp.supabase.co';
+const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVteXBnZmd2YWZsZmZ1dXNmbm1wIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk0NDIxMzAsImV4cCI6MjA5NTAxODEzMH0.xqth5vE8jucpvdvlw-s1VfRLRkrOG2ZsKFI3G98OmVk';
+const sb = supabase.createClient(SUPA_URL, SUPA_KEY);
+let currentUser = null;
+let splashDone = false;
+
+/* ═══════════════════════════════════════
    CONFIG
-══════════════════════════════════════ */
+═══════════════════════════════════════ */
 const TRAILS = {
-  gr34:   { num:'GR 34', name:'Sentier des Douaniers',  sub:'Tour de Bretagne · ~2 000 km',          label:'GR 34', title:'Sentier des Douaniers',  center:[47.8,-3.2], zoom:9 },
-  gr10:   { num:'GR 10', name:'Sentier des Pyrénées',   sub:'Méditerranée → Atlantique · ~900 km',   label:'GR 10', title:'Sentier des Pyrénées',   center:[42.8,0.5],  zoom:9 },
-  gr20:   { num:'GR 20', name:'Alta Via di Corsica',    sub:'Traversée Nord–Sud · ~180 km',           label:'GR 20', title:'Alta Via di Corsica',    center:[42.1,9.1],  zoom:10 },
-  gr5:    { num:'GR 5',  name:'Sentier des Alpes',      sub:'Lac Léman → Méditerranée · ~600 km',    label:'GR 5',  title:'Sentier des Alpes',      center:[45.5,6.8],  zoom:9 },
-  custom: { num:'—',     name:'Sentier libre',           sub:'Votre propre tracé GPX',                label:'—',     title:'Sentier libre',           center:[46.5,2.3],  zoom:6 }
+  gr34:  {num:'GR 34', name:'Le Sentier des Douaniers',          sub:'~2 000 km · Saint-Malo → Saint-Nazaire',  label:'GR 34', title:'Sentier des Douaniers',        center:[47.8,-3.2], zoom:9},
+  gr10:  {num:'GR 10', name:'La Grande Traversée des Pyrénées', sub:'~900 km · Hendaye → Banyuls-sur-Mer',     label:'GR 10', title:'Grande Traversée des Pyrénées', center:[42.8,0.5],  zoom:9},
+  gr20:  {num:'GR 20', name:'Fra Li Monti',                     sub:'~180 km · Calenzana → Conca · Corse',     label:'GR 20', title:'Fra Li Monti',                  center:[42.1,9.1],  zoom:10},
+  gr5:   {num:'GR 5',  name:'Le Sentier des Alpes',             sub:'Lac Léman → Méditerranée · ~600 km',      label:'GR 5',  title:'Sentier des Alpes',             center:[45.5,6.8],  zoom:9},
+  custom:{num:'—',     name:'Sentier libre',                    sub:'Votre propre tracé GPX',                  label:'—',     title:'Sentier libre',                  center:[46.5,2.3],  zoom:6},
 };
-
 const LAYERS = {
-  topo:      { url:'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',               attr:'© OpenStreetMap © OpenTopoMap' },
-  outdoor:   { url:'https://tile.waymarkedtrails.org/hiking/{z}/{x}/{y}.png',        attr:'© waymarkedtrails.org' },
-  satellite: { url:'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', attr:'© Esri' }
+  topo:     {url:'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', attr:'© OpenStreetMap © CartoDB'},
+  outdoor:  {url:'https://tile.waymarkedtrails.org/hiking/{z}/{x}/{y}.png',                  attr:'© waymarkedtrails.org'},
+  satellite:{url:'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', attr:'© Esri'},
 };
+const SEG=15, THRESH=35;
+let trail=null, refPts=[], refEle=[], done=new Set(),
+    lines=[], poiMarkers=[],
+    tracking=false, wid=null, posMarker=null,
+    mapObj=null, libMapObj=null, tileLayer=null, currentLayer='topo';
+let isGeneralMode = false;
 
-const SEG = 15, THRESH = 35;
-let trail = null, refPts = [], refEle = [], done = new Set(),
-    lines = [], poiMarkers = [],
-    tracking = false, wid = null, posMarker = null,
-    mapObj = null, tileLayer = null, currentLayer = 'topo';
+/* ═══════════════════════════════════════
+   STORAGE
+═══════════════════════════════════════ */
+function sv(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+function ld(k){try{const v=localStorage.getItem(k);return v?JSON.parse(v):null}catch(e){return null}}
 
-/* ── Storage ── */
-function sv(k,v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} }
-function ld(k)   { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : null; } catch(e){ return null; } }
+/* ═══════════════════════════════════════
+   SUPABASE SYNC
+═══════════════════════════════════════ */
+function setSyncDot(state){
+  const d=document.getElementById('sync-dot');
+  if(!d) return;
+  d.className='sync-dot'+(state==='syncing'?' syncing':state==='ok'?' ok':'');
+}
+async function cloudSaveProgress(t){
+  if(!currentUser) return;
+  setSyncDot('syncing');
+  try{
+    await sb.from('trail_progress').upsert({
+      user_id:currentUser.id, trail_key:t,
+      done_segments:ld('done_'+t)||[],
+      ref_pts:ld('ref_'+t)||[],
+      ele_pts:ld('ele_'+t)||[],
+      poi_pts:ld('poi_'+t)||[],
+      updated_at:new Date().toISOString()
+    },{onConflict:'user_id,trail_key'});
+    setSyncDot('ok');
+  }catch(e){setSyncDot('');}
+}
+async function cloudSaveHistory(t){
+  if(!currentUser) return;
+  const hist=ld('hist_'+t)||[];
+  if(!hist.length) return;
+  const h=hist[0];
+  try{
+    await sb.from('activity_history').insert({
+      user_id:currentUser.id, trail_key:t,
+      name:h.name, date:h.date, source:h.source, km:h.km, new_segs:h.newSegs||0
+    });
+  }catch(e){}
+}
+async function cloudLoadAll(){
+  if(!currentUser) return;
+  setSyncDot('syncing');
+  try{
+    const{data:progData}=await sb.from('trail_progress').select('*').eq('user_id',currentUser.id);
+    if(progData) progData.forEach(row=>{
+      if(row.ref_pts?.length)    sv('ref_'+row.trail_key,  row.ref_pts);
+      if(row.done_segments)       sv('done_'+row.trail_key, row.done_segments);
+      if(row.ele_pts)             sv('ele_'+row.trail_key,  row.ele_pts);
+      if(row.poi_pts)             sv('poi_'+row.trail_key,  row.poi_pts);
+    });
+    const{data:histData}=await sb.from('activity_history').select('*').eq('user_id',currentUser.id).order('created_at',{ascending:false});
+    if(histData){
+      const byTrail={};
+      histData.forEach(row=>{
+        if(!byTrail[row.trail_key]) byTrail[row.trail_key]=[];
+        byTrail[row.trail_key].push({id:row.id,name:row.name,date:row.date,source:row.source,km:row.km,newSegs:row.new_segs});
+      });
+      Object.entries(byTrail).forEach(([t,h])=>sv('hist_'+t,h));
+    }
+    setSyncDot('ok');
+  }catch(e){setSyncDot('');}
+}
 
-/* ══════════════════════════════════════
+/* ═══════════════════════════════════════
+   AUTH
+═══════════════════════════════════════ */
+function switchAuthTab(tab){
+  document.querySelectorAll('.auth-tab').forEach((b,i)=>b.classList.toggle('on',['login','signup'][i]===tab));
+  document.querySelectorAll('.auth-pane').forEach(p=>p.classList.remove('on'));
+  document.getElementById('pane-'+tab).classList.add('on');
+}
+async function loginEmail(){
+  const email=document.getElementById('login-email').value.trim();
+  const pwd=document.getElementById('login-pwd').value;
+  const err=document.getElementById('login-error');
+  err.textContent=''; err.className='auth-error';
+  if(!email||!pwd){err.textContent='Email et mot de passe requis.';return;}
+  const{error}=await sb.auth.signInWithPassword({email,password:pwd});
+  if(error) err.textContent=error.message;
+}
+async function signupEmail(){
+  const email=document.getElementById('signup-email').value.trim();
+  const pwd=document.getElementById('signup-pwd').value;
+  const err=document.getElementById('signup-error');
+  err.textContent=''; err.className='auth-error';
+  if(!email||!pwd){err.textContent='Email et mot de passe requis.';return;}
+  if(pwd.length<8){err.textContent='Mot de passe : 8 caractères minimum.';return;}
+  const{error}=await sb.auth.signUp({email,password:pwd});
+  if(error) err.textContent=error.message;
+  else{err.className='auth-error auth-ok';err.textContent='Compte créé — vérifiez vos emails pour confirmer.';}
+}
+async function loginGoogle(){
+  await sb.auth.signInWithOAuth({provider:'google',options:{redirectTo:window.location.href}});
+}
+async function logout(){
+  await sb.auth.signOut();
+  currentUser=null;
+  showScreen('authscreen');
+  toast('Déconnectée');
+}
+function showUserMenu(){
+  if(confirm('Se déconnecter de Cairn ?')) logout();
+}
+function updateUserUI(user){
+  const email=user.email||'';
+  document.getElementById('user-avatar').textContent=email.charAt(0).toUpperCase();
+  document.getElementById('user-email-short').textContent=email.split('@')[0];
+}
+
+/* Auth state listener */
+sb.auth.onAuthStateChange(async(event,session)=>{
+  if(session?.user){
+    currentUser=session.user;
+    updateUserUI(currentUser);
+    if(splashDone){
+      await cloudLoadAll();
+      showScreen('library');
+      refreshLibrary();
+      setTimeout(initLibMap,80);
+    }
+  }else{
+    currentUser=null;
+    if(splashDone){
+      showScreen('authscreen');
+    }
+  }
+});
+
+/* ═══════════════════════════════════════
    SCREENS
-══════════════════════════════════════ */
-function showScreen(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+═══════════════════════════════════════ */
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
 }
 
-function exitLanding() {
-  const l = document.getElementById('landing');
-  l.style.transition = 'opacity 0.7s ease';
-  l.style.opacity = '0';
-  l.style.pointerEvents = 'none';
-  setTimeout(() => {
-    l.style.display = 'none';
-    showScreen('library');
-    refreshLibrary();
-  }, 700);
+async function exitLanding(){
+  splashDone=true;
+  const l=document.getElementById('landing');
+  l.style.transition='opacity .7s ease';
+  l.style.opacity='0';
+  l.style.pointerEvents='none';
+  setTimeout(async()=>{
+    l.style.display='none';
+    const{data:{session}}=await sb.auth.getSession();
+    if(session?.user){
+      currentUser=session.user;
+      updateUserUI(currentUser);
+      await cloudLoadAll();
+      showScreen('library');
+      refreshLibrary();
+      setTimeout(initLibMap,80);
+    }else{
+      showScreen('authscreen');
+    }
+  },700);
 }
 
-function goLibrary() {
-  if (tracking) stopGPS();
+function goLibrary(){
+  if(tracking) stopGPS();
   showScreen('library');
   refreshLibrary();
+  setTimeout(initLibMap,80);
+}
+function toggleSidebar(){ document.getElementById('sidebar').classList.toggle('open'); }
+
+/* ═══════════════════════════════════════
+   GENERAL MAP
+═══════════════════════════════════════ */
+function openGeneralMap(){
+  isGeneralMode=true;
+  trail=null;
+  document.getElementById('s-num').textContent='Vue générale';
+  document.getElementById('s-name').textContent='Tous les sentiers';
+  document.getElementById('s-sub').textContent='Carte combinée';
+  document.getElementById('lo-label').textContent='';
+  document.getElementById('lo-title').textContent='';
+  document.getElementById('sb-progress-wrap').style.display='none';
+  document.getElementById('btn-change-ref').style.display='none';
+  document.getElementById('btn-gps').style.display='none';
+  showScreen('mapscreen');
+  setTimeout(()=>{
+    ensureMap(); mapObj.invalidateSize();
+    lines.forEach(l=>mapObj.removeLayer(l));lines=[];
+    poiMarkers.forEach(m=>mapObj.removeLayer(m));poiMarkers=[];
+    if(posMarker){mapObj.removeLayer(posMarker);posMarker=null;}
+    // Dessiner tous les tracés chargés
+    const bounds=[];
+    let totalKmAll=0, totalSegAll=0;
+    Object.keys(TRAILS).forEach(t=>{
+      const rr=ld('ref_'+t), dd=ld('done_'+t);
+      if(!rr||!rr.length) return;
+      const doneSet=new Set(dd||[]);
+      const n=Math.ceil(rr.length/SEG);
+      for(let s=0;s<n;s++){
+        const seg=rr.slice(s*SEG,Math.min(s*SEG+SEG+1,rr.length));
+        if(seg.length<2) continue;
+        lines.push(L.polyline(seg,{color:doneSet.has(s)?'#556B57':'#B14B3F',weight:doneSet.has(s)?4:2.5,opacity:doneSet.has(s)?.85:.5}).addTo(mapObj));
+        seg.forEach(p=>bounds.push(p));
+      }
+      totalKmAll+=Math.round(totalKm(rr)*doneSet.size/Math.max(1,n));
+      totalSegAll+=doneSet.size;
+    });
+    if(bounds.length>1) mapObj.fitBounds(L.latLngBounds(bounds),{padding:[40,40]});
+    else mapObj.setView([46.5,2.3],6);
+    document.getElementById('s-km').textContent=totalKmAll;
+    document.getElementById('s-seg').textContent=totalSegAll;
+    document.getElementById('s-pct').textContent='—';
+    document.getElementById('s-sorties').textContent='—';
+    document.getElementById('p-km').textContent=totalKmAll+' km';
+    document.getElementById('p-rest').textContent='total parcourus';
+    document.getElementById('load-overlay').style.display='none';
+    // Journal all
+    renderHistoryAll();
+    switchTab('suivi');
+  },50);
 }
 
-function toggleSidebar() {
-  document.getElementById('sidebar').classList.toggle('open');
-}
-
-/* ══════════════════════════════════════
-   GPX PARSING
-══════════════════════════════════════ */
-function parseGPX(txt) {
-  const doc = new DOMParser().parseFromString(txt, 'text/xml');
-  const pts = [], ele = [], pois = [];
-  doc.querySelectorAll('trkpt,rtept').forEach(n => {
-    const la = parseFloat(n.getAttribute('lat')), lo = parseFloat(n.getAttribute('lon'));
-    const el = parseFloat(n.querySelector('ele')?.textContent || 'NaN');
-    if (!isNaN(la) && !isNaN(lo)) { pts.push([la,lo]); ele.push(isNaN(el) ? null : el); }
+function renderHistoryAll(){
+  const all=[];
+  Object.keys(TRAILS).forEach(t=>{
+    const hist=ld('hist_'+t)||[];
+    hist.forEach(h=>all.push({...h,trailName:TRAILS[t].num}));
   });
-  doc.querySelectorAll('wpt').forEach(n => {
-    const la = parseFloat(n.getAttribute('lat')), lo = parseFloat(n.getAttribute('lon'));
-    const name = n.querySelector('name')?.textContent || '';
-    if (!isNaN(la) && !isNaN(lo)) pois.push({ latlng:[la,lo], name });
-  });
-  return { pts, ele, pois };
+  all.sort((a,b)=>(b.id||0)-(a.id||0));
+  const el=document.getElementById('hist-list');
+  if(!all.length){el.innerHTML='<div class="hist-empty">Aucune sortie enregistrée.</div>';return;}
+  el.innerHTML=all.slice(0,30).map(h=>`
+    <div class="hist-item">
+      <div class="hist-dot ${h.source}"></div>
+      <div class="hist-body">
+        <div class="hist-name">${h.trailName ? h.trailName+' — ':''} ${h.name}</div>
+        <div class="hist-meta">${h.date}${h.km?' · '+h.km+' km':''}</div>
+      </div>
+      ${h.newSegs>0?`<div class="hist-tag">+${h.newSegs}</div>`:''}
+    </div>`).join('');
 }
 
-function dist(a,b) {
-  const R=6371000, dL=(b[0]-a[0])*Math.PI/180, dG=(b[1]-a[1])*Math.PI/180,
-    la=a[0]*Math.PI/180, lb=b[0]*Math.PI/180,
+/* ═══════════════════════════════════════
+   LIBRARY MAP
+═══════════════════════════════════════ */
+function initLibMap(){
+  if(libMapObj){libMapObj.invalidateSize();drawLibMap();return;}
+  libMapObj=L.map('lib-map',{zoomControl:false,attributionControl:false,dragging:false,scrollWheelZoom:false,touchZoom:false,doubleClickZoom:false});
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',{maxZoom:10,attribution:''}).addTo(libMapObj);
+  libMapObj.setView([46.5,2.3],5);
+  drawLibMap();
+}
+function drawLibMap(){
+  if(!libMapObj) return;
+  libMapObj.eachLayer(l=>{if(l instanceof L.Polyline) libMapObj.removeLayer(l);});
+  const bounds=[];
+  Object.keys(TRAILS).forEach(t=>{
+    const rr=ld('ref_'+t),dd=ld('done_'+t);
+    if(!rr||!rr.length) return;
+    const doneSet=new Set(dd||[]);
+    const n=Math.ceil(rr.length/SEG);
+    for(let s=0;s<n;s++){
+      const seg=rr.slice(s*SEG,Math.min(s*SEG+SEG+1,rr.length));
+      if(seg.length<2) continue;
+      L.polyline(seg,{color:doneSet.has(s)?'#556B57':'#B14B3F',weight:2,opacity:.7}).addTo(libMapObj);
+      seg.forEach(p=>bounds.push(p));
+    }
+  });
+  if(bounds.length>1) libMapObj.fitBounds(L.latLngBounds(bounds),{padding:[12,12]});
+}
+
+/* ═══════════════════════════════════════
+   GPX
+═══════════════════════════════════════ */
+function parseGPX(txt){
+  const doc=new DOMParser().parseFromString(txt,'text/xml');
+  const pts=[],ele=[],pois=[];
+  doc.querySelectorAll('trkpt,rtept').forEach(n=>{
+    const la=parseFloat(n.getAttribute('lat')),lo=parseFloat(n.getAttribute('lon'));
+    const el=parseFloat(n.querySelector('ele')?.textContent||'NaN');
+    if(!isNaN(la)&&!isNaN(lo)){pts.push([la,lo]);ele.push(isNaN(el)?null:el);}
+  });
+  doc.querySelectorAll('wpt').forEach(n=>{
+    const la=parseFloat(n.getAttribute('lat')),lo=parseFloat(n.getAttribute('lon'));
+    const name=n.querySelector('name')?.textContent||'';
+    if(!isNaN(la)&&!isNaN(lo)) pois.push({latlng:[la,lo],name});
+  });
+  return{pts,ele,pois};
+}
+function dist(a,b){
+  const R=6371000,dL=(b[0]-a[0])*Math.PI/180,dG=(b[1]-a[1])*Math.PI/180,
+    la=a[0]*Math.PI/180,lb=b[0]*Math.PI/180,
     x=Math.sin(dL/2)**2+Math.cos(la)*Math.cos(lb)*Math.sin(dG/2)**2;
   return R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x));
 }
-function downsample(pts,ele,d=18) {
-  if (!pts.length) return { pts:[], ele:[] };
-  const op=[pts[0]], oe=[ele[0]]; let l=pts[0];
-  for (let i=1;i<pts.length;i++) { if(dist(l,pts[i])>=d){ op.push(pts[i]); oe.push(ele[i]); l=pts[i]; } }
-  if (op[op.length-1]!==pts[pts.length-1]) { op.push(pts[pts.length-1]); oe.push(ele[ele.length-1]); }
-  return { pts:op, ele:oe };
+function downsample(pts,ele,d=18){
+  if(!pts.length) return{pts:[],ele:[]};
+  const op=[pts[0]],oe=[ele[0]];let l=pts[0];
+  for(let i=1;i<pts.length;i++){if(dist(l,pts[i])>=d){op.push(pts[i]);oe.push(ele[i]);l=pts[i];}}
+  if(op[op.length-1]!==pts[pts.length-1]){op.push(pts[pts.length-1]);oe.push(ele[ele.length-1]);}
+  return{pts:op,ele:oe};
 }
-function matchPts(up,rp,ds) {
-  for (const u of up)
-    for (let i=0;i<rp.length;i++) {
-      if (Math.abs(rp[i][0]-u[0])>THRESH/111000) continue;
-      if (dist(u,rp[i])<THRESH) ds.add(Math.floor(i/SEG));
-    }
-}
-function totalKm(pts) { let d=0; for(let i=1;i<pts.length;i++) d+=dist(pts[i-1],pts[i]); return d/1000; }
-
-/* ══════════════════════════════════════
-   MAP
-══════════════════════════════════════ */
-function ensureMap() {
-  if (mapObj) return;
-  mapObj = L.map('map', { zoomControl: true });
-  const l = LAYERS[currentLayer];
-  tileLayer = L.tileLayer(l.url, { maxZoom:19, attribution:l.attr }).addTo(mapObj);
-}
-
-function setLayer(name) {
-  currentLayer = name;
-  if (!mapObj) return;
-  if (tileLayer) mapObj.removeLayer(tileLayer);
-  const l = LAYERS[name];
-  tileLayer = L.tileLayer(l.url, { maxZoom:19, attribution:l.attr }).addTo(mapObj);
-  document.querySelectorAll('.map-btn[id^="lb-"]').forEach(b => b.classList.remove('on'));
-  document.getElementById('lb-'+name).classList.add('on');
-}
-
-function draw() {
-  lines.forEach(l => mapObj.removeLayer(l)); lines = [];
-  const n = Math.ceil(refPts.length / SEG);
-  for (let s=0; s<n; s++) {
-    const seg = refPts.slice(s*SEG, Math.min(s*SEG+SEG+1, refPts.length));
-    if (seg.length < 2) continue;
-    const ok = done.has(s);
-    lines.push(L.polyline(seg, {
-      color:   ok ? '#556B57' : '#B14B3F',
-      weight:  ok ? 5 : 3.5,
-      opacity: ok ? 0.90 : 0.65
-    }).addTo(mapObj));
+function matchPts(up,rp,ds){
+  for(const u of up) for(let i=0;i<rp.length;i++){
+    if(Math.abs(rp[i][0]-u[0])>THRESH/111000) continue;
+    if(dist(u,rp[i])<THRESH) ds.add(Math.floor(i/SEG));
   }
 }
+function totalKm(pts){let d=0;for(let i=1;i<pts.length;i++)d+=dist(pts[i-1],pts[i]);return d/1000;}
 
-function drawPOIs(pois) {
-  poiMarkers.forEach(m => mapObj.removeLayer(m)); poiMarkers = [];
-  if (!pois || !pois.length) return;
-  const icon = L.divIcon({
-    html: '<div style="width:6px;height:6px;border-radius:50%;background:#2B2A28;border:1.5px solid #F6F3EC;box-shadow:0 1px 4px rgba(0,0,0,.20)"></div>',
-    className:'', iconSize:[6,6], iconAnchor:[3,3]
-  });
-  pois.forEach(p => {
-    const m = L.marker(p.latlng, {icon}).addTo(mapObj);
-    if (p.name) m.bindPopup(`<span style="font-family:'DM Sans',sans-serif;font-size:11px;color:#2B2A28">${p.name}</span>`);
+/* ═══════════════════════════════════════
+   MAP
+═══════════════════════════════════════ */
+function ensureMap(){
+  if(mapObj) return;
+  mapObj=L.map('map',{zoomControl:true});
+  const l=LAYERS[currentLayer];
+  tileLayer=L.tileLayer(l.url,{maxZoom:19,attribution:l.attr}).addTo(mapObj);
+}
+function setLayer(name){
+  currentLayer=name;
+  if(!mapObj) return;
+  if(tileLayer) mapObj.removeLayer(tileLayer);
+  const l=LAYERS[name];
+  tileLayer=L.tileLayer(l.url,{maxZoom:19,attribution:l.attr}).addTo(mapObj);
+  document.querySelectorAll('.mcb[id^="lb-"]').forEach(b=>b.classList.remove('on'));
+  document.getElementById('lb-'+name).classList.add('on');
+}
+function draw(){
+  lines.forEach(l=>mapObj.removeLayer(l));lines=[];
+  const n=Math.ceil(refPts.length/SEG);
+  for(let s=0;s<n;s++){
+    const seg=refPts.slice(s*SEG,Math.min(s*SEG+SEG+1,refPts.length));
+    if(seg.length<2) continue;
+    const ok=done.has(s);
+    lines.push(L.polyline(seg,{color:ok?'#556B57':'#B14B3F',weight:ok?5:3.5,opacity:ok?.90:.65}).addTo(mapObj));
+  }
+}
+function drawPOIs(pois){
+  poiMarkers.forEach(m=>mapObj.removeLayer(m));poiMarkers=[];
+  if(!pois||!pois.length) return;
+  const icon=L.divIcon({html:'<div style="width:6px;height:6px;border-radius:50%;background:#2B2A28;border:1.5px solid #F6F3EC;box-shadow:0 1px 4px rgba(0,0,0,.2)"></div>',className:'',iconSize:[6,6],iconAnchor:[3,3]});
+  pois.forEach(p=>{
+    const m=L.marker(p.latlng,{icon}).addTo(mapObj);
+    if(p.name) m.bindPopup(`<span style="font-family:'DM Sans',sans-serif;font-size:11px">${p.name}</span>`);
     poiMarkers.push(m);
   });
 }
 
-/* ══════════════════════════════════════
+/* ═══════════════════════════════════════
    ALTITUDE
-══════════════════════════════════════ */
-function drawAltitude(ele) {
-  const valid = ele.filter(e => e !== null);
-  if (valid.length < 2) {
-    document.getElementById('alti-svg').innerHTML = '<text x="120" y="30" text-anchor="middle" font-size="10" fill="#9B9388" font-family="DM Sans,sans-serif" font-weight="300">Pas de données d\'altitude</text>';
-    ['a-min','a-max','a-up','a-down','alti-min','alti-max'].forEach(id => document.getElementById(id).textContent = '—');
+═══════════════════════════════════════ */
+function drawAltitude(ele){
+  const valid=ele.filter(e=>e!==null);
+  if(valid.length<2){
+    document.getElementById('alti-svg').innerHTML='<text x="114" y="29" text-anchor="middle" font-size="9" fill="#9B9388" font-family="DM Sans,sans-serif" font-weight="300">Pas de données d\'altitude</text>';
+    ['a-min','a-max','a-up','a-down','alti-min','alti-max'].forEach(id=>document.getElementById(id).textContent='—');
     return;
   }
-  const mn = Math.min(...valid), mx = Math.max(...valid);
-  const pad = 4, W = 240, H = 52, iW = W-2*pad, iH = H-2*pad;
-  const step = Math.max(1, Math.floor(valid.length/200));
-  const sampled = []; for (let i=0;i<valid.length;i+=step) sampled.push(valid[i]);
-  const points = sampled.map((v,i) => `${pad+i/(sampled.length-1)*iW},${pad+(1-(v-mn)/(mx-mn||1))*iH}`).join(' ');
-  const fillPts = `${pad},${H-pad} ${points} ${pad+iW},${H-pad}`;
-  let up=0, down=0;
-  for (let i=1;i<valid.length;i++) { const d=valid[i]-valid[i-1]; if(d>0) up+=d; else down+=Math.abs(d); }
-  document.getElementById('alti-svg').innerHTML = `
+  const mn=Math.min(...valid),mx=Math.max(...valid);
+  const pad=3,W=228,H=50,iW=W-2*pad,iH=H-2*pad;
+  const step=Math.max(1,Math.floor(valid.length/200));
+  const sampled=[];for(let i=0;i<valid.length;i+=step)sampled.push(valid[i]);
+  const points=sampled.map((v,i)=>`${pad+i/(sampled.length-1)*iW},${pad+(1-(v-mn)/(mx-mn||1))*iH}`).join(' ');
+  const fillPts=`${pad},${H-pad} ${points} ${pad+iW},${H-pad}`;
+  let up=0,down=0;
+  for(let i=1;i<valid.length;i++){const d=valid[i]-valid[i-1];if(d>0)up+=d;else down+=Math.abs(d);}
+  document.getElementById('alti-svg').innerHTML=`
     <defs><linearGradient id="ag" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#556B57" stop-opacity=".28"/>
-      <stop offset="100%" stop-color="#556B57" stop-opacity=".04"/>
+      <stop offset="0%" stop-color="#556B57" stop-opacity=".25"/>
+      <stop offset="100%" stop-color="#556B57" stop-opacity=".03"/>
     </linearGradient></defs>
     <polygon points="${fillPts}" fill="url(#ag)"/>
     <polyline points="${points}" fill="none" stroke="#2B2A28" stroke-width="1.2" stroke-linejoin="round" stroke-linecap="round"/>`;
-  document.getElementById('alti-min').textContent = Math.round(mn)+' m';
-  document.getElementById('alti-max').textContent = Math.round(mx)+' m';
-  document.getElementById('a-min').textContent = Math.round(mn);
-  document.getElementById('a-max').textContent = Math.round(mx);
-  document.getElementById('a-up').textContent   = '+'+Math.round(up);
-  document.getElementById('a-down').textContent = '−'+Math.round(down);
+  document.getElementById('alti-min').textContent=Math.round(mn)+' m';
+  document.getElementById('alti-max').textContent=Math.round(mx)+' m';
+  document.getElementById('a-min').textContent=Math.round(mn);
+  document.getElementById('a-max').textContent=Math.round(mx);
+  document.getElementById('a-up').textContent='+'+Math.round(up);
+  document.getElementById('a-down').textContent='−'+Math.round(down);
 }
 
-/* ══════════════════════════════════════
+/* ═══════════════════════════════════════
    STATS
-══════════════════════════════════════ */
-function updateStats() {
-  const total = Math.max(1, Math.ceil(refPts.length / SEG));
-  const n = done.size, pct = Math.round(n / total * 100);
-  const tkm = totalKm(refPts), dkm = Math.round(tkm*n/total), rkm = Math.round(tkm-dkm);
-  const hist = ld('hist_'+trail) || [];
-
-  document.getElementById('s-pct').textContent  = pct + '%';
-  document.getElementById('s-seg').textContent  = n;
-  document.getElementById('s-km').textContent   = dkm;
-  document.getElementById('s-sorties').textContent = hist.length;
-  document.getElementById('pct-label').textContent = pct + '%';
-  document.getElementById('p-km').textContent   = dkm + ' km';
-  document.getElementById('p-rest').textContent = refPts.length ? rkm + ' km restants' : '—';
-  document.getElementById('arc').setAttribute('stroke-dashoffset', 131.9 - (pct/100)*131.9);
+═══════════════════════════════════════ */
+function updateStats(){
+  const total=Math.max(1,Math.ceil(refPts.length/SEG));
+  const n=done.size,pct=Math.round(n/total*100);
+  const tkm=totalKm(refPts),dkm=Math.round(tkm*n/total),rkm=Math.round(tkm-dkm);
+  const hist=ld('hist_'+trail)||[];
+  document.getElementById('s-pct').textContent=pct+'%';
+  document.getElementById('s-seg').textContent=n;
+  document.getElementById('s-km').textContent=dkm;
+  document.getElementById('s-sorties').textContent=hist.length;
+  document.getElementById('pct-label').textContent=pct+'%';
+  document.getElementById('p-km').textContent=dkm+' km';
+  document.getElementById('p-rest').textContent=refPts.length?rkm+' km restants':'—';
+  document.getElementById('arc').setAttribute('stroke-dashoffset',125.7-(pct/100)*125.7);
 }
 
-/* ══════════════════════════════════════
-   LIBRARY
-══════════════════════════════════════ */
-function refreshLibrary() {
-  let kAll = 0, gAll = 0, sAll = 0;
-  Object.keys(TRAILS).forEach(t => {
-    const rr = ld('ref_'+t), dd = ld('done_'+t), hist = ld('hist_'+t) || [];
-    const card = document.getElementById('card-'+t);
-    if (rr && rr.length > 0) {
+/* ═══════════════════════════════════════
+   LIBRARY REFRESH
+═══════════════════════════════════════ */
+function refreshLibrary(){
+  let kAll=0,gAll=0,sAll=0;
+  Object.keys(TRAILS).forEach(t=>{
+    const rr=ld('ref_'+t),dd=ld('done_'+t),hist=ld('hist_'+t)||[];
+    const card=document.getElementById('card-'+t);
+    if(rr&&rr.length>0){
       card.classList.add('loaded');
-      const total = Math.max(1, Math.ceil(rr.length / SEG));
-      const n = (dd||[]).length, pct = Math.round(n/total*100);
-      const dkm = Math.round(totalKm(rr)*n/total);
-      document.getElementById('fill-'+t).style.width = pct + '%';
-      document.getElementById('pct-'+t).textContent  = pct + '% · ' + dkm + ' km parcourus';
-      kAll += dkm; gAll++;
-    } else {
+      const total=Math.max(1,Math.ceil(rr.length/SEG));
+      const n=(dd||[]).length,pct=Math.round(n/total*100);
+      const dkm=Math.round(totalKm(rr)*n/total);
+      document.getElementById('fill-'+t).style.width=pct+'%';
+      document.getElementById('pct-'+t).textContent=pct+'% · '+dkm+' km parcourus';
+      kAll+=dkm;gAll++;
+    }else{
       card.classList.remove('loaded');
-      document.getElementById('fill-'+t).style.width = '0%';
-      document.getElementById('pct-'+t).textContent  = 'Tracé non chargé';
+      document.getElementById('fill-'+t).style.width='0%';
+      document.getElementById('pct-'+t).textContent='Tracé non chargé';
     }
-    sAll += hist.length;
+    sAll+=hist.length;
   });
-  document.getElementById('total-km').textContent     = kAll;
-  document.getElementById('total-gr').textContent     = gAll;
-  document.getElementById('total-sorties').textContent = sAll;
+  document.getElementById('total-km').textContent=kAll;
+  document.getElementById('total-gr').textContent=gAll;
+  document.getElementById('total-sorties').textContent=sAll;
+  // Mise à jour carte générale
+  const genPct=gAll>0?Math.round(kAll/Math.max(1,kAll+(kAll>0?0:0))*100):0;
+  document.getElementById('pct-general').textContent=gAll>0?kAll+' km parcourus sur '+gAll+' sentier'+(gAll>1?'s':''):'Aucun tracé chargé';
+  if(gAll>0) document.getElementById('dot-general').style.background='var(--gr-green)';
 }
 
-/* ══════════════════════════════════════
+/* ═══════════════════════════════════════
    NAVIGATION
-══════════════════════════════════════ */
-function openTrail(t) {
-  trail = t;
-  const info = TRAILS[t];
-
-  document.getElementById('s-trail-num').textContent  = info.num;
-  document.getElementById('s-trail-name').textContent = info.name;
-  document.getElementById('s-trail-sub').textContent  = info.sub;
-  document.getElementById('lo-label').textContent     = info.label;
-  document.getElementById('lo-title').textContent     = info.title;
-
+═══════════════════════════════════════ */
+function openTrail(t){
+  isGeneralMode=false;
+  trail=t;const info=TRAILS[t];
+  document.getElementById('s-num').textContent=info.num;
+  document.getElementById('s-name').textContent=info.name;
+  document.getElementById('s-sub').textContent=info.sub;
+  document.getElementById('lo-label').textContent=info.label;
+  document.getElementById('lo-title').textContent=info.title;
+  document.getElementById('sb-progress-wrap').style.display='flex';
+  document.getElementById('btn-change-ref').style.display='flex';
+  document.getElementById('btn-gps').style.display='flex';
   showScreen('mapscreen');
-
-  setTimeout(() => {
-    ensureMap();
-    mapObj.invalidateSize();
-
-    lines.forEach(l => mapObj.removeLayer(l)); lines = [];
-    poiMarkers.forEach(m => mapObj.removeLayer(m)); poiMarkers = [];
-    if (posMarker) { mapObj.removeLayer(posMarker); posMarker = null; }
-
-    const rr = ld('ref_'+t), dd = ld('done_'+t), re = ld('ele_'+t) || [];
+  setTimeout(()=>{
+    ensureMap(); mapObj.invalidateSize();
+    lines.forEach(l=>mapObj.removeLayer(l));lines=[];
+    poiMarkers.forEach(m=>mapObj.removeLayer(m));poiMarkers=[];
+    if(posMarker){mapObj.removeLayer(posMarker);posMarker=null;}
+    const rr=ld('ref_'+t),dd=ld('done_'+t),re=ld('ele_'+t)||[];
     switchTab('suivi');
-
-    if (rr && rr.length > 0) {
-      refPts = rr; refEle = re; done = new Set(dd || []);
-      const pois = ld('poi_'+t) || [];
-      draw(); drawPOIs(pois); drawAltitude(refEle); updateStats(); renderHistory();
+    if(rr&&rr.length>0){
+      refPts=rr;refEle=re;done=new Set(dd||[]);
+      const pois=ld('poi_'+t)||[];
+      draw();drawPOIs(pois);drawAltitude(refEle);updateStats();renderHistory();
       mapObj.fitBounds(L.latLngBounds(rr));
-      document.getElementById('load-overlay').style.display = 'none';
-    } else {
-      refPts = []; refEle = []; done = new Set();
-      updateStats(); renderHistory();
-      mapObj.setView(info.center, info.zoom);
-      document.getElementById('load-overlay').style.display = 'flex';
+      document.getElementById('load-overlay').style.display='none';
+    }else{
+      refPts=[];refEle=[];done=new Set();
+      updateStats();renderHistory();
+      mapObj.setView(info.center,info.zoom);
+      document.getElementById('load-overlay').style.display='flex';
     }
-  }, 50);
+  },50);
 }
 
-/* ══════════════════════════════════════
-   LOAD REFERENCE GPX
-══════════════════════════════════════ */
-async function loadRef(inp) {
-  const f = inp.files[0]; if (!f) return;
-  showLoading(true, 'Analyse du tracé');
-  const txt = await f.text();
-  const { pts, ele, pois } = parseGPX(txt);
-  if (pts.length < 5) { toast('Fichier GPX invalide'); showLoading(false); inp.value=''; return; }
-  const ds = downsample(pts, ele, 18);
-  refPts = ds.pts; refEle = ds.ele; done = new Set();
-  sv('ref_'+trail, ds.pts); sv('done_'+trail, []); sv('ele_'+trail, ds.ele); sv('poi_'+trail, pois);
-  draw(); drawPOIs(pois); drawAltitude(refEle); updateStats();
-  mapObj.invalidateSize();
-  mapObj.fitBounds(L.latLngBounds(ds.pts));
-  document.getElementById('load-overlay').style.display = 'none';
-  showLoading(false); inp.value = '';
-  toast('Tracé chargé · ' + Math.round(totalKm(ds.pts)) + ' km' + (pois.length ? ' · ' + pois.length + ' points d\'intérêt' : ''));
+/* ═══════════════════════════════════════
+   LOAD REF
+═══════════════════════════════════════ */
+async function loadRef(inp){
+  const f=inp.files[0];if(!f)return;
+  showLoading(true,'Analyse du tracé');
+  const txt=await f.text();
+  const{pts,ele,pois}=parseGPX(txt);
+  if(pts.length<5){toast('Fichier GPX invalide');showLoading(false);inp.value='';return;}
+  const ds=downsample(pts,ele,18);
+  refPts=ds.pts;refEle=ds.ele;done=new Set();
+  sv('ref_'+trail,ds.pts);sv('done_'+trail,[]);sv('ele_'+trail,ds.ele);sv('poi_'+trail,pois);
+  draw();drawPOIs(pois);drawAltitude(refEle);updateStats();
+  mapObj.invalidateSize();mapObj.fitBounds(L.latLngBounds(ds.pts));
+  document.getElementById('load-overlay').style.display='none';
+  showLoading(false);inp.value='';
+  await cloudSaveProgress(trail);
+  toast('Tracé chargé · '+Math.round(totalKm(ds.pts))+' km'+(pois.length?' · '+pois.length+' points d\'intérêt':''));
 }
 
-/* ══════════════════════════════════════
+/* ═══════════════════════════════════════
    LOAD ACTIVITIES
-══════════════════════════════════════ */
-async function loadActivities(inp) {
-  if (!refPts.length) { toast('Chargez d\'abord le tracé de référence'); inp.value=''; return; }
-  showLoading(true, 'Analyse des activités');
-  let count = 0; const hist = ld('hist_'+trail) || [];
-  for (const f of inp.files) {
-    const { pts } = parseGPX(await f.text());
-    if (!pts.length) continue;
-    const prev = done.size;
-    matchPts(pts, refPts, done);
-    hist.unshift({
-      id: Date.now()+count,
-      name: f.name.replace('.gpx','').replace(/_/g,' '),
-      date: new Date().toLocaleDateString('fr-FR', { day:'numeric', month:'long', year:'numeric' }),
-      source: 'gpx',
-      km: Math.round(totalKm(pts)),
-      newSegs: done.size - prev
-    });
+═══════════════════════════════════════ */
+async function loadActivities(inp){
+  if(!refPts.length){toast('Chargez d\'abord le tracé de référence');inp.value='';return;}
+  showLoading(true,'Analyse des activités');
+  let count=0;const hist=ld('hist_'+trail)||[];
+  for(const f of inp.files){
+    const{pts}=parseGPX(await f.text());
+    if(!pts.length) continue;
+    const prev=done.size;
+    matchPts(pts,refPts,done);
+    hist.unshift({id:Date.now()+count,name:f.name.replace('.gpx','').replace(/_/g,' '),
+      date:new Date().toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'}),
+      source:'gpx',km:Math.round(totalKm(pts)),newSegs:done.size-prev});
     count++;
   }
-  sv('done_'+trail, [...done]); sv('hist_'+trail, hist);
-  draw(); updateStats(); renderHistory(); showLoading(false); inp.value = '';
-  toast(count + ' activité' + (count>1?'s':'') + ' importée' + (count>1?'s':''));
+  sv('done_'+trail,[...done]);sv('hist_'+trail,hist);
+  draw();updateStats();renderHistory();showLoading(false);inp.value='';
+  await cloudSaveProgress(trail);
+  await cloudSaveHistory(trail);
+  toast(count+' activité'+(count>1?'s':'')+' importée'+(count>1?'s':''));
 }
 
-/* ══════════════════════════════════════
+/* ═══════════════════════════════════════
    HISTORY
-══════════════════════════════════════ */
-function renderHistory() {
-  const hist = ld('hist_'+trail) || [];
-  const el = document.getElementById('hist-list');
-  if (!hist.length) {
-    el.innerHTML = '<div class="hist-empty">Aucune sortie enregistrée.<br>Démarrez le suivi GPS ou importez vos fichiers Strava.</div>';
-    return;
-  }
-  el.innerHTML = hist.map(h => `
+═══════════════════════════════════════ */
+function renderHistory(){
+  if(isGeneralMode){renderHistoryAll();return;}
+  const hist=ld('hist_'+trail)||[];
+  const el=document.getElementById('hist-list');
+  if(!hist.length){el.innerHTML='<div class="hist-empty">Aucune sortie enregistrée.<br>Démarrez le suivi GPS ou importez vos activités.</div>';return;}
+  el.innerHTML=hist.map(h=>`
     <div class="hist-item">
       <div class="hist-dot ${h.source}"></div>
       <div class="hist-body">
         <div class="hist-name">${h.name}</div>
-        <div class="hist-meta">${h.date}${h.km ? ' · '+h.km+' km' : ''}</div>
+        <div class="hist-meta">${h.date}${h.km?' · '+h.km+' km':''}</div>
       </div>
-      ${h.newSegs > 0 ? `<div class="hist-tag">+${h.newSegs}</div>` : ''}
+      ${h.newSegs>0?`<div class="hist-tag">+${h.newSegs}</div>`:''}
     </div>`).join('');
 }
 
-/* ══════════════════════════════════════
+/* ═══════════════════════════════════════
    GPS
-══════════════════════════════════════ */
-function toggleTracking() { if (tracking) stopGPS(); else startGPS(); }
-
-function startGPS() {
-  if (!refPts.length) { toast('Chargez d\'abord le tracé'); return; }
-  if (!navigator.geolocation) { toast('GPS non disponible'); return; }
-  tracking = true;
-  document.getElementById('btn-gps').textContent = 'Arrêter le suivi';
-  document.getElementById('btn-gps').className = 's-btn s-btn-stop';
-  document.getElementById('gps-status').style.display = 'flex';
+═══════════════════════════════════════ */
+function toggleTracking(){if(tracking)stopGPS();else startGPS();}
+function startGPS(){
+  if(!refPts.length){toast('Chargez d\'abord le tracé');return;}
+  if(!navigator.geolocation){toast('GPS non disponible');return;}
+  tracking=true;
+  document.getElementById('btn-gps').textContent='Arrêter le suivi';
+  document.getElementById('btn-gps').className='sb-btn sb-stop';
+  document.getElementById('gps-status').style.display='flex';
   document.getElementById('gps-dot').classList.add('on');
-  let buf = []; window._sessionBuf = buf;
-  wid = navigator.geolocation.watchPosition(pos => {
-    const pt = [pos.coords.latitude, pos.coords.longitude]; buf.push(pt);
-    if (posMarker) mapObj.removeLayer(posMarker);
-    const icon = L.divIcon({
-      html: '<div style="width:12px;height:12px;border-radius:50%;background:#2B2A28;border:2.5px solid #F6F3EC;box-shadow:0 2px 8px rgba(0,0,0,.24)"></div>',
-      className:'', iconSize:[12,12], iconAnchor:[6,6]
-    });
-    posMarker = L.marker(pt, {icon}).addTo(mapObj);
-    const prev = done.size;
-    matchPts(buf.slice(-10), refPts, done);
-    if (done.size > prev) { draw(); updateStats(); sv('done_'+trail, [...done]); }
-    document.getElementById('gps-msg').textContent = 'GPS actif · ±' + Math.round(pos.coords.accuracy) + 'm';
-  }, err => toast('GPS : ' + err.message), { enableHighAccuracy:true, maximumAge:4000, timeout:12000 });
+  let buf=[];window._sessionBuf=buf;
+  wid=navigator.geolocation.watchPosition(pos=>{
+    const pt=[pos.coords.latitude,pos.coords.longitude];buf.push(pt);
+    if(posMarker)mapObj.removeLayer(posMarker);
+    const icon=L.divIcon({html:'<div style="width:12px;height:12px;border-radius:50%;background:#2B2A28;border:2.5px solid #F6F3EC;box-shadow:0 2px 8px rgba(0,0,0,.24)"></div>',className:'',iconSize:[12,12],iconAnchor:[6,6]});
+    posMarker=L.marker(pt,{icon}).addTo(mapObj);
+    const prev=done.size;matchPts(buf.slice(-10),refPts,done);
+    if(done.size>prev){draw();updateStats();sv('done_'+trail,[...done]);}
+    document.getElementById('gps-msg').textContent='GPS actif · ±'+Math.round(pos.coords.accuracy)+'m';
+  },err=>toast('GPS : '+err.message),{enableHighAccuracy:true,maximumAge:4000,timeout:12000});
 }
-
-function stopGPS() {
-  if (wid !== null) navigator.geolocation.clearWatch(wid);
-  tracking = false; wid = null;
-  document.getElementById('btn-gps').textContent = 'Démarrer le suivi';
-  document.getElementById('btn-gps').className = 's-btn s-btn-primary';
-  document.getElementById('gps-status').style.display = 'none';
+async function stopGPS(){
+  if(wid!==null)navigator.geolocation.clearWatch(wid);
+  tracking=false;wid=null;
+  document.getElementById('btn-gps').textContent='Démarrer le suivi';
+  document.getElementById('btn-gps').className='sb-btn sb-primary';
+  document.getElementById('gps-status').style.display='none';
   document.getElementById('gps-dot').classList.remove('on');
-  sv('done_'+trail, [...done]);
-  const buf = window._sessionBuf || [];
-  let km = 0; for (let i=1;i<buf.length;i++) km += dist(buf[i-1], buf[i]);
-  const hist = ld('hist_'+trail) || [];
-  hist.unshift({
-    id: Date.now(), source: 'gps',
-    name: 'Sortie du ' + new Date().toLocaleDateString('fr-FR', { day:'numeric', month:'long' }),
-    date: new Date().toLocaleDateString('fr-FR', { day:'numeric', month:'long', year:'numeric' }),
-    km: Math.round(km/1000), newSegs: 0
-  });
-  sv('hist_'+trail, hist); renderHistory(); updateStats();
-  toast('Suivi arrêté · progression sauvegardée');
+  sv('done_'+trail,[...done]);
+  const buf=window._sessionBuf||[];let km=0;
+  for(let i=1;i<buf.length;i++)km+=dist(buf[i-1],buf[i]);
+  const hist=ld('hist_'+trail)||[];
+  hist.unshift({id:Date.now(),source:'gps',
+    name:'Sortie du '+new Date().toLocaleDateString('fr-FR',{day:'numeric',month:'long'}),
+    date:new Date().toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'}),
+    km:Math.round(km/1000),newSegs:0});
+  sv('hist_'+trail,hist);renderHistory();updateStats();
+  await cloudSaveProgress(trail);
+  await cloudSaveHistory(trail);
+  toast('Suivi arrêté · progression sauvegardée ☁️');
 }
 
-/* ══════════════════════════════════════
+/* ═══════════════════════════════════════
    UTILS
-══════════════════════════════════════ */
-function switchTab(name) {
-  const names = ['suivi','altitude','journal','options'];
-  document.querySelectorAll('.s-tab-btn').forEach((b,i) => b.classList.toggle('on', names[i]===name));
-  document.querySelectorAll('.sidebar-pane').forEach(p => p.classList.remove('on'));
+═══════════════════════════════════════ */
+function switchTab(name){
+  const names=['suivi','altitude','journal','options'];
+  document.querySelectorAll('.stb').forEach((b,i)=>b.classList.toggle('on',names[i]===name));
+  document.querySelectorAll('.sb-pane').forEach(p=>p.classList.remove('on'));
   document.getElementById('tab-'+name).classList.add('on');
 }
-
-function centerMap() {
-  if (!mapObj) return;
-  if (refPts.length) mapObj.fitBounds(L.latLngBounds(refPts));
-  else mapObj.setView(TRAILS[trail].center, TRAILS[trail].zoom);
+function centerMap(){
+  if(!mapObj) return;
+  if(isGeneralMode){mapObj.setView([46.5,2.3],5);return;}
+  if(refPts.length)mapObj.fitBounds(L.latLngBounds(refPts));
+  else mapObj.setView(TRAILS[trail].center,TRAILS[trail].zoom);
 }
-
-function doReset() {
-  if (!confirm('Réinitialiser la progression pour ' + TRAILS[trail].name + ' ?')) return;
-  done = new Set();
-  sv('done_'+trail, []); sv('hist_'+trail, []);
-  draw(); updateStats(); renderHistory();
+async function doReset(){
+  if(isGeneralMode){toast('Sélectionnez un sentier spécifique pour réinitialiser');return;}
+  if(!confirm('Réinitialiser la progression pour '+TRAILS[trail].name+' ?'))return;
+  done=new Set();sv('done_'+trail,[]);sv('hist_'+trail,[]);
+  draw();updateStats();renderHistory();
+  await cloudSaveProgress(trail);
   toast('Progression réinitialisée');
 }
-
-function showLoading(v, msg='Chargement') {
-  document.getElementById('loading').style.display = v ? 'flex' : 'none';
-  document.getElementById('loading-msg').textContent = msg;
+function showLoading(v,msg='Chargement'){
+  document.getElementById('loading').style.display=v?'flex':'none';
+  document.getElementById('loading-msg').textContent=msg;
 }
-
-function toast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.style.display = 'block';
-  clearTimeout(t._t); t._t = setTimeout(() => t.style.display = 'none', 3200);
+function toast(msg){
+  const t=document.getElementById('toast');t.textContent=msg;t.style.display='block';
+  clearTimeout(t._t);t._t=setTimeout(()=>t.style.display='none',3200);
 }
-</script>
+function checkMobile(){
+  const sb=document.getElementById('sb-toggle');
+  if(sb) sb.style.display=window.innerWidth<=700?'flex':'none';
+}
+window.addEventListener('resize',checkMobile);
+checkMobile();
 
-<script>
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js')
-      .then(r => console.log('Cairn SW enregistré'))
-      .catch(e => console.log('SW erreur:', e));
-  });
+/* PWA */
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
 }
 </script>
 </body>
