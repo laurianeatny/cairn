@@ -780,9 +780,17 @@ input[type=file]{display:none}
 ═══════════════════════════════════════ */
 const SUPA_URL = 'https://emypgfgvaflffuusfnmp.supabase.co';
 const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVteXBnZmd2YWZsZmZ1dXNmbm1wIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk0NDIxMzAsImV4cCI6MjA5NTAxODEzMH0.xqth5vE8jucpvdvlw-s1VfRLRkrOG2ZsKFI3G98OmVk';
-const sb = supabase.createClient(SUPA_URL, SUPA_KEY);
+let sb = null;
 let currentUser = null;
 let splashDone = false;
+
+function getSB(){
+  if(!sb){
+    try{ sb = supabase.createClient(SUPA_URL, SUPA_KEY); }
+    catch(e){ console.warn('Supabase not ready:', e); }
+  }
+  return sb;
+}
 
 /* ═══════════════════════════════════════
    STRAVA CONFIG
@@ -873,7 +881,7 @@ async function cloudSaveProgress(t){
   if(!currentUser) return;
   setSyncDot('syncing');
   try{
-    await sb.from('trail_progress').upsert({
+    await getSB().from('trail_progress').upsert({
       user_id:currentUser.id, trail_key:t,
       done_segments:ld('done_'+t)||[],
       ref_pts:ld('ref_'+t)||[],
@@ -890,7 +898,7 @@ async function cloudSaveHistory(t){
   if(!hist.length) return;
   const h=hist[0];
   try{
-    await sb.from('activity_history').insert({
+    await getSB().from('activity_history').insert({
       user_id:currentUser.id, trail_key:t,
       name:h.name, date:h.date, source:h.source, km:h.km, new_segs:h.newSegs||0
     });
@@ -900,14 +908,14 @@ async function cloudLoadAll(){
   if(!currentUser) return;
   setSyncDot('syncing');
   try{
-    const{data:progData}=await sb.from('trail_progress').select('*').eq('user_id',currentUser.id);
+    const{data:progData}=await getSB().from('trail_progress').select('*').eq('user_id',currentUser.id);
     if(progData) progData.forEach(row=>{
       if(row.ref_pts?.length)    sv('ref_'+row.trail_key,  row.ref_pts);
       if(row.done_segments)       sv('done_'+row.trail_key, row.done_segments);
       if(row.ele_pts)             sv('ele_'+row.trail_key,  row.ele_pts);
       if(row.poi_pts)             sv('poi_'+row.trail_key,  row.poi_pts);
     });
-    const{data:histData}=await sb.from('activity_history').select('*').eq('user_id',currentUser.id).order('created_at',{ascending:false});
+    const{data:histData}=await getSB().from('activity_history').select('*').eq('user_id',currentUser.id).order('created_at',{ascending:false});
     if(histData){
       const byTrail={};
       histData.forEach(row=>{
@@ -934,7 +942,7 @@ async function loginEmail(){
   const err=document.getElementById('login-error');
   err.textContent=''; err.className='auth-error';
   if(!email||!pwd){err.textContent='Email et mot de passe requis.';return;}
-  const{error}=await sb.auth.signInWithPassword({email,password:pwd});
+  const{error}=await getSB().auth.signInWithPassword({email,password:pwd});
   if(error) err.textContent=error.message;
 }
 async function signupEmail(){
@@ -944,15 +952,15 @@ async function signupEmail(){
   err.textContent=''; err.className='auth-error';
   if(!email||!pwd){err.textContent='Email et mot de passe requis.';return;}
   if(pwd.length<8){err.textContent='Mot de passe : 8 caractères minimum.';return;}
-  const{error}=await sb.auth.signUp({email,password:pwd});
+  const{error}=await getSB().auth.signUp({email,password:pwd});
   if(error) err.textContent=error.message;
   else{err.className='auth-error auth-ok';err.textContent='Compte créé — vérifiez vos emails pour confirmer.';}
 }
 async function loginGoogle(){
-  await sb.auth.signInWithOAuth({provider:'google',options:{redirectTo:window.location.href}});
+  await getSB().auth.signInWithOAuth({provider:'google',options:{redirectTo:window.location.href}});
 }
 async function logout(){
-  await sb.auth.signOut();
+  await getSB().auth.signOut();
   currentUser=null;
   showScreen('authscreen');
   toast('Déconnectée');
@@ -967,7 +975,10 @@ function updateUserUI(user){
 }
 
 /* Auth state listener */
-sb.auth.onAuthStateChange(async(event,session)=>{
+/* Auth state — init après chargement Supabase */
+document.addEventListener('DOMContentLoaded', ()=>{
+  const client=getSB();
+  if(client) client.auth.onAuthStateChange(async(event,session)=>{
   if(session?.user){
     currentUser=session.user;
     updateUserUI(currentUser);
@@ -983,6 +994,7 @@ sb.auth.onAuthStateChange(async(event,session)=>{
       showScreen('authscreen');
     }
   }
+  });
 });
 
 /* ═══════════════════════════════════════
@@ -1002,13 +1014,19 @@ async function exitLanding(){
   l.style.pointerEvents='none';
   setTimeout(async()=>{
     l.style.display='none';
+    const client=getSB();
+    if(!client){
+      // Supabase pas chargé — on va quand même à l'auth
+      showScreen('authscreen');
+      return;
+    }
     try{
-      const resp=await sb.auth.getSession();
+      const resp=await client.auth.getSession();
       const session=resp?.data?.session;
       if(session?.user){
         currentUser=session.user;
         updateUserUI(currentUser);
-        try{ await cloudLoadAll(); }catch(e){ console.warn('cloud load error',e); }
+        try{ await cloudLoadAll(); }catch(e){}
         showScreen('library');
         refreshLibrary();
         setTimeout(initLibMap,80);
