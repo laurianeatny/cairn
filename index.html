@@ -1037,37 +1037,45 @@ function showScreen(id){
 
 async function exitLanding(){
   splashDone=true;
-  buildTrailsFromActive();
+  try{ buildTrailsFromActive(); }catch(e){ console.warn('buildTrails error:',e); }
   const l=document.getElementById('landing');
   l.style.transition='opacity .7s ease';
   l.style.opacity='0';
   l.style.pointerEvents='none';
+
+  // Fallback garanti : si rien ne s'affiche dans 2s, on force l'authscreen
+  const fallback = setTimeout(()=>{
+    if(!document.querySelector('.screen.active:not(#landing)'))
+      showScreen('authscreen');
+  }, 2200);
+
   setTimeout(async()=>{
     l.style.display='none';
-    const client=getSB();
-    if(!client){
-      // Supabase pas chargé — on va quand même à l'auth
-      showScreen('authscreen');
-      return;
-    }
+    let shown = false;
     try{
-      const resp=await client.auth.getSession();
-      const session=resp?.data?.session;
-      if(session?.user){
-        currentUser=session.user;
-        updateUserUI(currentUser);
-        try{ await cloudLoadAll(); }catch(e){}
-        showScreen('library');
-        refreshLibrary();
-        setTimeout(initLibMap,80);
-      }else{
-        showScreen('authscreen');
+      const client=getSB();
+      if(client){
+        const resp = await Promise.race([
+          client.auth.getSession(),
+          new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),3000))
+        ]);
+        const session=resp?.data?.session;
+        if(session?.user){
+          currentUser=session.user;
+          try{ updateUserUI(currentUser); }catch(e){}
+          try{ await cloudLoadAll(); }catch(e){}
+          showScreen('library');
+          try{ refreshLibrary(); }catch(e){}
+          setTimeout(initLibMap,80);
+          shown=true;
+        }
       }
     }catch(e){
       console.warn('Supabase error:',e);
-      showScreen('authscreen');
     }
-  },700);
+    if(!shown) showScreen('authscreen');
+    clearTimeout(fallback);
+  }, 700);
 }
 
 function goLibrary(){
