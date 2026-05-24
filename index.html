@@ -711,7 +711,30 @@ input[type=file]{display:none}
       <div class="sb-pane" id="tab-options">
         <button class="sb-btn sb-secondary" id="btn-change-ref" onclick="document.getElementById('fi-ref').click()">Changer le tracé de référence</button>
         <button class="sb-btn sb-secondary" onclick="centerMap()">Recentrer la carte</button>
-        <button class="sb-btn sb-danger" onclick="doReset()">Réinitialiser la progression</button>
+        <button class="sb-btn sb-danger" onclick="doReset()" style="margin-top:4px">Réinitialiser la progression</button>
+        <button class="sb-btn sb-danger" id="btn-remove-trail" onclick="removeTrail()" style="margin-top:4px">Supprimer ce sentier de l'atlas</button>
+
+        <!-- Filtre type d'activité Strava -->
+        <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--ghost)">
+          <div style="font-family:var(--sans);font-size:9px;font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:var(--stone);margin-bottom:10px">Activités Strava à importer</div>
+          <div id="strava-type-filters" style="display:flex;flex-direction:column;gap:6px">
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-family:var(--sans);font-size:11px;color:var(--ink)">
+              <input type="checkbox" id="stype-hike" value="Hike" onchange="saveStravaTypes()" style="accent-color:var(--gr-green)"> Randonnée (Hike)
+            </label>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-family:var(--sans);font-size:11px;color:var(--ink)">
+              <input type="checkbox" id="stype-walk" value="Walk" onchange="saveStravaTypes()" style="accent-color:var(--gr-green)"> Marche (Walk)
+            </label>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-family:var(--sans);font-size:11px;color:var(--ink)">
+              <input type="checkbox" id="stype-trail" value="TrailRun" onchange="saveStravaTypes()" style="accent-color:var(--gr-green)"> Trail
+            </label>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-family:var(--sans);font-size:11px;color:var(--ink)">
+              <input type="checkbox" id="stype-run" value="Run" onchange="saveStravaTypes()" style="accent-color:var(--gr-green)"> Course (Run)
+            </label>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-family:var(--sans);font-size:11px;color:var(--ink)">
+              <input type="checkbox" id="stype-snowshoe" value="Snowshoe" onchange="saveStravaTypes()" style="accent-color:var(--gr-green)"> Raquettes
+            </label>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -801,31 +824,40 @@ const STRAVA_SCOPE         = 'activity:read_all';
 /* =======================================
    CONFIG
 ======================================= */
+/* Base URL pour les GPX — fonctionne en local ET sur GitHub Pages */
+const GPX_BASE = (()=>{
+  const p = window.location.pathname;
+  // Sur GitHub Pages : /nom-repo/ ou /
+  // On veut l'URL du dossier contenant index.html
+  const base = window.location.origin + p.substring(0, p.lastIndexOf('/')+1);
+  return base;
+})();
+
 /* =======================================
    CATALOGUE COMPLET DES GR FRANÇAIS
    gpxUrl = chemin relatif dans le repo GitHub /gpx/
 ======================================= */
 const GR_CATALOGUE = [
-  {key:"gr1",   num:"GR 1",   name:"Sentier Tour de Ile-de-France",     sub:"~600 km - Ile-de-France",                     center:[48.5,2.5],  zoom:8,  gpxUrl:"gpx/gr1.gpx"},
-  {key:"gr2",   num:"GR 2",   name:"Sentier de la Seine",               sub:"~750 km - De la source a la mer",             center:[49.0,1.5],  zoom:8,  gpxUrl:"gpx/gr2.gpx"},
-  {key:"gr3",   num:"GR 3",   name:"Sentier de la Loire",               sub:"~1000 km - Gerbier-de-Jonc vers Saint-Nazaire",center:[47.5,1.0], zoom:7,  gpxUrl:"gpx/gr3.gpx"},
-  {key:"gr4",   num:"GR 4",   name:"Sentier Mediterranee-Ocean",        sub:"~1200 km - Grasse vers Royan",                center:[44.5,3.0],  zoom:7,  gpxUrl:"gpx/gr4.gpx"},
-  {key:"gr5",   num:"GR 5",   name:"Le Sentier des Alpes",              sub:"~600 km - Lac Leman vers Mediterranee",       center:[45.5,6.8],  zoom:9,  gpxUrl:"gpx/gr5.gpx"},
-  {key:"gr7",   num:"GR 7",   name:"Vosges-Pyrenees",                   sub:"~1400 km - Ballon d'Alsace vers Andorre",     center:[45.0,3.5],  zoom:7,  gpxUrl:"gpx/gr7.gpx"},
-  {key:"gr9",   num:"GR 9",   name:"Rhone-Mediterranee",                sub:"~500 km - Bresse vers Saintes-Maries",        center:[45.0,5.5],  zoom:8,  gpxUrl:"gpx/gr9.gpx"},
-  {key:"gr10",  num:"GR 10",  name:"La Grande Traversee des Pyrenees",  sub:"~900 km - Hendaye vers Banyuls-sur-Mer",      center:[42.8,0.5],  zoom:9,  gpxUrl:"gpx/gr10.gpx"},
-  {key:"gr20",  num:"GR 20",  name:"Fra Li Monti",                      sub:"~180 km - Calenzana vers Conca - Corse",      center:[42.1,9.1],  zoom:10, gpxUrl:"gpx/gr20.gpx"},
-  {key:"gr34",  num:"GR 34",  name:"Le Sentier des Douaniers",          sub:"~2000 km - Saint-Malo vers Saint-Nazaire",    center:[47.8,-3.2], zoom:9,  gpxUrl:"gpx/gr34.gpx"},
-  {key:"gr36",  num:"GR 36",  name:"Manche-Pyrenees",                   sub:"~1200 km - Ouistreham vers Hendaye",          center:[46.0,-0.5], zoom:7,  gpxUrl:"gpx/gr36.gpx"},
-  {key:"gr51",  num:"GR 51",  name:"Tour des Alpes Maritimes",          sub:"~400 km - Menton vers Menton",                center:[43.8,7.2],  zoom:9,  gpxUrl:"gpx/gr51.gpx"},
-  {key:"gr52",  num:"GR 52",  name:"Alpes-Maritimes Interieur",         sub:"~200 km - Menton vers Saint-Dalmas",          center:[44.0,7.5],  zoom:10, gpxUrl:"gpx/gr52.gpx"},
-  {key:"gr54",  num:"GR 54",  name:"Tour de l'Oisans et des Ecrins",    sub:"~180 km - Briancon, Haute Montagne",          center:[44.9,6.2],  zoom:10, gpxUrl:"gpx/gr54.gpx"},
-  {key:"gr65",  num:"GR 65",  name:"Voie de Tours - Chemin de St-Jacques",sub:"~750 km - Puy-en-Velay vers St-Jean-Pied-de-Port",center:[44.5,2.5],zoom:8,gpxUrl:"gpx/gr65.gpx"},
-  {key:"gr70",  num:"GR 70",  name:"Chemin de Stevenson",               sub:"~270 km - Le Monastier vers Ales",            center:[44.5,3.8],  zoom:9,  gpxUrl:"gpx/gr70.gpx"},
-  {key:"gr78",  num:"GR 78",  name:"Voie de Vezelay - St-Jacques",      sub:"~1000 km - Vezelay vers Hendaye",             center:[46.0,1.0],  zoom:7,  gpxUrl:"gpx/gr78.gpx"},
-  {key:"gr91",  num:"GR 91",  name:"Tour des 4 Massifs du Vercors",     sub:"~180 km - Vercors",                           center:[44.9,5.5],  zoom:10, gpxUrl:"gpx/gr91.gpx"},
-  {key:"gr92",  num:"GR 92",  name:"Tour du Diois",                     sub:"~210 km - Drome",                             center:[44.7,5.2],  zoom:10, gpxUrl:"gpx/gr92.gpx"},
-  {key:"gr107", num:"GR 107", name:"Chemin des Bonshommes",             sub:"~170 km - Foix vers Berga (Espagne)",         center:[42.8,1.8],  zoom:10, gpxUrl:"gpx/gr107.gpx"},
+  {key:"gr1",   num:"GR 1",   name:"Sentier Tour de Ile-de-France",     sub:"~600 km - Ile-de-France",                     center:[48.5,2.5],  zoom:8,  get gpxUrl(){ return GPX_BASE+'gpx/gr1.gpx'   }},
+  {key:"gr2",   num:"GR 2",   name:"Sentier de la Seine",               sub:"~750 km - De la source a la mer",             center:[49.0,1.5],  zoom:8,  get gpxUrl(){ return GPX_BASE+'gpx/gr2.gpx'   }},
+  {key:"gr3",   num:"GR 3",   name:"Sentier de la Loire",               sub:"~1000 km - Gerbier-de-Jonc vers Saint-Nazaire",center:[47.5,1.0], zoom:7,  get gpxUrl(){ return GPX_BASE+'gpx/gr3.gpx'   }},
+  {key:"gr4",   num:"GR 4",   name:"Sentier Mediterranee-Ocean",        sub:"~1200 km - Grasse vers Royan",                center:[44.5,3.0],  zoom:7,  get gpxUrl(){ return GPX_BASE+'gpx/gr4.gpx'   }},
+  {key:"gr5",   num:"GR 5",   name:"Le Sentier des Alpes",              sub:"~600 km - Lac Leman vers Mediterranee",       center:[45.5,6.8],  zoom:9,  get gpxUrl(){ return GPX_BASE+'gpx/gr5.gpx'   }},
+  {key:"gr7",   num:"GR 7",   name:"Vosges-Pyrenees",                   sub:"~1400 km - Ballon d'Alsace vers Andorre",     center:[45.0,3.5],  zoom:7,  get gpxUrl(){ return GPX_BASE+'gpx/gr7.gpx'   }},
+  {key:"gr9",   num:"GR 9",   name:"Rhone-Mediterranee",                sub:"~500 km - Bresse vers Saintes-Maries",        center:[45.0,5.5],  zoom:8,  get gpxUrl(){ return GPX_BASE+'gpx/gr9.gpx'   }},
+  {key:"gr10",  num:"GR 10",  name:"La Grande Traversee des Pyrenees",  sub:"~900 km - Hendaye vers Banyuls-sur-Mer",      center:[42.8,0.5],  zoom:9,  get gpxUrl(){ return GPX_BASE+'gpx/gr10.gpx'  }},
+  {key:"gr20",  num:"GR 20",  name:"Fra Li Monti",                      sub:"~180 km - Calenzana vers Conca - Corse",      center:[42.1,9.1],  zoom:10, get gpxUrl(){ return GPX_BASE+'gpx/gr20.gpx'  }},
+  {key:"gr34",  num:"GR 34",  name:"Le Sentier des Douaniers",          sub:"~2000 km - Saint-Malo vers Saint-Nazaire",    center:[47.8,-3.2], zoom:9,  get gpxUrl(){ return GPX_BASE+'gpx/gr34.gpx'  }},
+  {key:"gr36",  num:"GR 36",  name:"Manche-Pyrenees",                   sub:"~1200 km - Ouistreham vers Hendaye",          center:[46.0,-0.5], zoom:7,  get gpxUrl(){ return GPX_BASE+'gpx/gr36.gpx'  }},
+  {key:"gr51",  num:"GR 51",  name:"Tour des Alpes Maritimes",          sub:"~400 km - Menton vers Menton",                center:[43.8,7.2],  zoom:9,  get gpxUrl(){ return GPX_BASE+'gpx/gr51.gpx'  }},
+  {key:"gr52",  num:"GR 52",  name:"Alpes-Maritimes Interieur",         sub:"~200 km - Menton vers Saint-Dalmas",          center:[44.0,7.5],  zoom:10, get gpxUrl(){ return GPX_BASE+'gpx/gr52.gpx'  }},
+  {key:"gr54",  num:"GR 54",  name:"Tour de l'Oisans et des Ecrins",    sub:"~180 km - Briancon, Haute Montagne",          center:[44.9,6.2],  zoom:10, get gpxUrl(){ return GPX_BASE+'gpx/gr54.gpx'  }},
+  {key:"gr65",  num:"GR 65",  name:"Voie de Tours - Chemin de St-Jacques",sub:"~750 km - Puy-en-Velay vers St-Jean-Pied-de-Port",center:[44.5,2.5],zoom:8,get gpxUrl(){ return GPX_BASE+'gpx/gr65.gpx'}},
+  {key:"gr70",  num:"GR 70",  name:"Chemin de Stevenson",               sub:"~270 km - Le Monastier vers Ales",            center:[44.5,3.8],  zoom:9,  get gpxUrl(){ return GPX_BASE+'gpx/gr70.gpx'  }},
+  {key:"gr78",  num:"GR 78",  name:"Voie de Vezelay - St-Jacques",      sub:"~1000 km - Vezelay vers Hendaye",             center:[46.0,1.0],  zoom:7,  get gpxUrl(){ return GPX_BASE+'gpx/gr78.gpx'  }},
+  {key:"gr91",  num:"GR 91",  name:"Tour des 4 Massifs du Vercors",     sub:"~180 km - Vercors",                           center:[44.9,5.5],  zoom:10, get gpxUrl(){ return GPX_BASE+'gpx/gr91.gpx'  }},
+  {key:"gr92",  num:"GR 92",  name:"Tour du Diois",                     sub:"~210 km - Drome",                             center:[44.7,5.2],  zoom:10, get gpxUrl(){ return GPX_BASE+'gpx/gr92.gpx'  }},
+  {key:"gr107", num:"GR 107", name:"Chemin des Bonshommes",             sub:"~170 km - Foix vers Berga (Espagne)",         center:[42.8,1.8],  zoom:10, get gpxUrl(){ return GPX_BASE+'gpx/gr107.gpx' }},
   {key:"custom",num:"Libre",  name:"Sentier libre",                     sub:"Votre propre trace GPX",                      center:[46.5,2.3],  zoom:6,  gpxUrl:null},
 ];
 
@@ -1053,31 +1085,34 @@ function openGeneralMap(){
   isGeneralMode=true;
   trail=null;
   document.getElementById('s-num').textContent='Vue générale';
-  document.getElementById('s-name').textContent='Tous les sentiers';
-  document.getElementById('s-sub').textContent='Carte combinée';
+  document.getElementById('s-name').textContent='Mes randonnées';
+  document.getElementById('s-sub').textContent='Segments validés sur tous les sentiers';
   document.getElementById('lo-label').textContent='';
   document.getElementById('lo-title').textContent='';
   document.getElementById('sb-progress-wrap').style.display='none';
   document.getElementById('btn-change-ref').style.display='none';
   document.getElementById('btn-gps').style.display='none';
+  document.getElementById('btn-remove-trail').style.display='none';
   showScreen('mapscreen');
   setTimeout(()=>{
     ensureMap(); mapObj.invalidateSize();
     lines.forEach(l=>mapObj.removeLayer(l));lines=[];
     poiMarkers.forEach(m=>mapObj.removeLayer(m));poiMarkers=[];
     if(posMarker){mapObj.removeLayer(posMarker);posMarker=null;}
-    // Dessiner tous les tracés chargés
+    // Afficher UNIQUEMENT les segments validés (pas les tracés complets)
     const bounds=[];
     let totalKmAll=0, totalSegAll=0;
     Object.keys(TRAILS).forEach(t=>{
       const rr=ld('ref_'+t), dd=ld('done_'+t);
       if(!rr||!rr.length) return;
       const doneSet=new Set(dd||[]);
+      if(!doneSet.size) return; // rien de validé sur ce GR
       const n=Math.ceil(rr.length/SEG);
       for(let s=0;s<n;s++){
+        if(!doneSet.has(s)) continue; // SEULEMENT les segments faits
         const seg=rr.slice(s*SEG,Math.min(s*SEG+SEG+1,rr.length));
         if(seg.length<2) continue;
-        lines.push(L.polyline(seg,{color:doneSet.has(s)?'#556B57':'#B14B3F',weight:doneSet.has(s)?4:2.5,opacity:doneSet.has(s)?.85:.5}).addTo(mapObj));
+        lines.push(L.polyline(seg,{color:'#4a6050',weight:4.5,opacity:.88}).addTo(mapObj));
         seg.forEach(p=>bounds.push(p));
       }
       totalKmAll+=Math.round(totalKm(rr)*doneSet.size/Math.max(1,n));
@@ -1090,9 +1125,8 @@ function openGeneralMap(){
     document.getElementById('s-pct').textContent='—';
     document.getElementById('s-sorties').textContent='—';
     document.getElementById('p-km').textContent=totalKmAll+' km';
-    document.getElementById('p-rest').textContent='total parcourus';
+    document.getElementById('p-rest').textContent='parcourus au total';
     document.getElementById('load-overlay').style.display='none';
-    // Journal all
     renderHistoryAll();
     switchTab('suivi');
   },50);
@@ -1402,6 +1436,7 @@ function openTrail(t){
   document.getElementById('sb-progress-wrap').style.display='flex';
   document.getElementById('btn-change-ref').style.display='flex';
   document.getElementById('btn-gps').style.display='flex';
+  document.getElementById('btn-remove-trail').style.display = (t==='custom')?'none':'flex';
   showScreen('mapscreen');
   setTimeout(()=>{
     ensureMap(); mapObj.invalidateSize();
@@ -1479,8 +1514,8 @@ function renderHistory(){
   if(!hist.length){el.innerHTML='<div class="hist-empty">Aucune sortie enregistrée.<br>Démarrez le suivi GPS ou importez vos activités.</div>';return;}
   el.innerHTML=hist.map(h=>`
     <div class="hist-item">
-      <div class="hist-dot ${h.source}" style="cursor:pointer;flex-shrink:0" onclick="openPhotoPanelFromJournal(${h.segIdx||0},'${h.date||''}','${h.name||''}')"></div>
-      <div class="hist-body" style="cursor:pointer" onclick="openPhotoPanelFromJournal(${h.segIdx||0},'${h.date||''}','${h.name||''}')">
+      <div class="hist-dot ${h.source}" style="cursor:pointer;flex-shrink:0" onclick="openPhotoPanelFromJournal(${h.segIdx||0},'${h.date||''}','${h.name||''}',event)"></div>
+      <div class="hist-body" style="cursor:pointer" onclick="openPhotoPanelFromJournal(${h.segIdx||0},'${h.date||''}','${h.name||''}',event)">
         <div class="hist-name">${h.name}</div>
         <div class="hist-meta">${h.date}${h.km?' · '+h.km+' km':''}</div>
       </div>
@@ -1543,6 +1578,7 @@ function switchTab(name){
   document.querySelectorAll('.stb').forEach((b,i)=>b.classList.toggle('on',names[i]===name));
   document.querySelectorAll('.sb-pane').forEach(p=>p.classList.remove('on'));
   document.getElementById('tab-'+name).classList.add('on');
+  if(name==='options') loadStravaTypes();
 }
 function centerMap(){
   if(!mapObj) return;
@@ -1742,9 +1778,9 @@ async function stravaSyncCurrentTrail(){
 
   try{
     const activities=await stravaFetchActivities(after);
-    // Uniquement activités pédestres — pas vélo, natation, etc.
-    const WALK_TYPES=['Walk','Hike','TrailRun','Run','Snowshoe','NordicSki'];
-    const relevant=activities.filter(a=>WALK_TYPES.includes(a.type));
+    // Types filtrés selon les préférences de l'utilisateur
+    const activeTypes = getStravaTypes();
+    const relevant=activities.filter(a=>activeTypes.includes(a.type));
 
     if(!relevant.length){
       showLoading(false);
@@ -1940,12 +1976,61 @@ function resizeImage(file, maxPx, quality){
 }
 
 // Fermer panel si clic sur la carte hors panel
-document.addEventListener('click', e=>{
+document.addEventListener('mousedown', e=>{
   const panel=document.getElementById('photo-panel');
-  if(panel.style.display==='block' && !panel.contains(e.target)){
+  if(panel && panel.style.display==='block' && !panel.contains(e.target)){
+    // Ne pas fermer si c'est un clic sur une polyline (le panel vient de s'ouvrir)
+    if(!e.target.closest('#map')) return;
     closePhotoPanel();
   }
 });
+
+/* =======================================
+   SUPPRIMER UN SENTIER DE L'ATLAS
+======================================= */
+async function removeTrail(){
+  if(!trail || trail==='custom') return;
+  const info = TRAILS[trail];
+  if(!confirm('Supprimer "'+info.name+'" de votre atlas ?\n\nLa progression et l\'historique seront effacés.')) return;
+  // Supprimer de la liste active
+  const active = (ld('active_trails')||[]).filter(k=>k!==trail);
+  sv('active_trails', active);
+  // Effacer les données locales
+  ['ref_','done_','ele_','poi_','hist_','strava_last_sync_'].forEach(prefix=>{
+    localStorage.removeItem(prefix+trail);
+  });
+  buildTrailsFromActive();
+  goLibrary();
+  toast(info.num+' supprimé de l\'atlas');
+}
+
+/* =======================================
+   FILTRE TYPES STRAVA
+======================================= */
+function saveStravaTypes(){
+  const types=[];
+  ['hike','walk','trail','run','snowshoe'].forEach(id=>{
+    const cb=document.getElementById('stype-'+id);
+    if(cb&&cb.checked) types.push(cb.value);
+  });
+  sv('strava_activity_types', types.length ? types : null);
+}
+
+function loadStravaTypes(){
+  const saved=ld('strava_activity_types');
+  // Par défaut : Hike + Walk seulement
+  const defaults=['Hike','Walk'];
+  const active = saved || defaults;
+  ['hike','walk','trail','run','snowshoe'].forEach(id=>{
+    const cb=document.getElementById('stype-'+id);
+    if(cb) cb.checked=active.includes(cb.value);
+  });
+}
+
+function getStravaTypes(){
+  const saved=ld('strava_activity_types');
+  return saved && saved.length ? saved : ['Hike','Walk'];
+}
 
 /* PWA */
 if('serviceWorker' in navigator){
@@ -2075,7 +2160,8 @@ async function loadCustomGPX(inp){
 /* =======================================
    PHOTO PANEL DEPUIS LE JOURNAL
 ======================================= */
-function openPhotoPanelFromJournal(segIdx, date, name){
+function openPhotoPanelFromJournal(segIdx, date, name, event){
+  if(event) event.stopPropagation();
   const key = (trail||'general')+'_'+(segIdx||0);
   currentSegKey = key;
   const panel = document.getElementById('photo-panel');
