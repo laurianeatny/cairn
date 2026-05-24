@@ -18,8 +18,8 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root {
-  --paper:    #F6F3EC;
-  --paper-2:  #EFE9DD;
+  --paper:    #F7F3EB;
+  --paper-2:  #EDE5D5;
   --ink:      #2B2A28;
   --ink-mid:  #3d3c3a;
   --stone:    #7a6f68;
@@ -47,7 +47,7 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;o
 #landing{
   flex-direction:column;align-items:center;justify-content:center;
   cursor:pointer;overflow:hidden;background-color:var(--paper);
-  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.65' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23p)'/%3E%3C/svg%3E");
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.55' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='1 0 0 0 0.06  0 1 0 0 0.03  0 0 1 0 -0.02  0 0 0 0.7 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23p)'/%3E%3C/svg%3E");
   background-size:256px 256px}
 #landing::before{content:'';position:absolute;inset:0;z-index:1;pointer-events:none;
   background:radial-gradient(ellipse 80% 80% at 50% 50%,transparent 40%,rgba(43,42,40,.18) 100%)}
@@ -215,7 +215,7 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;o
 #add-trail-modal.open{display:flex}
 .atm-box{
   background:var(--paper);
-  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.65' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23p)'/%3E%3C/svg%3E");
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.55' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='1 0 0 0 0.06  0 1 0 0 0.03  0 0 1 0 -0.02  0 0 0 0.7 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23p)'/%3E%3C/svg%3E");
   background-size:256px 256px;
   max-width:520px;width:100%;
   max-height:80vh;overflow-y:auto;
@@ -348,11 +348,11 @@ input[type=file]{display:none}
   -->
   <svg id="topo-svg" viewBox="0 0 1400 900" preserveAspectRatio="xMidYMid slice">
 
-    <!-- ╔══════════════════════════════════════
+    <!-- ╔======================================
          MASSIF OUEST — courbes concentriques irrégulières
          Versant NE raide (courbes serrées à droite)
          Versant SW doux (courbes écartées à gauche)
-    ══════════════════════════════════════╗ -->
+    ======================================╗ -->
     <!-- Courbe base 1 — large emprise -->
     <path class="tl" style="--len:5400;--dur:7s;--del:0s" stroke-width="1.1" opacity=".11"
       d="M 38,612 C 52,548 94,484 164,432 C 248,370 368,324 502,300 C 626,278 752,278 858,302 C 950,322 1022,360 1062,412 C 1098,458 1104,514 1074,566 C 1040,622 968,666 872,696 C 760,730 622,744 494,740 C 380,736 270,716 184,680 C 108,648 30,682 38,612 Z"/>
@@ -391,10 +391,10 @@ input[type=file]{display:none}
     <path class="tl" style="--len:280;--dur:4.6s;--del:1.28s" stroke-width=".7" opacity=".35"
       d="M 778,410 C 794,396 816,388 836,390 C 854,392 862,406 852,422 C 840,438 816,446 792,442 C 770,438 762,422 778,410 Z"/>
 
-    <!-- ╔══════════════════════════════════════
+    <!-- ╔======================================
          MASSIF EST — plus allongé, crête N-S
          Versant W très raide, versant E doux
-    ══════════════════════════════════════╗ -->
+    ======================================╗ -->
     <path class="tl" style="--len:3200;--dur:7.2s;--del:.10s" stroke-width="1" opacity=".10"
       d="M 1090,88 C 1130,56 1194,34 1264,30 C 1326,28 1384,46 1408,84 C 1430,120 1418,170 1378,212 C 1332,258 1260,290 1180,302 C 1100,314 1016,302 954,270 C 898,240 866,196 876,152 C 886,112 940,80 1010,68 C 1048,62 1068,82 1090,88 Z"/>
     <path class="tl" style="--len:2740;--dur:7s;--del:.22s" stroke-width=".95" opacity=".13"
@@ -417,10 +417,10 @@ input[type=file]{display:none}
     <path class="tl" style="--len:290;--dur:5.4s;--del:1.06s" stroke-width=".72" opacity=".30"
       d="M 1284,282 C 1292,272 1304,268 1314,274 C 1322,280 1320,296 1306,308 C 1292,320 1272,326 1254,320 C 1238,314 1232,300 1242,288 C 1254,278 1272,280 1284,282 Z"/>
 
-    <!-- ╔══════════════════════════════════════
+    <!-- ╔======================================
          COL entre les deux massifs
          Courbes qui s'étirent latéralement = selle de pression
-    ══════════════════════════════════════╗ -->
+    ======================================╗ -->
     <path class="tl" style="--len:1800;--dur:5.8s;--del:.38s" stroke-width=".82" opacity=".12"
       d="M 920,300 C 962,268 1018,244 1076,238 C 1128,234 1178,248 1204,278 C 1228,306 1224,344 1194,374 C 1160,406 1108,424 1052,426 C 998,426 946,408 916,378 C 888,352 888,322 920,300 Z"/>
     <path class="tl" style="--len:1380;--dur:5.6s;--del:.50s" stroke-width=".78" opacity=".14"
@@ -428,10 +428,10 @@ input[type=file]{display:none}
     <path class="tl" style="--len:980;--dur:5.4s;--del:.61s" stroke-width=".74" opacity=".16"
       d="M 964,332 C 996,304 1040,284 1082,282 C 1120,282 1154,300 1170,328 C 1184,354 1174,386 1146,410 C 1112,436 1064,448 1016,444 C 970,440 928,422 908,396 C 888,370 932,354 964,332 Z"/>
 
-    <!-- ╔══════════════════════════════════════
+    <!-- ╔======================================
          CONTREFORTS SUD-OUEST
          Formes en éperon allongées
-    ══════════════════════════════════════╗ -->
+    ======================================╗ -->
     <path class="tl" style="--len:2200;--dur:5.6s;--del:.26s" stroke-width=".85" opacity=".10"
       d="M 60,740 C 88,696 148,658 228,634 C 308,610 402,604 486,620 C 558,634 614,664 636,706 C 656,746 640,790 600,820 C 554,854 488,868 416,864 C 344,858 272,836 214,800 C 164,768 36,778 60,740 Z"/>
     <path class="tl" style="--len:1780;--dur:5.4s;--del:.38s" stroke-width=".82" opacity=".12"
@@ -444,10 +444,10 @@ input[type=file]{display:none}
       d="M 244,782 C 268,746 316,718 376,700 C 432,684 494,682 546,700 C 592,716 622,748 622,784 C 620,818 598,846 562,864 C 522,884 474,888 428,880 C 384,870 342,848 310,818 C 278,788 224,816 244,782 Z"/>
 
 
-    <!-- ═════════════════════════
+    <!-- =========================
          TRACÉS GR ANIMÉS
          Chemins sinueux style GR qui se dessinent après les courbes topo
-    ══════════════════════════ -->
+    ========================== -->
     <!-- Tracé 1 — style GR côtier (rouge) — traverse de gauche à droite en bas -->
     <path style="--len:2800;--dur:3.5s;--del:5.2s" 
       fill="none" stroke="#B14B3F" stroke-width="2.2" opacity=".55"
@@ -596,10 +596,8 @@ input[type=file]{display:none}
         </div>
         <div style="margin-top:18px;padding-top:14px;border-top:1px solid var(--ghost)">
           <div class="atm-label" style="margin-bottom:10px">Ou importez votre propre fichier GPX</div>
-          <label style="display:block;padding:12px 14px;border:1px dashed var(--ghost);text-align:center;cursor:pointer;font-family:var(--sans);font-size:11px;font-weight:300;color:var(--stone);transition:all .2s" 
-                 for="fi-custom-gpx" 
-                 onmouseover="this.style.borderColor='var(--accent)'" 
-                 onmouseout="this.style.borderColor='var(--ghost)'">
+          <label style="display:block;padding:12px 14px;border:1px dashed var(--ghost);text-align:center;cursor:pointer;font-family:var(--sans);font-size:11px;font-weight:300;color:var(--stone)" 
+                 for="fi-custom-gpx">
             + Charger un fichier GPX personnalisé
           </label>
           <input type="file" id="fi-custom-gpx" accept=".gpx" onchange="loadCustomGPX(this)" style="display:none">
@@ -684,7 +682,7 @@ input[type=file]{display:none}
         <div id="gps-status"><div id="gps-dot"></div><span id="gps-msg">GPS actif</span></div>
         <button class="sb-btn sb-primary" id="btn-gps" onclick="toggleTracking()">Démarrer le suivi</button>
         <button class="sb-btn sb-secondary" onclick="document.getElementById('fi-activity').click()">Importer des activités GPX</button>
-        <button class="sb-btn sb-secondary" id="btn-strava-sync" onclick="stravaSyncCurrentTrail()" style="display:none;align-items:center;gap:8px">
+        <button class="sb-btn sb-secondary" id="btn-strava-sync" onclick="stravaSyncAll()" style="display:none;align-items:center;gap:8px">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="#FC4C02"><path d="M15.387 17.944l-2.089-4.116h-3.065L15.387 24l5.15-10.172h-3.066m-7.008-5.599l2.836 5.599h4.172L10.463 0l-7 13.828h4.169"/></svg>
           Synchroniser Strava
         </button>
@@ -775,9 +773,9 @@ input[type=file]{display:none}
 <input type="file" id="fi-activity"    accept=".gpx" multiple onchange="loadActivities(this)">
 
 <script>
-/* ═══════════════════════════════════════
+/* =======================================
    SUPABASE
-═══════════════════════════════════════ */
+======================================= */
 const SUPA_URL = 'https://emypgfgvaflffuusfnmp.supabase.co';
 const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVteXBnZmd2YWZsZmZ1dXNmbm1wIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk0NDIxMzAsImV4cCI6MjA5NTAxODEzMH0.xqth5vE8jucpvdvlw-s1VfRLRkrOG2ZsKFI3G98OmVk';
 let sb = null;
@@ -792,21 +790,21 @@ function getSB(){
   return sb;
 }
 
-/* ═══════════════════════════════════════
+/* =======================================
    STRAVA CONFIG
-═══════════════════════════════════════ */
+======================================= */
 const STRAVA_CLIENT_ID     = '249836';
 const STRAVA_CLIENT_SECRET = '6e6dcac5aded94b033e3ec76ca610322dcbf6869';
-const STRAVA_REDIRECT_URI  = window.location.origin + window.location.pathname.replace(/\/index\.html$/,'') + '/';
+const STRAVA_REDIRECT_URI  = window.location.origin + window.location.pathname.split('index.html')[0];
 const STRAVA_SCOPE         = 'activity:read_all';
 
-/* ═══════════════════════════════════════
+/* =======================================
    CONFIG
-═══════════════════════════════════════ */
-/* ═══════════════════════════════════════
+======================================= */
+/* =======================================
    CATALOGUE COMPLET DES GR FRANÇAIS
    gpxUrl = chemin relatif dans le repo GitHub /gpx/
-═══════════════════════════════════════ */
+======================================= */
 const GR_CATALOGUE = [
   {key:"gr1",   num:"GR 1",   name:"Sentier Tour de Ile-de-France",     sub:"~600 km - Ile-de-France",                     center:[48.5,2.5],  zoom:8,  gpxUrl:"gpx/gr1.gpx"},
   {key:"gr2",   num:"GR 2",   name:"Sentier de la Seine",               sub:"~750 km - De la source a la mer",             center:[49.0,1.5],  zoom:8,  gpxUrl:"gpx/gr2.gpx"},
@@ -863,15 +861,15 @@ let trail=null, refPts=[], refEle=[], done=new Set(),
     mapObj=null, libMapObj=null, tileLayer=null, currentLayer='topo';
 let isGeneralMode = false;
 
-/* ═══════════════════════════════════════
+/* =======================================
    STORAGE
-═══════════════════════════════════════ */
+======================================= */
 function sv(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
 function ld(k){try{const v=localStorage.getItem(k);return v?JSON.parse(v):null}catch(e){return null}}
 
-/* ═══════════════════════════════════════
+/* =======================================
    SUPABASE SYNC
-═══════════════════════════════════════ */
+======================================= */
 function setSyncDot(state){
   const d=document.getElementById('sync-dot');
   if(!d) return;
@@ -928,9 +926,9 @@ async function cloudLoadAll(){
   }catch(e){setSyncDot('');}
 }
 
-/* ═══════════════════════════════════════
+/* =======================================
    AUTH
-═══════════════════════════════════════ */
+======================================= */
 function switchAuthTab(tab){
   document.querySelectorAll('.auth-tab').forEach((b,i)=>b.classList.toggle('on',['login','signup'][i]===tab));
   document.querySelectorAll('.auth-pane').forEach(p=>p.classList.remove('on'));
@@ -997,9 +995,9 @@ document.addEventListener('DOMContentLoaded', ()=>{
   });
 });
 
-/* ═══════════════════════════════════════
+/* =======================================
    SCREENS
-═══════════════════════════════════════ */
+======================================= */
 function showScreen(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
@@ -1048,9 +1046,9 @@ function goLibrary(){
 }
 function toggleSidebar(){ document.getElementById('sidebar').classList.toggle('open'); }
 
-/* ═══════════════════════════════════════
+/* =======================================
    GENERAL MAP
-═══════════════════════════════════════ */
+======================================= */
 function openGeneralMap(){
   isGeneralMode=true;
   trail=null;
@@ -1101,28 +1099,59 @@ function openGeneralMap(){
 }
 
 function renderHistoryAll(){
+  // Combiner hist_general + historiques des GRs (dédupliqués)
+  const seen=new Set();
   const all=[];
+  // D'abord hist_general (toutes les activités Strava)
+  (ld('hist_general')||[]).forEach(h=>{
+    if(!seen.has(h.stravaId||h.id)){ seen.add(h.stravaId||h.id); all.push({...h,trailName:''}); }
+  });
+  // Puis les GRs (activités qui croisent un GR)
   Object.keys(TRAILS).forEach(t=>{
-    const hist=ld('hist_'+t)||[];
-    hist.forEach(h=>all.push({...h,trailName:TRAILS[t].num}));
+    (ld('hist_'+t)||[]).forEach(h=>{
+      const uid=h.stravaId||h.id;
+      if(!seen.has(uid)){ seen.add(uid); all.push({...h,trailName:TRAILS[t]?.num||''}); }
+    });
   });
   all.sort((a,b)=>(b.id||0)-(a.id||0));
   const el=document.getElementById('hist-list');
-  if(!all.length){el.innerHTML='<div class="hist-empty">Aucune sortie enregistrée.</div>';return;}
-  el.innerHTML=all.slice(0,30).map(h=>`
+  if(!all.length){
+    el.innerHTML='<div class="hist-empty">Aucune sortie enregistrée.<br>Connectez Strava pour importer vos activités.</div>';
+    return;
+  }
+  el.innerHTML=all.slice(0,50).map(h=>`
     <div class="hist-item">
-      <div class="hist-dot ${h.source}"></div>
+      <div class="hist-dot ${h.source||'gpx'}"></div>
       <div class="hist-body">
-        <div class="hist-name">${h.trailName ? h.trailName+' — ':''} ${h.name}</div>
-        <div class="hist-meta">${h.date}${h.km?' · '+h.km+' km':''}</div>
+        <div class="hist-name">${h.trailName?'<span style="color:var(--accent);font-size:9px;letter-spacing:.1em;text-transform:uppercase;margin-right:6px">'+h.trailName+'</span>':''}${h.name||''}</div>
+        <div class="hist-meta">${h.date||''}${h.km?' · '+h.km+' km':''}</div>
       </div>
-      ${h.newSegs>0?`<div class="hist-tag">+${h.newSegs}</div>`:''}
+      <div style="display:flex;align-items:center;gap:4px;flex-shrink:0">
+        ${h.newSegs>0?'<div class="hist-tag">+'+h.newSegs+'</div>':''}
+        <button onclick="deleteGeneralActivity(${h.id||0},this.dataset.sid)" data-sid="${h.stravaId||''}" title="Supprimer" style="background:none;border:none;cursor:pointer;color:#C8C2B8;font-size:14px;padding:2px 4px">×</button>
+      </div>
     </div>`).join('');
 }
 
-/* ═══════════════════════════════════════
+function deleteGeneralActivity(id, stravaId){
+  if(!confirm('Supprimer cette sortie ?')) return;
+  // Supprimer de hist_general
+  const gen=(ld('hist_general')||[]).filter(h=>h.id!=id && (!stravaId||h.stravaId!=stravaId));
+  sv('hist_general',gen);
+  // Supprimer aussi de tous les GRs si même stravaId
+  if(stravaId){
+    Object.keys(TRAILS).forEach(t=>{
+      const h=(ld('hist_'+t)||[]).filter(h=>h.stravaId!=stravaId);
+      sv('hist_'+t,h);
+    });
+  }
+  renderHistoryAll();
+  toast('Sortie supprimée');
+}
+
+/* =======================================
    LIBRARY MAP
-═══════════════════════════════════════ */
+======================================= */
 function initLibMap(){
   if(libMapObj){libMapObj.invalidateSize();drawLibMap();return;}
   libMapObj=L.map('lib-map',{zoomControl:false,attributionControl:false,dragging:false,scrollWheelZoom:false,touchZoom:false,doubleClickZoom:false});
@@ -1150,9 +1179,9 @@ function drawLibMap(){
   if(bounds.length>1) libMapObj.fitBounds(L.latLngBounds(bounds),{padding:[16,16]});
 }
 
-/* ═══════════════════════════════════════
+/* =======================================
    GPX
-═══════════════════════════════════════ */
+======================================= */
 function parseGPX(txt){
   const doc=new DOMParser().parseFromString(txt,'text/xml');
   const pts=[],ele=[],pois=[];
@@ -1189,9 +1218,9 @@ function matchPts(up,rp,ds){
 }
 function totalKm(pts){let d=0;for(let i=1;i<pts.length;i++)d+=dist(pts[i-1],pts[i]);return d/1000;}
 
-/* ═══════════════════════════════════════
+/* =======================================
    MAP
-═══════════════════════════════════════ */
+======================================= */
 function ensureMap(){
   if(mapObj) return;
   mapObj=L.map('map',{zoomControl:true});
@@ -1229,9 +1258,9 @@ function drawPOIs(pois){
   });
 }
 
-/* ═══════════════════════════════════════
+/* =======================================
    ALTITUDE
-═══════════════════════════════════════ */
+======================================= */
 function drawAltitude(ele){
   const valid=ele.filter(e=>e!==null);
   if(valid.length<2){
@@ -1262,9 +1291,9 @@ function drawAltitude(ele){
   document.getElementById('a-down').textContent='−'+Math.round(down);
 }
 
-/* ═══════════════════════════════════════
+/* =======================================
    STATS
-═══════════════════════════════════════ */
+======================================= */
 function updateStats(){
   const total=Math.max(1,Math.ceil(refPts.length/SEG));
   const n=done.size,pct=Math.round(n/total*100);
@@ -1280,9 +1309,9 @@ function updateStats(){
   document.getElementById('arc').setAttribute('stroke-dashoffset',125.7-(pct/100)*125.7);
 }
 
-/* ═══════════════════════════════════════
+/* =======================================
    LIBRARY REFRESH
-═══════════════════════════════════════ */
+======================================= */
 function refreshLibrary(){
   buildTrailsFromActive();
   renderGRList();
@@ -1359,9 +1388,9 @@ function renderGRList(){
   container.innerHTML=html;
 }
 
-/* ═══════════════════════════════════════
+/* =======================================
    NAVIGATION
-═══════════════════════════════════════ */
+======================================= */
 function openTrail(t){
   isGeneralMode=false;
   trail=t;const info=TRAILS[t];
@@ -1396,9 +1425,9 @@ function openTrail(t){
   },50);
 }
 
-/* ═══════════════════════════════════════
+/* =======================================
    LOAD REF
-═══════════════════════════════════════ */
+======================================= */
 async function loadRef(inp){
   const f=inp.files[0];if(!f)return;
   showLoading(true,'Analyse du tracé');
@@ -1416,9 +1445,9 @@ async function loadRef(inp){
   toast('Tracé chargé · '+Math.round(totalKm(ds.pts))+' km'+(pois.length?' · '+pois.length+' points d\'intérêt':''));
 }
 
-/* ═══════════════════════════════════════
+/* =======================================
    LOAD ACTIVITIES
-═══════════════════════════════════════ */
+======================================= */
 async function loadActivities(inp){
   if(!refPts.length){toast('Chargez d\'abord le tracé de référence');inp.value='';return;}
   showLoading(true,'Analyse des activités');
@@ -1440,28 +1469,31 @@ async function loadActivities(inp){
   toast(count+' activité'+(count>1?'s':'')+' importée'+(count>1?'s':''));
 }
 
-/* ═══════════════════════════════════════
+/* =======================================
    HISTORY
-═══════════════════════════════════════ */
+======================================= */
 function renderHistory(){
   if(isGeneralMode){renderHistoryAll();return;}
   const hist=ld('hist_'+trail)||[];
   const el=document.getElementById('hist-list');
   if(!hist.length){el.innerHTML='<div class="hist-empty">Aucune sortie enregistrée.<br>Démarrez le suivi GPS ou importez vos activités.</div>';return;}
   el.innerHTML=hist.map(h=>`
-    <div class="hist-item" style="cursor:pointer" onclick="openPhotoPanelFromJournal(${h.segIdx||0},'${h.date||''}','${h.name||''}')">
-      <div class="hist-dot ${h.source}"></div>
-      <div class="hist-body">
+    <div class="hist-item">
+      <div class="hist-dot ${h.source}" style="cursor:pointer;flex-shrink:0" onclick="openPhotoPanelFromJournal(${h.segIdx||0},'${h.date||''}','${h.name||''}')"></div>
+      <div class="hist-body" style="cursor:pointer" onclick="openPhotoPanelFromJournal(${h.segIdx||0},'${h.date||''}','${h.name||''}')">
         <div class="hist-name">${h.name}</div>
         <div class="hist-meta">${h.date}${h.km?' · '+h.km+' km':''}</div>
       </div>
-      ${h.newSegs>0?`<div class="hist-tag">+${h.newSegs}</div>`:''}
+      <div style="display:flex;align-items:center;gap:4px;flex-shrink:0">
+        ${h.newSegs>0?'<div class="hist-tag">+'+h.newSegs+'</div>':''}
+        <button onclick="deleteActivity('${trail}',${h.id})" title="Supprimer" style="background:none;border:none;cursor:pointer;color:#C8C2B8;font-size:14px;padding:2px 4px">×</button>
+      </div>
     </div>`).join('');
 }
 
-/* ═══════════════════════════════════════
+/* =======================================
    GPS
-═══════════════════════════════════════ */
+======================================= */
 function toggleTracking(){if(tracking)stopGPS();else startGPS();}
 function startGPS(){
   if(!refPts.length){toast('Chargez d\'abord le tracé');return;}
@@ -1503,9 +1535,9 @@ async function stopGPS(){
   toast('Suivi arrêté · progression sauvegardée ☁️');
 }
 
-/* ═══════════════════════════════════════
+/* =======================================
    UTILS
-═══════════════════════════════════════ */
+======================================= */
 function switchTab(name){
   const names=['suivi','altitude','journal','options'];
   document.querySelectorAll('.stb').forEach((b,i)=>b.classList.toggle('on',names[i]===name));
@@ -1541,9 +1573,9 @@ function checkMobile(){
 window.addEventListener('resize',checkMobile);
 checkMobile();
 
-/* ═══════════════════════════════════════
+/* =======================================
    STRAVA — OAuth + Sync
-═══════════════════════════════════════ */
+======================================= */
 
 /* ── Tokens (localStorage) ── */
 function stravaGetTokens(){
@@ -1706,7 +1738,7 @@ async function stravaSyncCurrentTrail(){
 
   // Chercher depuis la dernière sync (ou 90 jours)
   const lastSync=ld('strava_last_sync_'+trail)||null;
-  const after=lastSync || Math.floor((Date.now()-90*24*60*60*1000)/1000);
+  const after=lastSync || Math.floor((Date.now()-365*24*60*60*1000)/1000); // 1 an
 
   try{
     const activities=await stravaFetchActivities(after);
@@ -1781,9 +1813,15 @@ async function stravaSyncCurrentTrail(){
     sv('hist_'+trail,hist);
     sv('strava_last_sync_'+trail, Math.floor(Date.now()/1000));
 
-    draw(); updateStats(); renderHistory();
+    // Rafraîchir tout l'UI immédiatement
+    draw();
+    updateStats();
+    renderHistory();
+    if(mapObj) mapObj.invalidateSize();
     await cloudSaveProgress(trail);
     showLoading(false);
+    // Forcer re-render après un court délai pour s'assurer que tout est à jour
+    setTimeout(()=>{ draw(); updateStats(); renderHistory(); }, 200);
     toast(`${count} activité${count>1?'s':''} Strava · +${newSegsTotal} segment${newSegsTotal>1?'s':''} validés`);
 
   }catch(e){
@@ -1796,9 +1834,9 @@ async function stravaSyncCurrentTrail(){
 // (les points hist de type strava sont identifiés par h.source==='strava')
 
 
-/* ═══════════════════════════════════════
+/* =======================================
    PHOTOS sur segments validés
-═══════════════════════════════════════ */
+======================================= */
 let currentSegKey = null; // "trailKey_segIndex"
 
 /* Attacher le clic sur chaque polyline validé */
@@ -1922,6 +1960,184 @@ if('serviceWorker' in navigator){
   }
   updateStravaUI();
 })();
+
+/* =======================================
+   MODAL AJOUTER SENTIER
+======================================= */
+let atmSelectedKey = null;
+let atmGpxAvailable = false;
+
+function openAddTrailModal(){
+  const sel = document.getElementById('atm-select');
+  if(!sel){ console.warn('atm-select not found'); return; }
+  const active = ld('active_trails')||[];
+  sel.innerHTML = '<option value="">— Choisissez un GR —</option>';
+  GR_CATALOGUE.forEach(g=>{
+    if(g.key==='custom') return;
+    if(active.includes(g.key)) return;
+    const opt=document.createElement('option');
+    opt.value=g.key;
+    opt.textContent=g.num+' — '+g.name;
+    sel.appendChild(opt);
+  });
+  atmSelectedKey=null; atmGpxAvailable=false;
+  const prev=document.getElementById('atm-preview');
+  const btn=document.getElementById('atm-confirm');
+  if(prev) prev.classList.remove('show');
+  if(btn) btn.disabled=true;
+  const modal=document.getElementById('add-trail-modal');
+  if(modal) modal.classList.add('open');
+}
+
+function closeAddTrailModal(){
+  const modal=document.getElementById('add-trail-modal');
+  if(modal) modal.classList.remove('open');
+}
+
+async function onATMSelect(){
+  const key = document.getElementById('atm-select').value;
+  const prev=document.getElementById('atm-preview');
+  const btn=document.getElementById('atm-confirm');
+  if(!key){ if(prev) prev.classList.remove('show'); return; }
+  atmSelectedKey=key; atmGpxAvailable=false;
+  const cat=GR_CATALOGUE.find(g=>g.key===key);
+  if(!cat) return;
+  document.getElementById('atm-prev-name').textContent=cat.name;
+  document.getElementById('atm-prev-sub').textContent=cat.sub;
+  const st=document.getElementById('atm-prev-status');
+  st.className='atm-prev-status loading';
+  st.textContent='Vérification du tracé…';
+  if(prev) prev.classList.add('show');
+  if(btn) btn.disabled=true;
+  if(cat.gpxUrl){
+    try{
+      const res=await fetch(cat.gpxUrl,{method:'HEAD'});
+      if(res.ok){
+        st.className='atm-prev-status ok';
+        st.textContent='Tracé disponible — prêt à charger';
+        atmGpxAvailable=true;
+        if(btn) btn.disabled=false;
+      }else{
+        st.className='atm-prev-status err';
+        st.textContent='Fichier GPX manquant dans /gpx/ — voyez le guide';
+      }
+    }catch(e){
+      st.className='atm-prev-status err';
+      st.textContent='Fichier GPX introuvable — ajoutez-le dans /gpx/';
+    }
+  }
+}
+
+async function confirmAddTrail(){
+  if(!atmSelectedKey||!atmGpxAvailable) return;
+  closeAddTrailModal();
+  const active=ld('active_trails')||[];
+  if(!active.includes(atmSelectedKey)) active.push(atmSelectedKey);
+  sv('active_trails',active);
+  const cat=GR_CATALOGUE.find(g=>g.key===atmSelectedKey);
+  showLoading(true,'Chargement du tracé '+cat.num+'…');
+  try{
+    const res=await fetch(cat.gpxUrl);
+    const txt=await res.text();
+    const{pts,ele,pois}=parseGPX(txt);
+    if(pts.length>5){
+      const ds=downsample(pts,ele,18);
+      sv('ref_'+atmSelectedKey,ds.pts);
+      sv('done_'+atmSelectedKey,[]);
+      sv('ele_'+atmSelectedKey,ds.ele);
+      sv('poi_'+atmSelectedKey,pois);
+      toast(cat.num+' ajouté · '+Math.round(totalKm(ds.pts))+' km');
+    }
+  }catch(e){ toast('Erreur chargement tracé'); }
+  showLoading(false);
+  refreshLibrary();
+  setTimeout(initLibMap,80);
+}
+
+async function loadCustomGPX(inp){
+  const f=inp.files[0]; if(!f) return;
+  closeAddTrailModal();
+  const active=ld('active_trails')||[];
+  if(!active.includes('custom')) active.push('custom');
+  sv('active_trails',active);
+  showLoading(true,'Chargement du tracé personnalisé…');
+  const txt=await f.text();
+  const{pts,ele,pois}=parseGPX(txt);
+  if(pts.length>5){
+    const ds=downsample(pts,ele,18);
+    sv('ref_custom',ds.pts); sv('done_custom',[]); sv('ele_custom',ds.ele); sv('poi_custom',pois);
+    toast('Tracé personnalisé chargé · '+Math.round(totalKm(ds.pts))+' km');
+  }
+  showLoading(false); inp.value='';
+  refreshLibrary(); setTimeout(initLibMap,80);
+}
+
+/* =======================================
+   PHOTO PANEL DEPUIS LE JOURNAL
+======================================= */
+function openPhotoPanelFromJournal(segIdx, date, name){
+  const key = (trail||'general')+'_'+(segIdx||0);
+  currentSegKey = key;
+  const panel = document.getElementById('photo-panel');
+  if(!panel) return;
+  // Positionner dans la sidebar
+  const sidebar = document.getElementById('sidebar');
+  const r = sidebar ? sidebar.getBoundingClientRect() : {left:0,width:280};
+  panel.style.left  = (r.left + 8)+'px';
+  panel.style.top   = '200px';
+  panel.style.width = Math.min(r.width - 16, 280)+'px';
+  panel.style.maxWidth = '280px';
+  panel.style.display = 'block';
+  document.getElementById('pp-title').textContent = name   || 'Sortie';
+  document.getElementById('pp-sub').textContent   = date   || '';
+  renderPhotoPanel();
+}
+
+/* =======================================
+   SUPPRIMER UNE ACTIVITÉ DU JOURNAL
+======================================= */
+function deleteActivity(trailKey, actId){
+  if(!confirm("Supprimer cette sortie de l'historique ?")) return;
+  const hist=(ld('hist_'+trailKey)||[]).filter(h=>h.id!=actId);
+  sv('hist_'+trailKey, hist);
+  if(trailKey===trail) renderHistory();
+  else renderHistoryAll();
+  toast('Sortie supprimée');
+}
+
+/* =======================================
+   DELETE PHOTO
+======================================= */
+function deletePhoto(key, idx){
+  const photos=ld('photos_'+key)||[];
+  photos.splice(idx,1);
+  sv('photos_'+key,photos);
+  renderPhotoPanel();
+  toast('Photo supprimée');
+}
+
+
+function drawGeneralActivities(){
+  // Optionnel: si on veut afficher les traces GPS des activités sur la vue générale
+  // Pour l'instant, on affiche les segments validés de chaque GR
+  lines.forEach(l=>mapObj.removeLayer(l)); lines=[];
+  const bounds=[];
+  Object.keys(TRAILS).forEach(t=>{
+    const rr=ld('ref_'+t), dd=ld('done_'+t);
+    if(!rr||!rr.length) return;
+    const doneSet=new Set(dd||[]);
+    const n=Math.ceil(rr.length/SEG);
+    for(let s=0;s<n;s++){
+      if(!doneSet.has(s)) continue;
+      const seg=rr.slice(s*SEG,Math.min(s*SEG+SEG+1,rr.length));
+      if(seg.length<2) continue;
+      lines.push(L.polyline(seg,{color:'#4a6050',weight:4.5,opacity:.88}).addTo(mapObj));
+      seg.forEach(p=>bounds.push(p));
+    }
+  });
+  if(bounds.length>1) mapObj.fitBounds(L.latLngBounds(bounds),{padding:[40,40]});
+}
+
 </script>
 </body>
 </html>
