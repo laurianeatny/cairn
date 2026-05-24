@@ -204,6 +204,74 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;o
 .hist-item:last-child{border-bottom:none}
 .hist-dot{width:6px;height:6px;border-radius:50%;background:var(--ghost);flex-shrink:0;margin-top:4px}
 .hist-dot.gps{background:var(--ink)}.hist-dot.gpx{background:var(--stone)}.hist-dot.strava{background:#FC4C02}
+
+/* ━━━━━━━━━━━━ MODAL AJOUTER SENTIER ━━━━━━━━━━━━ */
+#add-trail-modal{
+  display:none;position:fixed;inset:0;z-index:700;
+  background:rgba(43,42,40,.62);
+  align-items:center;justify-content:center;
+  padding:24px;
+}
+#add-trail-modal.open{display:flex}
+.atm-box{
+  background:var(--paper);
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.65' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23p)'/%3E%3C/svg%3E");
+  background-size:256px 256px;
+  max-width:520px;width:100%;
+  max-height:80vh;overflow-y:auto;
+  border:1px solid var(--ghost);
+  box-shadow:0 16px 60px rgba(43,42,40,.22);
+  animation:ppIn .22s var(--ease) both;
+}
+.atm-head{
+  padding:24px 28px 18px;
+  border-bottom:1px solid var(--ghost);
+  display:flex;align-items:flex-start;justify-content:space-between;
+}
+.atm-head-title{font-family:var(--serif);font-size:22px;font-weight:600;color:var(--ink);letter-spacing:-.01em}
+.atm-head-sub{font-family:var(--sans);font-size:11px;font-weight:300;color:var(--stone);margin-top:4px}
+.atm-close{background:none;border:none;cursor:pointer;font-size:22px;color:var(--stone);padding:0;line-height:1;flex-shrink:0}
+.atm-close:hover{color:var(--ink)}
+.atm-body{padding:22px 28px 28px}
+.atm-label{font-family:var(--sans);font-size:9px;font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:var(--stone);margin-bottom:8px}
+.atm-select{
+  width:100%;padding:11px 14px;
+  border:1px solid var(--ghost);background:var(--white);
+  font-family:var(--sans);font-size:13px;color:var(--ink);
+  outline:none;cursor:pointer;
+  appearance:none;-webkit-appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%237a6f68' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 14px center;
+  padding-right:36px;margin-bottom:18px;
+}
+.atm-select:focus{border-color:var(--accent)}
+.atm-preview{
+  padding:14px;border:1px solid var(--ghost);background:var(--white);
+  margin-bottom:18px;display:none;
+}
+.atm-preview.show{display:block}
+.atm-prev-name{font-family:var(--serif);font-size:17px;font-weight:600;color:var(--ink);margin-bottom:3px}
+.atm-prev-sub{font-family:var(--sans);font-size:11px;font-weight:300;color:var(--stone)}
+.atm-prev-status{font-family:var(--sans);font-size:10px;font-weight:400;margin-top:8px;padding:6px 10px;display:inline-flex;align-items:center;gap:6px}
+.atm-prev-status.ok{background:#edf3ea;color:var(--gr-green)}
+.atm-prev-status.loading{background:var(--mist);color:var(--stone)}
+.atm-prev-status.err{background:#fdf0ee;color:var(--gr-red)}
+.atm-actions{display:flex;gap:10px}
+.atm-btn{
+  flex:1;padding:12px 14px;border:1px solid var(--ghost);
+  font-family:var(--sans);font-size:10px;font-weight:400;letter-spacing:.18em;
+  text-transform:uppercase;cursor:pointer;transition:all .18s;
+}
+.atm-btn-primary{background:var(--accent);color:var(--white);border-color:var(--accent)}
+.atm-btn-primary:hover{background:#253649}
+.atm-btn-primary:disabled{background:var(--ghost);border-color:var(--ghost);cursor:not-allowed}
+.atm-btn-sec{background:transparent;color:var(--stone)}
+.atm-btn-sec:hover{background:var(--mist)}
+/* Photo delete */
+.pp-photo-wrap{position:relative;display:inline-block;scroll-snap-align:start}
+.pp-del{position:absolute;top:3px;right:3px;width:18px;height:18px;border-radius:50%;background:rgba(43,42,40,.7);border:none;cursor:pointer;color:#fff;font-size:11px;display:flex;align-items:center;justify-content:center;line-height:1;transition:background .15s}
+.pp-del:hover{background:rgba(177,75,63,.9)}
+
 .hist-body{flex:1;min-width:0}
 .hist-name{font-family:var(--sans);font-size:11px;font-weight:400;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .hist-meta{font-family:var(--sans);font-size:10px;font-weight:300;color:var(--stone);margin-top:2px}
@@ -499,78 +567,45 @@ input[type=file]{display:none}
   <!-- Section sentiers — sans ligne à droite -->
   <div class="lib-section-label">Sentiers</div>
 
-  <div class="gr-list">
+  <!-- gr-list généré dynamiquement par JS -->
+  <div class="gr-list" id="gr-list-container"></div>
 
-    <!-- CARTE GÉNÉRALE — entrée spéciale en tête de liste -->
-    <div class="gr-row general-row" onclick="openGeneralMap()">
-      <div class="gr-num-big" style="font-size:9px;letter-spacing:.14em;font-family:var(--sans);font-weight:500;color:var(--stone)">Vue<br>générale</div>
-      <div class="gr-row-body">
-        <div class="gr-row-name">Le grand chemin</div>
-        <div class="gr-row-sub">Tous les territoires, une seule vue</div>
-        <div class="gr-row-bar"><div class="gr-row-fill" id="fill-general" style="width:0%"></div></div>
-        <div class="gr-row-pct" id="pct-general">—</div>
+  <!-- Modal ajouter un sentier -->
+  <div id="add-trail-modal">
+    <div class="atm-box">
+      <div class="atm-head">
+        <div>
+          <div class="atm-head-title">Ajouter un sentier</div>
+          <div class="atm-head-sub">Sélectionnez un GR — le tracé se charge automatiquement</div>
+        </div>
+        <button class="atm-close" onclick="closeAddTrailModal()">×</button>
       </div>
-      <div class="gr-row-right">
-        <div class="gr-status-dot" id="dot-general"></div>
-        <div class="gr-arrow">›</div>
+      <div class="atm-body">
+        <div class="atm-label">Sentier</div>
+        <select class="atm-select" id="atm-select" onchange="onATMSelect()">
+          <option value="">— Choisissez un GR —</option>
+        </select>
+        <div class="atm-preview" id="atm-preview">
+          <div class="atm-prev-name" id="atm-prev-name">—</div>
+          <div class="atm-prev-sub" id="atm-prev-sub">—</div>
+          <div class="atm-prev-status loading" id="atm-prev-status">Vérification…</div>
+        </div>
+        <div class="atm-actions">
+          <button class="atm-btn atm-btn-sec" onclick="closeAddTrailModal()">Annuler</button>
+          <button class="atm-btn atm-btn-primary" id="atm-confirm" onclick="confirmAddTrail()" disabled>Ajouter ce sentier</button>
+        </div>
+        <div style="margin-top:18px;padding-top:14px;border-top:1px solid var(--ghost)">
+          <div class="atm-label" style="margin-bottom:10px">Ou importez votre propre fichier GPX</div>
+          <label style="display:block;padding:12px 14px;border:1px dashed var(--ghost);text-align:center;cursor:pointer;font-family:var(--sans);font-size:11px;font-weight:300;color:var(--stone);transition:all .2s" 
+                 for="fi-custom-gpx" 
+                 onmouseover="this.style.borderColor='var(--accent)'" 
+                 onmouseout="this.style.borderColor='var(--ghost)'">
+            + Charger un fichier GPX personnalisé
+          </label>
+          <input type="file" id="fi-custom-gpx" accept=".gpx" onchange="loadCustomGPX(this)" style="display:none">
+        </div>
       </div>
     </div>
-
-    <div class="gr-row" id="card-gr34" onclick="openTrail('gr34')">
-      <div class="gr-num-big">GR<br>34</div>
-      <div class="gr-row-body">
-        <div class="gr-row-name">Le Sentier des Douaniers</div>
-        <div class="gr-row-sub">GR 34 · ~2 000 km · Saint-Malo → Saint-Nazaire</div>
-        <div class="gr-row-bar"><div class="gr-row-fill" id="fill-gr34"></div></div>
-        <div class="gr-row-pct" id="pct-gr34">Tracé non chargé</div>
-      </div>
-      <div class="gr-row-right"><div class="gr-status-dot" id="dot-gr34"></div><div class="gr-arrow">›</div></div>
-    </div>
-
-    <div class="gr-row" id="card-gr10" onclick="openTrail('gr10')">
-      <div class="gr-num-big">GR<br>10</div>
-      <div class="gr-row-body">
-        <div class="gr-row-name">La Grande Traversée des Pyrénées</div>
-        <div class="gr-row-sub">GR 10 · ~900 km · Hendaye → Banyuls-sur-Mer</div>
-        <div class="gr-row-bar"><div class="gr-row-fill" id="fill-gr10"></div></div>
-        <div class="gr-row-pct" id="pct-gr10">Tracé non chargé</div>
-      </div>
-      <div class="gr-row-right"><div class="gr-status-dot" id="dot-gr10"></div><div class="gr-arrow">›</div></div>
-    </div>
-
-    <div class="gr-row" id="card-gr20" onclick="openTrail('gr20')">
-      <div class="gr-num-big">GR<br>20</div>
-      <div class="gr-row-body">
-        <div class="gr-row-name">Fra Li Monti</div>
-        <div class="gr-row-sub">GR 20 · ~180 km · Calenzana → Conca · Corse</div>
-        <div class="gr-row-bar"><div class="gr-row-fill" id="fill-gr20"></div></div>
-        <div class="gr-row-pct" id="pct-gr20">Tracé non chargé</div>
-      </div>
-      <div class="gr-row-right"><div class="gr-status-dot" id="dot-gr20"></div><div class="gr-arrow">›</div></div>
-    </div>
-
-    <div class="gr-row" id="card-gr5" onclick="openTrail('gr5')">
-      <div class="gr-num-big">GR<br>5</div>
-      <div class="gr-row-body">
-        <div class="gr-row-name">Le Sentier des Alpes</div>
-        <div class="gr-row-sub">Lac Léman → Méditerranée · ~600 km</div>
-        <div class="gr-row-bar"><div class="gr-row-fill" id="fill-gr5"></div></div>
-        <div class="gr-row-pct" id="pct-gr5">Tracé non chargé</div>
-      </div>
-      <div class="gr-row-right"><div class="gr-status-dot" id="dot-gr5"></div><div class="gr-arrow">›</div></div>
-    </div>
-
-    <div class="gr-row" id="card-custom" onclick="openTrail('custom')">
-      <div class="gr-num-big" style="color:var(--ghost);font-size:20px;font-family:var(--serif);font-weight:300">+</div>
-      <div class="gr-row-body">
-        <div class="gr-row-name" style="color:var(--stone)">Sentier libre</div>
-        <div class="gr-row-sub">Chargez n'importe quel tracé GPX · votre propre géographie</div>
-        <div class="gr-row-bar"><div class="gr-row-fill" id="fill-custom"></div></div>
-        <div class="gr-row-pct" id="pct-custom">Tracé non chargé</div>
-      </div>
-      <div class="gr-row-right"><div class="gr-status-dot" id="dot-custom"></div><div class="gr-arrow">›</div></div>
-    </div>
-
   </div>
 
   <div class="lib-footer">
@@ -760,13 +795,54 @@ const STRAVA_SCOPE         = 'activity:read_all';
 /* ═══════════════════════════════════════
    CONFIG
 ═══════════════════════════════════════ */
-const TRAILS = {
-  gr34:  {num:'GR 34', name:'Le Sentier des Douaniers',          sub:'~2 000 km · Saint-Malo → Saint-Nazaire',  label:'GR 34', title:'Sentier des Douaniers',        center:[47.8,-3.2], zoom:9},
-  gr10:  {num:'GR 10', name:'La Grande Traversée des Pyrénées', sub:'~900 km · Hendaye → Banyuls-sur-Mer',     label:'GR 10', title:'Grande Traversée des Pyrénées', center:[42.8,0.5],  zoom:9},
-  gr20:  {num:'GR 20', name:'Fra Li Monti',                     sub:'~180 km · Calenzana → Conca · Corse',     label:'GR 20', title:'Fra Li Monti',                  center:[42.1,9.1],  zoom:10},
-  gr5:   {num:'GR 5',  name:'Le Sentier des Alpes',             sub:'Lac Léman → Méditerranée · ~600 km',      label:'GR 5',  title:'Sentier des Alpes',             center:[45.5,6.8],  zoom:9},
-  custom:{num:'—',     name:'Sentier libre',                    sub:'Votre propre tracé GPX',                  label:'—',     title:'Sentier libre',                  center:[46.5,2.3],  zoom:6},
-};
+/* ═══════════════════════════════════════
+   CATALOGUE COMPLET DES GR FRANÇAIS
+   gpxUrl = chemin relatif dans le repo GitHub /gpx/
+═══════════════════════════════════════ */
+const GR_CATALOGUE = [
+  {key:'gr1',   num:'GR 1',   name:'Sentier Tour de l'Île-de-France',   sub:'~600 km · Île-de-France',                   center:[48.5,2.5],   zoom:8,  gpxUrl:'gpx/gr1.gpx'},
+  {key:'gr2',   num:'GR 2',   name:'Sentier de la Seine',                sub:'~750 km · De la source à la mer',            center:[49.0,1.5],   zoom:8,  gpxUrl:'gpx/gr2.gpx'},
+  {key:'gr3',   num:'GR 3',   name:'Sentier de la Loire',                sub:'~1 000 km · Gerbier-de-Jonc → Saint-Nazaire',center:[47.5,1.0],   zoom:7,  gpxUrl:'gpx/gr3.gpx'},
+  {key:'gr4',   num:'GR 4',   name:'Sentier Méditerranée–Océan',         sub:'~1 200 km · Grasse → Royan',                 center:[44.5,3.0],   zoom:7,  gpxUrl:'gpx/gr4.gpx'},
+  {key:'gr5',   num:'GR 5',   name:'Le Sentier des Alpes',               sub:'~600 km · Lac Léman → Méditerranée',         center:[45.5,6.8],   zoom:9,  gpxUrl:'gpx/gr5.gpx'},
+  {key:'gr7',   num:'GR 7',   name:'Vosges–Pyrénées',                    sub:'~1 400 km · Ballon d'Alsace → Andorre',     center:[45.0,3.5],   zoom:7,  gpxUrl:'gpx/gr7.gpx'},
+  {key:'gr9',   num:'GR 9',   name:'Rhône–Méditerranée',                 sub:'~500 km · Bresse → Saintes-Maries',          center:[45.0,5.5],   zoom:8,  gpxUrl:'gpx/gr9.gpx'},
+  {key:'gr10',  num:'GR 10',  name:'La Grande Traversée des Pyrénées',   sub:'~900 km · Hendaye → Banyuls-sur-Mer',        center:[42.8,0.5],   zoom:9,  gpxUrl:'gpx/gr10.gpx'},
+  {key:'gr20',  num:'GR 20',  name:'Fra Li Monti',                       sub:'~180 km · Calenzana → Conca · Corse',        center:[42.1,9.1],   zoom:10, gpxUrl:'gpx/gr20.gpx'},
+  {key:'gr34',  num:'GR 34',  name:'Le Sentier des Douaniers',           sub:'~2 000 km · Saint-Malo → Saint-Nazaire',     center:[47.8,-3.2],  zoom:9,  gpxUrl:'gpx/gr34.gpx'},
+  {key:'gr36',  num:'GR 36',  name:'Manche–Pyrénées',                    sub:'~1 200 km · Ouistreham → Hendaye',           center:[46.0,-0.5],  zoom:7,  gpxUrl:'gpx/gr36.gpx'},
+  {key:'gr51',  num:'GR 51',  name:'Tour des Alpes Maritimes',           sub:'~400 km · Menton → Menton',                  center:[43.8,7.2],   zoom:9,  gpxUrl:'gpx/gr51.gpx'},
+  {key:'gr52',  num:'GR 52',  name:'Alpes-Maritimes Intérieur',          sub:'~200 km · Menton → Saint-Dalmas',            center:[44.0,7.5],   zoom:10, gpxUrl:'gpx/gr52.gpx'},
+  {key:'gr54',  num:'GR 54',  name:'Tour de l'Oisans et des Écrins',    sub:'~180 km · Briançon · Haute Montagne',        center:[44.9,6.2],   zoom:10, gpxUrl:'gpx/gr54.gpx'},
+  {key:'gr65',  num:'GR 65',  name:'Voie de Tours — Chemin de St-Jacques',sub:'~750 km · Puy-en-Velay → Saint-Jean-Pied-de-Port',center:[44.5,2.5],zoom:8,gpxUrl:'gpx/gr65.gpx'},
+  {key:'gr70',  num:'GR 70',  name:'Chemin de Stevenson',                sub:'~270 km · Le Monastier → Alès',              center:[44.5,3.8],   zoom:9,  gpxUrl:'gpx/gr70.gpx'},
+  {key:'gr78',  num:'GR 78',  name:'Voie de Vézelay — St-Jacques',       sub:'~1 000 km · Vézelay → Hendaye',              center:[46.0,1.0],   zoom:7,  gpxUrl:'gpx/gr78.gpx'},
+  {key:'gr91',  num:'GR 91',  name:'Tour des 4 Massifs du Vercors',      sub:'~180 km · Vercors',                          center:[44.9,5.5],   zoom:10, gpxUrl:'gpx/gr91.gpx'},
+  {key:'gr92',  num:'GR 92',  name:'Tour du Diois',                      sub:'~210 km · Drôme',                            center:[44.7,5.2],   zoom:10, gpxUrl:'gpx/gr92.gpx'},
+  {key:'gr107', num:'GR 107', name:'Chemin des Bonshommes',              sub:'~170 km · Foix → Berga (Espagne)',           center:[42.8,1.8],   zoom:10, gpxUrl:'gpx/gr107.gpx'},
+  {key:'custom',num:'Libre',  name:'Sentier libre',                      sub:'Votre propre tracé GPX',                     center:[46.5,2.3],   zoom:6,  gpxUrl:null},
+];
+
+/* TRAILS actif = ce que l'utilisateur a ajouté */
+let TRAILS = {};
+
+function buildTrailsFromActive(){
+  const active = ld('active_trails') || ['gr34'];
+  TRAILS = {};
+  active.forEach(key=>{
+    const cat = GR_CATALOGUE.find(g=>g.key===key);
+    if(cat) TRAILS[key] = {
+      num:cat.num, name:cat.name, sub:cat.sub,
+      label:cat.num, title:cat.name,
+      center:cat.center, zoom:cat.zoom, gpxUrl:cat.gpxUrl
+    };
+  });
+  // toujours avoir custom
+  if(!TRAILS.custom){
+    const cat = GR_CATALOGUE.find(g=>g.key==='custom');
+    TRAILS.custom = {num:'—',name:'Sentier libre',sub:'Votre propre tracé GPX',label:'—',title:'Sentier libre',center:[46.5,2.3],zoom:6,gpxUrl:null};
+  }
+}
 const LAYERS = {
   topo:     {url:'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', attr:'© OpenStreetMap © CartoDB'},
   outdoor:  {url:'https://tile.waymarkedtrails.org/hiking/{z}/{x}/{y}.png',                  attr:'© waymarkedtrails.org'},
@@ -919,6 +995,7 @@ function showScreen(id){
 
 async function exitLanding(){
   splashDone=true;
+  buildTrailsFromActive(); // init au plus tôt
   const l=document.getElementById('landing');
   l.style.transition='opacity .7s ease';
   l.style.opacity='0';
@@ -1183,32 +1260,79 @@ function updateStats(){
    LIBRARY REFRESH
 ═══════════════════════════════════════ */
 function refreshLibrary(){
+  buildTrailsFromActive();
+  renderGRList();
   let kAll=0,gAll=0,sAll=0;
   Object.keys(TRAILS).forEach(t=>{
+    if(t==='custom') return;
     const rr=ld('ref_'+t),dd=ld('done_'+t),hist=ld('hist_'+t)||[];
-    const card=document.getElementById('card-'+t);
     if(rr&&rr.length>0){
-      card.classList.add('loaded');
       const total=Math.max(1,Math.ceil(rr.length/SEG));
       const n=(dd||[]).length,pct=Math.round(n/total*100);
       const dkm=Math.round(totalKm(rr)*n/total);
-      document.getElementById('fill-'+t).style.width=pct+'%';
-      document.getElementById('pct-'+t).textContent=pct+'% · '+dkm+' km parcourus';
       kAll+=dkm;gAll++;
-    }else{
-      card.classList.remove('loaded');
-      document.getElementById('fill-'+t).style.width='0%';
-      document.getElementById('pct-'+t).textContent='Tracé non chargé';
     }
-    sAll+=hist.length;
+    sAll+=(ld('hist_'+t)||[]).length;
   });
   document.getElementById('total-km').textContent=kAll;
   document.getElementById('total-gr').textContent=gAll;
   document.getElementById('total-sorties').textContent=sAll;
-  // Mise à jour carte générale
-  const genPct=gAll>0?Math.round(kAll/Math.max(1,kAll+(kAll>0?0:0))*100):0;
-  document.getElementById('pct-general').textContent=gAll>0?kAll+' km parcourus sur '+gAll+' sentier'+(gAll>1?'s':''):'Aucun tracé chargé';
-  if(gAll>0) document.getElementById('dot-general').style.background='var(--gr-green)';
+  // carte générale
+  const pctEl=document.getElementById('pct-general');
+  const dotEl=document.getElementById('dot-general');
+  if(pctEl) pctEl.textContent=gAll>0?kAll+' km parcourus sur '+gAll+' sentier'+(gAll>1?'s':''):'Aucun tracé chargé';
+  if(dotEl && gAll>0) dotEl.style.background='var(--gr-green)';
+}
+
+function renderGRList(){
+  const container=document.getElementById('gr-list-container');
+  if(!container) return;
+  let html='';
+  // Vue générale
+  html+=`<div class="gr-row general-row" onclick="openGeneralMap()">
+    <div class="gr-num-big" style="font-size:9px;letter-spacing:.14em;font-family:var(--sans);font-weight:500;color:var(--stone)">Vue<br>générale</div>
+    <div class="gr-row-body">
+      <div class="gr-row-name">Le grand chemin</div>
+      <div class="gr-row-sub">Tous les territoires, une seule vue</div>
+      <div class="gr-row-bar"><div class="gr-row-fill" id="fill-general" style="width:0%"></div></div>
+      <div class="gr-row-pct" id="pct-general">—</div>
+    </div>
+    <div class="gr-row-right"><div class="gr-status-dot" id="dot-general"></div><div class="gr-arrow">›</div></div>
+  </div>`;
+  // Sentiers actifs
+  Object.keys(TRAILS).forEach(t=>{
+    if(t==='custom') return;
+    const tr=TRAILS[t];
+    const rr=ld('ref_'+t),dd=ld('done_'+t);
+    const loaded=!!(rr&&rr.length>0);
+    let pctTxt='Tracé non chargé', pctW='0%';
+    if(loaded){
+      const total=Math.max(1,Math.ceil(rr.length/SEG));
+      const n=(dd||[]).length,pct=Math.round(n/total*100);
+      const dkm=Math.round(totalKm(rr)*n/total);
+      pctTxt=pct+'% · '+dkm+' km parcourus'; pctW=pct+'%';
+    }
+    html+=`<div class="gr-row${loaded?' loaded':''}" id="card-${t}" onclick="openTrail('${t}')">
+      <div class="gr-num-big">${tr.num.replace(' ','<br>')}</div>
+      <div class="gr-row-body">
+        <div class="gr-row-name">${tr.name}</div>
+        <div class="gr-row-sub">${tr.sub}</div>
+        <div class="gr-row-bar"><div class="gr-row-fill" id="fill-${t}" style="width:${pctW}"></div></div>
+        <div class="gr-row-pct${loaded?' loaded':''}" id="pct-${t}">${pctTxt}</div>
+      </div>
+      <div class="gr-row-right"><div class="gr-status-dot${loaded?' loaded':''}" id="dot-${t}" style="${loaded?'background:var(--gr-green)':''}"></div><div class="gr-arrow">›</div></div>
+    </div>`;
+  });
+  // Bouton ajouter
+  html+=`<div class="gr-row" onclick="openAddTrailModal()" style="cursor:pointer;border-top:1px solid var(--ghost)">
+    <div class="gr-num-big" style="color:var(--ghost);font-size:22px;font-family:var(--serif);font-weight:200">+</div>
+    <div class="gr-row-body">
+      <div class="gr-row-name" style="color:var(--accent)">Ajouter un sentier</div>
+      <div class="gr-row-sub">Choisir parmi tous les GR français</div>
+    </div>
+    <div class="gr-row-right"><div class="gr-arrow" style="color:var(--accent)">›</div></div>
+  </div>`;
+  container.innerHTML=html;
 }
 
 /* ═══════════════════════════════════════
@@ -1591,6 +1715,31 @@ async function stravaSyncCurrentTrail(){
       const newSegs=done.size-prev;
       newSegsTotal+=newSegs;
 
+      // Récupérer les photos Strava de l'activité
+      try{
+        const photoRes=await fetch(
+          `https://www.strava.com/api/v3/activities/${act.id}/photos?photo_sources=true&size=600`,
+          {headers:{Authorization:'Bearer '+await stravaGetValidToken()}}
+        );
+        if(photoRes.ok){
+          const photoData=await photoRes.json();
+          if(photoData&&photoData.length>0){
+            // Associer les photos au segment le plus représentatif
+            const segIdx=newSegs>0?[...done][done.size-1]:Math.floor(refPts.length/SEG/2);
+            const segKey=trail+'_'+segIdx;
+            const existing=ld('photos_'+segKey)||[];
+            for(const ph of photoData.slice(0,3)){
+              const url=ph.urls?.['600']||ph.urls?.['100'];
+              if(url&&!existing.some(e=>e.stravaUrl===url)){
+                existing.push({dataUrl:url,stravaUrl:url,fromStrava:true,
+                  date:new Date(act.start_date).toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'})});
+              }
+            }
+            sv('photos_'+segKey,existing.slice(0,6));
+          }
+        }
+      }catch(e){}
+
       hist.unshift({
         id:Date.now()+count,
         stravaId:act.id,
@@ -1598,7 +1747,8 @@ async function stravaSyncCurrentTrail(){
         date:new Date(act.start_date).toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'}),
         source:'strava',
         km:Math.round((act.distance||0)/1000),
-        newSegs
+        newSegs,
+        segIdx:newSegs>0?[...done][done.size-1]:null
       });
       count++;
     }
@@ -1680,9 +1830,12 @@ function renderPhotoPanel(){
     el.innerHTML='<div class="pp-empty">Aucune photo pour ce segment.<br>Ajoutez un souvenir.</div>';
     return;
   }
-  el.innerHTML = photos.map((p,i)=>
-    `<img class="pp-photo" src="${p.dataUrl}" title="${p.date||''}" 
-      onclick="openLightbox('${currentSegKey}',${i})">`
+  el.innerHTML = photos.map((p,i)=>`
+    <div class="pp-photo-wrap">
+      <img class="pp-photo" src="${p.dataUrl}" title="${p.date||''}" onclick="openLightbox('${currentSegKey}',${i})">
+      <button class="pp-del" onclick="event.stopPropagation();deletePhoto('${currentSegKey}',${i})" title="Supprimer">×</button>
+      ${p.fromStrava?'<div style=\'position:absolute;bottom:3px;left:3px;background:rgba(252,76,2,.85);border-radius:2px;padding:1px 4px;font-size:8px;color:#fff\'>Strava</div>':''}
+    </div>`
   ).join('');
 }
 
