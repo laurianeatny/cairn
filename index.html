@@ -995,22 +995,28 @@ function showScreen(id){
 
 async function exitLanding(){
   splashDone=true;
-  buildTrailsFromActive(); // init au plus tôt
+  buildTrailsFromActive();
   const l=document.getElementById('landing');
   l.style.transition='opacity .7s ease';
   l.style.opacity='0';
   l.style.pointerEvents='none';
   setTimeout(async()=>{
     l.style.display='none';
-    const{data:{session}}=await sb.auth.getSession();
-    if(session?.user){
-      currentUser=session.user;
-      updateUserUI(currentUser);
-      await cloudLoadAll();
-      showScreen('library');
-      refreshLibrary();
-      setTimeout(initLibMap,80);
-    }else{
+    try{
+      const resp=await sb.auth.getSession();
+      const session=resp?.data?.session;
+      if(session?.user){
+        currentUser=session.user;
+        updateUserUI(currentUser);
+        try{ await cloudLoadAll(); }catch(e){ console.warn('cloud load error',e); }
+        showScreen('library');
+        refreshLibrary();
+        setTimeout(initLibMap,80);
+      }else{
+        showScreen('authscreen');
+      }
+    }catch(e){
+      console.warn('Supabase error:',e);
       showScreen('authscreen');
     }
   },700);
