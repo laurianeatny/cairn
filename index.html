@@ -1278,16 +1278,67 @@ function setLayer(name){
   document.querySelectorAll('.mcb[id^="lb-"]').forEach(b=>b.classList.remove('on'));
   document.getElementById('lb-'+name).classList.add('on');
 }
-function draw(){
+function draw(animate=false){
   lines.forEach(l=>mapObj.removeLayer(l));lines=[];
   const n=Math.ceil(refPts.length/SEG);
+
+  if(!animate){
+    // Rendu immédiat (re-draw après import d'activité, GPS, etc.)
+    for(let s=0;s<n;s++){
+      const seg=refPts.slice(s*SEG,Math.min(s*SEG+SEG+1,refPts.length));
+      if(seg.length<2) continue;
+      const ok=done.has(s);
+      lines.push(L.polyline(seg,{color:ok?'#4a6050':'#B14B3F',weight:ok?5:3.5,opacity:ok?.90:.65}).addTo(mapObj));
+    }
+    setTimeout(attachSegmentClicks,100);
+    return;
+  }
+
+  // ── Animation progressive : d'abord le tracé complet grisé, puis les segments validés apparaissent un à un
+  // Étape 1 : afficher tout le tracé en rouge (non parcouru) immédiatement
   for(let s=0;s<n;s++){
     const seg=refPts.slice(s*SEG,Math.min(s*SEG+SEG+1,refPts.length));
     if(seg.length<2) continue;
-    const ok=done.has(s);
-    lines.push(L.polyline(seg,{color:ok?'#4a6050':'#B14B3F',weight:ok?5:3.5,opacity:ok?.90:.65}).addTo(mapObj));
+    const pl=L.polyline(seg,{color:'#B14B3F',weight:3.5,opacity:0}).addTo(mapObj);
+    lines.push(pl);
+    // Fade-in décalé segment par segment
+    const delay=s*18; // 18ms entre chaque segment = ~1s pour 60 segments
+    setTimeout(()=>{
+      if(!pl._map) return; // déjà retiré
+      const el=pl.getElement();
+      if(el){
+        el.style.transition='opacity 0.4s ease';
+        el.style.opacity='0.65';
+      }
+    }, delay);
   }
-  setTimeout(attachSegmentClicks,100);
+
+  // Étape 2 : après que tout le tracé est apparu, animer les segments validés en vert
+  const totalDelay = n*18 + 500;
+  const doneSegments=[...done].sort((a,b)=>a-b);
+  doneSegments.forEach((segIdx, i)=>{
+    setTimeout(()=>{
+      const line=lines[segIdx];
+      if(!line||!line._map) return;
+      const el=line.getElement();
+      if(el){
+        el.style.transition='stroke 0.6s ease, opacity 0.4s ease';
+        // Leaflet ne permet pas de changer la couleur via style directement,
+        // on retire et recrée avec la bonne couleur
+        mapObj.removeLayer(line);
+        const seg=refPts.slice(segIdx*SEG,Math.min(segIdx*SEG+SEG+1,refPts.length));
+        if(seg.length<2) return;
+        const newLine=L.polyline(seg,{color:'#4a6050',weight:5,opacity:0}).addTo(mapObj);
+        lines[segIdx]=newLine;
+        setTimeout(()=>{
+          const el2=newLine.getElement();
+          if(el2){ el2.style.transition='opacity 0.5s ease'; el2.style.opacity='0.90'; }
+        },30);
+      }
+    }, totalDelay + i*40); // 40ms entre chaque segment validé
+  });
+
+  setTimeout(attachSegmentClicks, totalDelay + doneSegments.length*40 + 200);
 }
 function drawPOIs(pois){
   poiMarkers.forEach(m=>mapObj.removeLayer(m));poiMarkers=[];
@@ -1456,7 +1507,8 @@ function openTrail(t){
     if(rr&&rr.length>0){
       refPts=rr;refEle=re;done=new Set(dd||[]);
       const pois=ld('poi_'+t)||[];
-      draw();drawPOIs(pois);drawAltitude(refEle);updateStats();renderHistory();
+      draw(true); // animation progressive à l'ouverture
+      drawPOIs(pois);drawAltitude(refEle);updateStats();renderHistory();
       mapObj.fitBounds(L.latLngBounds(rr));
       document.getElementById('load-overlay').style.display='none';
     }else{
@@ -2021,14 +2073,14 @@ function saveStravaTypes(){
     const cb=document.getElementById('stype-'+id);
     if(cb&&cb.checked) types.push(cb.value);
   });
-  sv('strava_activity_types', types.length ? types : null);
+  // Toujours sauvegarder, même tableau vide — null = jamais configuré
+  sv('strava_activity_types', types);
 }
 
 function loadStravaTypes(){
   const saved=ld('strava_activity_types');
   // Par défaut : Hike + Walk seulement
-  const defaults=['Hike','Walk'];
-  const active = saved || defaults;
+  const active = (saved && Array.isArray(saved)) ? saved : ['Hike','Walk'];
   ['hike','walk','trail','run','snowshoe'].forEach(id=>{
     const cb=document.getElementById('stype-'+id);
     if(cb) cb.checked=active.includes(cb.value);
@@ -2037,7 +2089,13 @@ function loadStravaTypes(){
 
 function getStravaTypes(){
   const saved=ld('strava_activity_types');
-  return saved && saved.length ? saved : ['Hike','Walk'];
+  // Si jamais configuré (null), appliquer les défauts ET les sauvegarder
+  if(!saved || !Array.isArray(saved)){
+    const defaults=['Hike','Walk'];
+    sv('strava_activity_types', defaults);
+    return defaults;
+  }
+  return saved; // peut être tableau vide = rien importer
 }
 
 /* PWA */
@@ -2067,10 +2125,13 @@ function openAddTrailModal(){
   sel.innerHTML = '<option value="">— Choisissez un GR —</option>';
   GR_CATALOGUE.forEach(g=>{
     if(g.key==='custom') return;
-    if(active.includes(g.key)) return;
     const opt=document.createElement('option');
     opt.value=g.key;
-    opt.textContent=g.num+' — '+g.name;
+    // Indiquer si déjà dans l'atlas
+    const isActive=active.includes(g.key);
+    const hasRef=!!(ld('ref_'+g.key)&&ld('ref_'+g.key).length>0);
+    const suffix = hasRef ? ' ✓' : isActive ? ' (ajouté)' : '';
+    opt.textContent=g.num+' — '+g.name+suffix;
     sel.appendChild(opt);
   });
   atmSelectedKey=null; atmGpxAvailable=false;
