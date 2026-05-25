@@ -308,8 +308,9 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;o
   background:rgba(246,243,236,.98);backdrop-filter:blur(12px);
   border:1px solid var(--ghost);
   box-shadow:0 8px 40px rgba(43,42,40,.18);
-  min-width:260px;max-width:320px;overflow:hidden;
+  width:280px;max-width:calc(100vw - 320px);overflow:hidden;
   animation:ppIn .22s var(--ease) both;
+  /* Positionné à droite de la sidebar par JS */
 }
 @keyframes ppIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 .pp-head{padding:12px 14px 10px;border-bottom:1px solid var(--ghost);display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
@@ -838,29 +839,99 @@ const GPX_BASE = (()=>{
    gpxUrl = chemin relatif dans le repo GitHub /gpx/
 ======================================= */
 const GR_CATALOGUE = [
-  {key:"gr1",   num:"GR 1",   name:"Sentier Tour de Ile-de-France",     sub:"~600 km - Ile-de-France",                     center:[48.5,2.5],  zoom:8,  get gpxUrl(){ return GPX_BASE+'gpx/gr1.gpx'   }},
-  {key:"gr2",   num:"GR 2",   name:"Sentier de la Seine",               sub:"~750 km - De la source a la mer",             center:[49.0,1.5],  zoom:8,  get gpxUrl(){ return GPX_BASE+'gpx/gr2.gpx'   }},
-  {key:"gr3",   num:"GR 3",   name:"Sentier de la Loire",               sub:"~1000 km - Gerbier-de-Jonc vers Saint-Nazaire",center:[47.5,1.0], zoom:7,  get gpxUrl(){ return GPX_BASE+'gpx/gr3.gpx'   }},
-  {key:"gr4",   num:"GR 4",   name:"Sentier Mediterranee-Ocean",        sub:"~1200 km - Grasse vers Royan",                center:[44.5,3.0],  zoom:7,  get gpxUrl(){ return GPX_BASE+'gpx/gr4.gpx'   }},
-  {key:"gr5",   num:"GR 5",   name:"Le Sentier des Alpes",              sub:"~600 km - Lac Leman vers Mediterranee",       center:[45.5,6.8],  zoom:9,  get gpxUrl(){ return GPX_BASE+'gpx/gr5.gpx'   }},
-  {key:"gr7",   num:"GR 7",   name:"Vosges-Pyrenees",                   sub:"~1400 km - Ballon d'Alsace vers Andorre",     center:[45.0,3.5],  zoom:7,  get gpxUrl(){ return GPX_BASE+'gpx/gr7.gpx'   }},
-  {key:"gr9",   num:"GR 9",   name:"Rhone-Mediterranee",                sub:"~500 km - Bresse vers Saintes-Maries",        center:[45.0,5.5],  zoom:8,  get gpxUrl(){ return GPX_BASE+'gpx/gr9.gpx'   }},
-  {key:"gr10",  num:"GR 10",  name:"La Grande Traversee des Pyrenees",  sub:"~900 km - Hendaye vers Banyuls-sur-Mer",      center:[42.8,0.5],  zoom:9,  get gpxUrl(){ return GPX_BASE+'gpx/gr10.gpx'  }},
-  {key:"gr20",  num:"GR 20",  name:"Fra Li Monti",                      sub:"~180 km - Calenzana vers Conca - Corse",      center:[42.1,9.1],  zoom:10, get gpxUrl(){ return GPX_BASE+'gpx/gr20.gpx'  }},
-  {key:"gr34",  num:"GR 34",  name:"Le Sentier des Douaniers",          sub:"~2000 km - Saint-Malo vers Saint-Nazaire",    center:[47.8,-3.2], zoom:9,  get gpxUrl(){ return GPX_BASE+'gpx/gr34.gpx'  }},
-  {key:"gr36",  num:"GR 36",  name:"Manche-Pyrenees",                   sub:"~1200 km - Ouistreham vers Hendaye",          center:[46.0,-0.5], zoom:7,  get gpxUrl(){ return GPX_BASE+'gpx/gr36.gpx'  }},
-  {key:"gr51",  num:"GR 51",  name:"Tour des Alpes Maritimes",          sub:"~400 km - Menton vers Menton",                center:[43.8,7.2],  zoom:9,  get gpxUrl(){ return GPX_BASE+'gpx/gr51.gpx'  }},
-  {key:"gr52",  num:"GR 52",  name:"Alpes-Maritimes Interieur",         sub:"~200 km - Menton vers Saint-Dalmas",          center:[44.0,7.5],  zoom:10, get gpxUrl(){ return GPX_BASE+'gpx/gr52.gpx'  }},
-  {key:"gr54",  num:"GR 54",  name:"Tour de l'Oisans et des Ecrins",    sub:"~180 km - Briancon, Haute Montagne",          center:[44.9,6.2],  zoom:10, get gpxUrl(){ return GPX_BASE+'gpx/gr54.gpx'  }},
-  {key:"gr65",  num:"GR 65",  name:"Voie de Tours - Chemin de St-Jacques",sub:"~750 km - Puy-en-Velay vers St-Jean-Pied-de-Port",center:[44.5,2.5],zoom:8,get gpxUrl(){ return GPX_BASE+'gpx/gr65.gpx'}},
-  {key:"gr70",  num:"GR 70",  name:"Chemin de Stevenson",               sub:"~270 km - Le Monastier vers Ales",            center:[44.5,3.8],  zoom:9,  get gpxUrl(){ return GPX_BASE+'gpx/gr70.gpx'  }},
-  {key:"gr78",  num:"GR 78",  name:"Voie de Vezelay - St-Jacques",      sub:"~1000 km - Vezelay vers Hendaye",             center:[46.0,1.0],  zoom:7,  get gpxUrl(){ return GPX_BASE+'gpx/gr78.gpx'  }},
-  {key:"gr91",  num:"GR 91",  name:"Tour des 4 Massifs du Vercors",     sub:"~180 km - Vercors",                           center:[44.9,5.5],  zoom:10, get gpxUrl(){ return GPX_BASE+'gpx/gr91.gpx'  }},
-  {key:"gr92",  num:"GR 92",  name:"Tour du Diois",                     sub:"~210 km - Drome",                             center:[44.7,5.2],  zoom:10, get gpxUrl(){ return GPX_BASE+'gpx/gr92.gpx'  }},
-  {key:"gr107", num:"GR 107", name:"Chemin des Bonshommes",             sub:"~170 km - Foix vers Berga (Espagne)",         center:[42.8,1.8],  zoom:10, get gpxUrl(){ return GPX_BASE+'gpx/gr107.gpx' }},
-  {key:"custom",num:"Libre",  name:"Sentier libre",                     sub:"Votre propre trace GPX",                      center:[46.5,2.3],  zoom:6,  gpxUrl:null},
-];
-
+  {key:"gr1",   num:"GR 1",   name:"Sentier de l'Ile-de-France",           sub:"~600 km · Tour de l'Ile-de-France",              center:[48.5,2.5],  zoom:8,  get gpxUrl(){return GPX_BASE+'gpx/gr1.gpx'}},
+  {key:"gr2",   num:"GR 2",   name:"Sentier de la Seine",                  sub:"~750 km · De la source à la mer",                center:[49.0,1.5],  zoom:8,  get gpxUrl(){return GPX_BASE+'gpx/gr2.gpx'}},
+  {key:"gr3",   num:"GR 3",   name:"Sentier de la Loire",                  sub:"~1000 km · Gerbier-de-Jonc → Saint-Nazaire",    center:[47.5,1.0],  zoom:7,  get gpxUrl(){return GPX_BASE+'gpx/gr3.gpx'}},
+  {key:"gr3a",  num:"GR 3A",  name:"Sentier de l'Allier",                  sub:"~200 km · Variante GR3 par l'Allier",            center:[46.5,3.2],  zoom:8,  get gpxUrl(){return GPX_BASE+'gpx/gr3a.gpx'}},
+  {key:"gr4",   num:"GR 4",   name:"Sentier Méditerranée-Océan",           sub:"~1200 km · Grasse → Royan",                     center:[44.5,3.0],  zoom:7,  get gpxUrl(){return GPX_BASE+'gpx/gr4.gpx'}},
+  {key:"gr5",   num:"GR 5",   name:"Le Sentier des Alpes",                 sub:"~600 km · Lac Léman → Méditerranée",            center:[45.5,6.8],  zoom:9,  get gpxUrl(){return GPX_BASE+'gpx/gr5.gpx'}},
+  {key:"gr6",   num:"GR 6",   name:"Alpes-Océan",                          sub:"~1200 km · Alpes → Atlantique",                 center:[44.0,4.0],  zoom:7,  get gpxUrl(){return GPX_BASE+'gpx/gr6.gpx'}},
+  {key:"gr7",   num:"GR 7",   name:"Vosges-Pyrénées",                      sub:"~1400 km · Ballon d'Alsace → Andorre",          center:[45.0,3.5],  zoom:7,  get gpxUrl(){return GPX_BASE+'gpx/gr7.gpx'}},
+  {key:"gr8",   num:"GR 8",   name:"Sentier des Gorges",                   sub:"~1000 km · Bâle → Bayonne",                     center:[45.5,2.0],  zoom:7,  get gpxUrl(){return GPX_BASE+'gpx/gr8.gpx'}},
+  {key:"gr9",   num:"GR 9",   name:"Rhône-Méditerranée",                   sub:"~500 km · Bresse → Saintes-Maries",             center:[45.0,5.5],  zoom:8,  get gpxUrl(){return GPX_BASE+'gpx/gr9.gpx'}},
+  {key:"gr10",  num:"GR 10",  name:"La Grande Traversée des Pyrénées",     sub:"~900 km · Hendaye → Banyuls-sur-Mer",          center:[42.8,0.5],  zoom:9,  get gpxUrl(){return GPX_BASE+'gpx/gr10.gpx'}},
+  {key:"gr11",  num:"GR 11",  name:"Sentier de la Haute Ariège",           sub:"~300 km · Ariège, Pyrénées",                    center:[42.7,1.6],  zoom:10, get gpxUrl(){return GPX_BASE+'gpx/gr11.gpx'}},
+  {key:"gr12",  num:"GR 12",  name:"Paris-Bruxelles",                      sub:"~450 km · Paris → Bruxelles",                   center:[49.5,3.5],  zoom:8,  get gpxUrl(){return GPX_BASE+'gpx/gr12.gpx'}},
+  {key:"gr13",  num:"GR 13",  name:"Sentier de Bourgogne",                 sub:"~500 km · Auxerre → Autun",                     center:[47.2,4.0],  zoom:9,  get gpxUrl(){return GPX_BASE+'gpx/gr13.gpx'}},
+  {key:"gr14",  num:"GR 14",  name:"Sentier des Ardennes",                 sub:"~450 km · Reims → Montmédy",                    center:[49.5,5.0],  zoom:9,  get gpxUrl(){return GPX_BASE+'gpx/gr14.gpx'}},
+  {key:"gr15",  num:"GR 15",  name:"Sentier Touristique d'Alsace",         sub:"~300 km · Alsace",                               center:[48.2,7.2],  zoom:9,  get gpxUrl(){return GPX_BASE+'gpx/gr15.gpx'}},
+  {key:"gr16",  num:"GR 16",  name:"Sentier de la Vallée du Lot",          sub:"~320 km · Source du Lot → Aiguillon",           center:[44.5,2.8],  zoom:8,  get gpxUrl(){return GPX_BASE+'gpx/gr16.gpx'}},
+  {key:"gr20",  num:"GR 20",  name:"Fra Li Monti",                         sub:"~180 km · Calenzana → Conca · Corse",           center:[42.1,9.1],  zoom:10, get gpxUrl(){return GPX_BASE+'gpx/gr20.gpx'}},
+  {key:"gr21",  num:"GR 21",  name:"Sentier des Falaises de Normandie",    sub:"~270 km · Le Havre → Le Tréport",              center:[49.8,0.8],  zoom:9,  get gpxUrl(){return GPX_BASE+'gpx/gr21.gpx'}},
+  {key:"gr22",  num:"GR 22",  name:"Paris-Mont-Saint-Michel",              sub:"~380 km · Paris → Mont-Saint-Michel",           center:[48.5,-0.5], zoom:8,  get gpxUrl(){return GPX_BASE+'gpx/gr22.gpx'}},
+  {key:"gr25",  num:"GR 25",  name:"Tour du Léman",                        sub:"~200 km · Tour du lac Léman",                   center:[46.4,6.5],  zoom:9,  get gpxUrl(){return GPX_BASE+'gpx/gr25.gpx'}},
+  {key:"gr30",  num:"GR 30",  name:"Tour des Lacs d'Auvergne",            sub:"~180 km · Autour des volcans",                   center:[45.5,2.9],  zoom:9,  get gpxUrl(){return GPX_BASE+'gpx/gr30.gpx'}},
+  {key:"gr34",  num:"GR 34",  name:"Le Sentier des Douaniers",             sub:"~2000 km · Saint-Malo → Saint-Nazaire",         center:[47.8,-3.2], zoom:9,  get gpxUrl(){return GPX_BASE+'gpx/gr34.gpx'}},
+  {key:"gr34b", num:"GR 34B", name:"Sentier des Douaniers — Presqu'île",   sub:"Variante · Presqu'île de Crozon",               center:[48.2,-4.5], zoom:10, get gpxUrl(){return GPX_BASE+'gpx/gr34b.gpx'}},
+  {key:"gr36",  num:"GR 36",  name:"Manche-Pyrénées",                      sub:"~1200 km · Ouistreham → Hendaye",               center:[46.0,-0.5], zoom:7,  get gpxUrl(){return GPX_BASE+'gpx/gr36.gpx'}},
+  {key:"gr37",  num:"GR 37",  name:"Sentier des Pays de l'Armor",          sub:"~400 km · Bretagne intérieure",                 center:[48.2,-2.8], zoom:9,  get gpxUrl(){return GPX_BASE+'gpx/gr37.gpx'}},
+  {key:"gr39",  num:"GR 39",  name:"Sentier du Pays de la Vilaine",        sub:"~250 km · Ille-et-Vilaine",                     center:[47.9,-1.8], zoom:9,  get gpxUrl(){return GPX_BASE+'gpx/gr39.gpx'}},
+  {key:"gr40",  num:"GR 40",  name:"Tour de la Haute-Loire",               sub:"~350 km · Haute-Loire",                         center:[45.0,3.8],  zoom:9,  get gpxUrl(){return GPX_BASE+'gpx/gr40.gpx'}},
+  {key:"gr46",  num:"GR 46",  name:"Sentier du Quercy",                    sub:"~280 km · Lot → Corrèze",                      center:[44.8,1.8],  zoom:9,  get gpxUrl(){return GPX_BASE+'gpx/gr46.gpx'}},
+  {key:"gr51",  num:"GR 51",  name:"Tour des Alpes Maritimes",             sub:"~400 km · Menton → Menton",                    center:[43.8,7.2],  zoom:9,  get gpxUrl(){return GPX_BASE+'gpx/gr51.gpx'}},
+  {key:"gr52",  num:"GR 52",  name:"Sentier des Merveilles",               sub:"~200 km · Menton → Saint-Dalmas",              center:[44.0,7.5],  zoom:10, get gpxUrl(){return GPX_BASE+'gpx/gr52.gpx'}},
+  {key:"gr52a", num:"GR 52A", name:"Tour du Mercantour",                   sub:"~200 km · Parc du Mercantour",                  center:[44.1,7.0],  zoom:10, get gpxUrl(){return GPX_BASE+'gpx/gr52a.gpx'}},
+  {key:"gr54",  num:"GR 54",  name:"Tour de l'Oisans et des Écrins",      sub:"~180 km · Briançon · Haute Montagne",           center:[44.9,6.2],  zoom:10, get gpxUrl(){return GPX_BASE+'gpx/gr54.gpx'}},
+  {key:"gr55",  num:"GR 55",  name:"Sentier du Vanoise",                   sub:"~150 km · Tour de la Vanoise",                  center:[45.4,6.7],  zoom:10, get gpxUrl(){return GPX_BASE+'gpx/gr55.gpx'}},
+  {key:"gr56",  num:"GR 56",  name:"Tour de l'Ubaye",                      sub:"~140 km · Barcelonnette",                       center:[44.4,6.6],  zoom:10, get gpxUrl(){return GPX_BASE+'gpx/gr56.gpx'}},
+  {key:"gr58",  num:"GR 58",  name:"Tour du Queyras",                      sub:"~110 km · Hautes-Alpes",                        center:[44.7,6.8],  zoom:10, get gpxUrl(){return GPX_BASE+'gpx/gr58.gpx'}},
+  {key:"gr59",  num:"GR 59",  name:"Sentier du Doubs et du Jura",          sub:"~250 km · Besançon → Dole",                    center:[47.2,5.8],  zoom:9,  get gpxUrl(){return GPX_BASE+'gpx/gr59.gpx'}},
+  {key:"gr60",  num:"GR 60",  name:"Tour des Cévennes",                    sub:"~200 km · Parc des Cévennes",                   center:[44.2,3.6],  zoom:9,  get gpxUrl(){return GPX_BASE+'gpx/gr60.gpx'}},
+  {key:"gr65",  num:"GR 65",  name:"Voie du Puy — Chemin de Saint-Jacques",sub:"~750 km · Le Puy-en-Velay → Saint-Jean-Pied-de-Port",center:[44.5,2.5],zoom:8,get gpxUrl(){return GPX_BASE+'gpx/gr65.gpx'}},
+  {key:"gr67",  num:"GR 67",  name:"Sentier de la Garrigue",               sub:"~200 km · Tour du Pic Saint-Loup",              center:[43.8,3.8],  zoom:9,  get gpxUrl(){return GPX_BASE+'gpx/gr67.gpx'}},
+  {key:"gr70",  num:"GR 70",  name:"Chemin de Stevenson",                  sub:"~270 km · Le Monastier → Alès",                center:[44.5,3.8],  zoom:9,  get gpxUrl(){return GPX_BASE+'gpx/gr70.gpx'}},
+  {key:"gr71",  num:"GR 71",  name:"Tour du Larzac",                       sub:"~140 km · Aveyron-Hérault",                     center:[43.9,3.1],  zoom:9,  get gpxUrl(){return GPX_BASE+'gpx/gr71.gpx'}},
+  {key:"gr74",  num:"GR 74",  name:"Sentier des Corbières",                sub:"~300 km · Aude",                                center:[43.0,2.5],  zoom:9,  get gpxUrl(){return GPX_BASE+'gpx/gr74.gpx'}},
+  {key:"gr75",  num:"GR 75",  name:"Tour du Canigou",                      sub:"~80 km · Pyrénées-Orientales",                  center:[42.5,2.5],  zoom:10, get gpxUrl(){return GPX_BASE+'gpx/gr75.gpx'}},
+  {key:"gr76",  num:"GR 76",  name:"Sentier Cathare",                      sub:"~250 km · Port-la-Nouvelle → Foix",            center:[42.9,2.0],  zoom:9,  get gpxUrl(){return GPX_BASE+'gpx/gr76.gpx'}},
+  {key:"gr78",  num:"GR 78",  name:"Voie de Vézelay — Saint-Jacques",     sub:"~1000 km · Vézelay → Hendaye",                 center:[46.0,1.0],  zoom:7,  get gpxUrl(){return GPX_BASE+'gpx/gr78.gpx'}},
+  {key:"gr80",  num:"GR 80",  name:"Sentier de la Côte Vermeille",        sub:"~80 km · Côte Catalane",                        center:[42.5,3.1],  zoom:10, get gpxUrl(){return GPX_BASE+'gpx/gr80.gpx'}},
+  {key:"gr83",  num:"GR 83",  name:"Tour de la Chartreuse",                sub:"~200 km · Massif de la Chartreuse",             center:[45.3,5.8],  zoom:9,  get gpxUrl(){return GPX_BASE+'gpx/gr83.gpx'}},
+  {key:"gr91",  num:"GR 91",  name:"Tour des 4 Massifs du Vercors",       sub:"~180 km · Vercors",                             center:[44.9,5.5],  zoom:10, get gpxUrl(){return GPX_BASE+'gpx/gr91.gpx'}},
+  {key:"gr92",  num:"GR 92",  name:"Tour du Diois",                        sub:"~210 km · Drôme",                               center:[44.7,5.2],  zoom:10, get gpxUrl(){return GPX_BASE+'gpx/gr92.gpx'}},
+  {key:"gr93",  num:"GR 93",  name:"Tour du Dévoluy",                      sub:"~160 km · Hautes-Alpes",                        center:[44.7,5.8],  zoom:10, get gpxUrl(){return GPX_BASE+'gpx/gr93.gpx'}},
+  {key:"gr96",  num:"GR 96",  name:"Tour du Viso",                         sub:"~80 km · Hautes-Alpes-Italie",                  center:[44.7,7.0],  zoom:10, get gpxUrl(){return GPX_BASE+'gpx/gr96.gpx'}},
+  {key:"gr97",  num:"GR 97",  name:"Sentier de la Côte d'Azur",           sub:"~250 km · Nice → Toulon",                      center:[43.6,6.5],  zoom:9,  get gpxUrl(){return GPX_BASE+'gpx/gr97.gpx'}},
+  {key:"gr98",  num:"GR 98",  name:"Sentier du Parc des Calanques",        sub:"~100 km · Marseille → Cassis",                 center:[43.2,5.4],  zoom:10, get gpxUrl(){return GPX_BASE+'gpx/gr98.gpx'}},
+  {key:"gr99",  num:"GR 99",  name:"Sentier du Luberon",                   sub:"~200 km · Tour du Luberon",                     center:[43.8,5.3],  zoom:9,  get gpxUrl(){return GPX_BASE+'gpx/gr99.gpx'}},
+  {key:"gr102", num:"GR 102", name:"Tour du Mont Ventoux",                 sub:"~170 km · Vaucluse",                            center:[44.2,5.3],  zoom:9,  get gpxUrl(){return GPX_BASE+'gpx/gr102.gpx'}},
+  {key:"gr107", num:"GR 107", name:"Chemin des Bonshommes",                sub:"~170 km · Foix → Berga",                       center:[42.8,1.8],  zoom:10, get gpxUrl(){return GPX_BASE+'gpx/gr107.gpx'}},
+  {key:"gr120", num:"GR 120", name:"Sentier du Littoral Picard",           sub:"~120 km · Baie de Somme → Dunkerque",          center:[50.4,1.8],  zoom:9,  get gpxUrl(){return GPX_BASE+'gpx/gr120.gpx'}},
+  {key:"gr121", num:"GR 121", name:"Sentier des Deux-Mers",                sub:"~800 km · Royan → Sète",                       center:[44.0,1.0],  zoom:7,  get gpxUrl(){return GPX_BASE+'gpx/gr121.gpx'}},
+  {key:"gr123", num:"GR 123", name:"Sentier du Littoral Nord",             sub:"~300 km · Calais → Bray-Dunes",                center:[50.8,2.5],  zoom:9,  get gpxUrl(){return GPX_BASE+'gpx/gr123.gpx'}},
+  {key:"gr125", num:"GR 125", name:"Sentier des Ardennes",                 sub:"~300 km · Ardennes belges et françaises",      center:[49.8,5.0],  zoom:9,  get gpxUrl(){return GPX_BASE+'gpx/gr125.gpx'}},
+  {key:"gr141", num:"GR 141", name:"Sentier de la Moselle",                sub:"~200 km · Moselle-Lorraine",                   center:[48.5,6.2],  zoom:9,  get gpxUrl(){return GPX_BASE+'gpx/gr141.gpx'}},
+  {key:"gr142", num:"GR 142", name:"Sentier des Vosges du Nord",           sub:"~160 km · Parc des Vosges du Nord",            center:[49.0,7.5],  zoom:9,  get gpxUrl(){return GPX_BASE+'gpx/gr142.gpx'}},
+  {key:"gr145", num:"GR 145", name:"Via Francigena",                       sub:"~550 km · Calais → Grand-Saint-Bernard",       center:[49.5,3.0],  zoom:7,  get gpxUrl(){return GPX_BASE+'gpx/gr145.gpx'}},
+  {key:"gr221", num:"GR 221", name:"Sentier des Châteaux Forts d'Alsace", sub:"~100 km · Alsace",                             center:[48.3,7.4],  zoom:10, get gpxUrl(){return GPX_BASE+'gpx/gr221.gpx'}},
+  {key:"gr300", num:"GR 300", name:"Sentier de la Creuse",                 sub:"~180 km · Creuse",                             center:[46.0,2.0],  zoom:9,  get gpxUrl(){return GPX_BASE+'gpx/gr300.gpx'}},
+  {key:"gr340", num:"GR 340", name:"Tour de l'île d'Oléron",              sub:"~130 km · Île d'Oléron",                       center:[45.9,-1.3], zoom:10, get gpxUrl(){return GPX_BASE+'gpx/gr340.gpx'}},
+  {key:"gr360", num:"GR 360", name:"Chemin des Marais",                    sub:"~200 km · Marais poitevin",                    center:[46.4,-0.8], zoom:9,  get gpxUrl(){return GPX_BASE+'gpx/gr360.gpx'}},
+  {key:"gr380", num:"GR 380", name:"Tour de l'île de Groix",              sub:"~45 km · Île de Groix",                        center:[47.6,-3.5], zoom:12, get gpxUrl(){return GPX_BASE+'gpx/gr380.gpx'}},
+  {key:"gr400", num:"GR 400", name:"Tour du Massif du Cantal",            sub:"~200 km · Auvergne · Volcans",                 center:[45.1,2.7],  zoom:9,  get gpxUrl(){return GPX_BASE+'gpx/gr400.gpx'}},
+  {key:"gr406", num:"GR 406", name:"Sentier des Monts du Forez",           sub:"~170 km · Loire-Puy-de-Dôme",                 center:[45.7,3.7],  zoom:9,  get gpxUrl(){return GPX_BASE+'gpx/gr406.gpx'}},
+  {key:"gr412", num:"GR 412", name:"Tour de la Margeride",                 sub:"~200 km · Lozère-Cantal",                     center:[44.9,3.4],  zoom:9,  get gpxUrl(){return GPX_BASE+'gpx/gr412.gpx'}},
+  {key:"gr429", num:"GR 429", name:"Sentier de l'Aubrac",                 sub:"~180 km · Aveyron-Lozère",                    center:[44.6,3.0],  zoom:9,  get gpxUrl(){return GPX_BASE+'gpx/gr429.gpx'}},
+  {key:"gr430", num:"GR 430", name:"Tour des Monts d'Auvergne",           sub:"~500 km · Auvergne",                          center:[45.5,3.0],  zoom:8,  get gpxUrl(){return GPX_BASE+'gpx/gr430.gpx'}},
+  {key:"gr462", num:"GR 462", name:"Tour des Gorges de la Truyère",       sub:"~150 km · Aveyron-Cantal",                    center:[44.8,3.0],  zoom:9,  get gpxUrl(){return GPX_BASE+'gpx/gr462.gpx'}},
+  {key:"gr502", num:"GR 502", name:"Sentier de l'Ardèche",                sub:"~200 km · Ardèche",                           center:[44.7,4.2],  zoom:9,  get gpxUrl(){return GPX_BASE+'gpx/gr502.gpx'}},
+  {key:"gr563", num:"GR 563", name:"Sentier du Piémont Pyrénéen",         sub:"~200 km · Piémont des Pyrénées",              center:[43.3,0.5],  zoom:9,  get gpxUrl(){return GPX_BASE+'gpx/gr563.gpx'}},
+  {key:"gr569", num:"GR 569", name:"Tour de la Montagne Basque",          sub:"~150 km · Pays Basque",                       center:[43.2,-1.2], zoom:9,  get gpxUrl(){return GPX_BASE+'gpx/gr569.gpx'}},
+  {key:"gr601", num:"GR 601", name:"Sentier de la Haute Corrèze",         sub:"~200 km · Corrèze",                           center:[45.4,2.2],  zoom:9,  get gpxUrl(){return GPX_BASE+'gpx/gr601.gpx'}},
+  {key:"gr621", num:"GR 621", name:"Tour du Pays d'Auge",                 sub:"~200 km · Normandie",                         center:[49.2,0.2],  zoom:9,  get gpxUrl(){return GPX_BASE+'gpx/gr621.gpx'}},
+  {key:"gr645", num:"GR 645", name:"Voie de Tours — Saint-Jacques",       sub:"~600 km · Tours → Saint-Jean-Pied-de-Port",  center:[47.0,0.5],  zoom:8,  get gpxUrl(){return GPX_BASE+'gpx/gr645.gpx'}},
+  {key:"gr647", num:"GR 647", name:"Voie Limousine — Saint-Jacques",      sub:"~400 km · Vézelay → Limoges",                center:[45.8,2.0],  zoom:8,  get gpxUrl(){return GPX_BASE+'gpx/gr647.gpx'}},
+  {key:"gr648", num:"GR 648", name:"Voie d'Arles — Saint-Jacques",        sub:"~750 km · Arles → Roncevaux",                center:[43.8,3.0],  zoom:7,  get gpxUrl(){return GPX_BASE+'gpx/gr648.gpx'}},
+  {key:"gr653", num:"GR 653", name:"Voie d'Arles",                        sub:"~800 km · Arles → Roncevaux",                center:[43.7,3.5],  zoom:7,  get gpxUrl(){return GPX_BASE+'gpx/gr653.gpx'}},
+  {key:"gr654", num:"GR 654", name:"Voie de Vézelay",                     sub:"~900 km · Namur → Saint-Jean-Pied-de-Port",  center:[47.1,3.7],  zoom:8,  get gpxUrl(){return GPX_BASE+'gpx/gr654.gpx'}},
+  {key:"gr670", num:"GR 670", name:"Chemin d'Oz — Saint-Jacques",         sub:"~350 km · Clermont-Ferrand → Conques",       center:[45.0,3.0],  zoom:8,  get gpxUrl(){return GPX_BASE+'gpx/gr670.gpx'}},
+  {key:"gr720", num:"GR 720", name:"Tour du Beaujolais",                   sub:"~200 km · Beaujolais-Mâconnais",             center:[46.0,4.5],  zoom:9,  get gpxUrl(){return GPX_BASE+'gpx/gr720.gpx'}},
+  {key:"gr738", num:"GR 738", name:"Tour du Vercors",                      sub:"~180 km · Vercors",                          center:[45.0,5.4],  zoom:9,  get gpxUrl(){return GPX_BASE+'gpx/gr738.gpx'}},
+  {key:"gr760", num:"GR 760", name:"Tour de la Chartreuse",                sub:"~180 km · Isère-Savoie",                    center:[45.3,5.8],  zoom:9,  get gpxUrl(){return GPX_BASE+'gpx/gr760.gpx'}},
+  {key:"gr770", num:"GR 770", name:"Tour du Bugey",                        sub:"~230 km · Ain",                              center:[45.8,5.6],  zoom:9,  get gpxUrl(){return GPX_BASE+'gpx/gr770.gpx'}},
+  {key:"tmb",   num:"TMB",    name:"Tour du Mont-Blanc",                   sub:"~170 km · France-Italie-Suisse",            center:[45.9,6.9],  zoom:10, get gpxUrl(){return GPX_BASE+'gpx/tmb.gpx'}},
+  {key:"custom",num:"Libre",  name:"Sentier libre",                        sub:"Votre propre tracé GPX",                    center:[46.5,2.3],  zoom:6,  gpxUrl:null},
+]
 /* TRAILS actif = ce que l'utilisateur a ajouté */
 let TRAILS = {};
 
@@ -1279,66 +1350,67 @@ function setLayer(name){
   document.getElementById('lb-'+name).classList.add('on');
 }
 function draw(animate=false){
-  lines.forEach(l=>mapObj.removeLayer(l));lines=[];
+  lines.forEach(l=>mapObj.removeLayer(l));
+  lines=[];
+  const segMap={}; // segIndex → polyline, évite les décalages d'index
   const n=Math.ceil(refPts.length/SEG);
 
   if(!animate){
-    // Rendu immédiat (re-draw après import d'activité, GPS, etc.)
     for(let s=0;s<n;s++){
       const seg=refPts.slice(s*SEG,Math.min(s*SEG+SEG+1,refPts.length));
       if(seg.length<2) continue;
       const ok=done.has(s);
-      lines.push(L.polyline(seg,{color:ok?'#4a6050':'#B14B3F',weight:ok?5:3.5,opacity:ok?.90:.65}).addTo(mapObj));
+      const pl=L.polyline(seg,{color:ok?'#4a6050':'#B14B3F',weight:ok?5:3.5,opacity:ok?.90:.65}).addTo(mapObj);
+      lines.push(pl);
+      segMap[s]=pl;
     }
+    window._segMap=segMap;
     setTimeout(attachSegmentClicks,100);
     return;
   }
 
-  // ── Animation progressive : d'abord le tracé complet grisé, puis les segments validés apparaissent un à un
-  // Étape 1 : afficher tout le tracé en rouge (non parcouru) immédiatement
+  // Animation progressive
+  // Étape 1 : tracé complet en rouge, fade-in segment par segment
+  let drawIdx=0;
   for(let s=0;s<n;s++){
     const seg=refPts.slice(s*SEG,Math.min(s*SEG+SEG+1,refPts.length));
     if(seg.length<2) continue;
     const pl=L.polyline(seg,{color:'#B14B3F',weight:3.5,opacity:0}).addTo(mapObj);
     lines.push(pl);
-    // Fade-in décalé segment par segment
-    const delay=s*18; // 18ms entre chaque segment = ~1s pour 60 segments
-    setTimeout(()=>{
-      if(!pl._map) return; // déjà retiré
-      const el=pl.getElement();
-      if(el){
-        el.style.transition='opacity 0.4s ease';
-        el.style.opacity='0.65';
-      }
-    }, delay);
+    segMap[s]=pl;
+    const delay=drawIdx*14;
+    drawIdx++;
+    setTimeout((p)=>{
+      if(!p._map) return;
+      const el=p.getElement();
+      if(el){ el.style.transition='opacity 0.35s ease'; el.style.opacity='0.65'; }
+    }, delay, pl);
   }
 
-  // Étape 2 : après que tout le tracé est apparu, animer les segments validés en vert
-  const totalDelay = n*18 + 500;
+  // Étape 2 : segments validés basculent en vert après que tout est apparu
+  const totalDelay=drawIdx*14+400;
   const doneSegments=[...done].sort((a,b)=>a-b);
-  doneSegments.forEach((segIdx, i)=>{
+  doneSegments.forEach((segIdx,i)=>{
     setTimeout(()=>{
-      const line=lines[segIdx];
-      if(!line||!line._map) return;
-      const el=line.getElement();
-      if(el){
-        el.style.transition='stroke 0.6s ease, opacity 0.4s ease';
-        // Leaflet ne permet pas de changer la couleur via style directement,
-        // on retire et recrée avec la bonne couleur
-        mapObj.removeLayer(line);
-        const seg=refPts.slice(segIdx*SEG,Math.min(segIdx*SEG+SEG+1,refPts.length));
-        if(seg.length<2) return;
-        const newLine=L.polyline(seg,{color:'#4a6050',weight:5,opacity:0}).addTo(mapObj);
-        lines[segIdx]=newLine;
-        setTimeout(()=>{
-          const el2=newLine.getElement();
-          if(el2){ el2.style.transition='opacity 0.5s ease'; el2.style.opacity='0.90'; }
-        },30);
-      }
-    }, totalDelay + i*40); // 40ms entre chaque segment validé
+      const oldLine=segMap[segIdx];
+      if(!oldLine||!oldLine._map) return;
+      mapObj.removeLayer(oldLine);
+      const seg=refPts.slice(segIdx*SEG,Math.min(segIdx*SEG+SEG+1,refPts.length));
+      if(seg.length<2) return;
+      const newLine=L.polyline(seg,{color:'#4a6050',weight:5,opacity:0}).addTo(mapObj);
+      segMap[segIdx]=newLine;
+      // Remplacer aussi dans lines[]
+      const li=lines.indexOf(oldLine);
+      if(li>=0) lines[li]=newLine;
+      setTimeout(()=>{
+        const el=newLine.getElement();
+        if(el){ el.style.transition='opacity 0.5s ease'; el.style.opacity='0.90'; }
+      },30);
+    }, totalDelay+i*35);
   });
 
-  setTimeout(attachSegmentClicks, totalDelay + doneSegments.length*40 + 200);
+  window._segMap=segMap;
+  setTimeout(attachSegmentClicks, totalDelay+doneSegments.length*35+200);
 }
 function drawPOIs(pois){
   poiMarkers.forEach(m=>mapObj.removeLayer(m));poiMarkers=[];
@@ -2235,16 +2307,24 @@ function openPhotoPanelFromJournal(segIdx, date, name, event){
   currentSegKey = key;
   const panel = document.getElementById('photo-panel');
   if(!panel) return;
-  // Positionner dans la sidebar
+  // Positionner À DROITE de la sidebar, pas dessus
   const sidebar = document.getElementById('sidebar');
-  const r = sidebar ? sidebar.getBoundingClientRect() : {left:0,width:280};
-  panel.style.left  = (r.left + 8)+'px';
-  panel.style.top   = '200px';
-  panel.style.width = Math.min(r.width - 16, 280)+'px';
-  panel.style.maxWidth = '280px';
+  const r = sidebar ? sidebar.getBoundingClientRect() : {right:280,top:0,height:window.innerHeight};
+  const panelW = 280;
+  const spaceRight = window.innerWidth - r.right;
+  if(spaceRight >= panelW + 16){
+    // Assez de place à droite de la sidebar
+    panel.style.left  = (r.right + 8)+'px';
+    panel.style.top   = Math.max(80, r.top + 60)+'px';
+  } else {
+    // Sur mobile ou sidebar trop large : panneau flottant centré sur la carte
+    panel.style.left  = (r.right + 8)+'px';
+    panel.style.top   = '80px';
+  }
+  panel.style.width = panelW+'px';
   panel.style.display = 'block';
-  document.getElementById('pp-title').textContent = name   || 'Sortie';
-  document.getElementById('pp-sub').textContent   = date   || '';
+  document.getElementById('pp-title').textContent = name || 'Sortie';
+  document.getElementById('pp-sub').textContent   = date || '';
   renderPhotoPanel();
 }
 
