@@ -205,6 +205,36 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;o
 .hist-dot{width:6px;height:6px;border-radius:50%;background:var(--ghost);flex-shrink:0;margin-top:4px}
 .hist-dot.gps{background:var(--ink)}.hist-dot.gpx{background:var(--stone)}.hist-dot.strava{background:#FC4C02}
 
+/* ━━━━━━━━━━━━ USER MENU DROPDOWN ━━━━━━━━━━━━ */
+#user-menu{
+  display:none;position:fixed;z-index:600;
+  background:var(--paper);
+  border:1px solid var(--ghost);
+  box-shadow:0 8px 32px rgba(43,42,40,.14);
+  min-width:200px;
+  animation:ppIn .18s var(--ease) both;
+}
+#user-menu.open{display:block}
+.um-header{
+  padding:14px 16px 12px;
+  border-bottom:1px solid var(--ghost);
+}
+.um-name{font-family:var(--serif);font-size:15px;font-weight:600;color:var(--ink);letter-spacing:-.01em}
+.um-email{font-family:var(--sans);font-size:10px;font-weight:300;color:var(--stone);margin-top:2px;letter-spacing:.02em}
+.um-item{
+  display:flex;align-items:center;gap:10px;
+  padding:11px 16px;
+  font-family:var(--sans);font-size:12px;font-weight:400;color:var(--ink);
+  cursor:pointer;transition:background .15s;
+  border:none;background:none;width:100%;text-align:left;
+}
+.um-item:hover{background:var(--mist)}
+.um-item-icon{font-size:14px;width:18px;text-align:center;flex-shrink:0}
+.um-sep{height:1px;background:var(--ghost);margin:4px 0}
+.um-item.danger{color:var(--gr-red)}
+.um-item.danger:hover{background:#fdf0ee}
+
+
 /* ━━━━━━━━━━━━ MODAL AJOUTER SENTIER ━━━━━━━━━━━━ */
 #add-trail-modal{
   display:none;position:fixed;inset:0;z-index:700;
@@ -571,6 +601,24 @@ input[type=file]{display:none}
   <!-- gr-list généré dynamiquement par JS -->
   <div class="gr-list" id="gr-list-container"></div>
 
+
+  <!-- User menu dropdown -->
+  <div id="user-menu">
+    <div class="um-header">
+      <div class="um-name" id="um-name">—</div>
+      <div class="um-email" id="um-email">—</div>
+    </div>
+    <button class="um-item" onclick="openSettings()">
+      <span class="um-item-icon">⚙️</span> Paramètres
+    </button>
+    <button class="um-item" onclick="closeUserMenu()">
+      <span class="um-item-icon">📊</span> Mes statistiques
+    </button>
+    <div class="um-sep"></div>
+    <button class="um-item danger" onclick="doLogout()">
+      <span class="um-item-icon">↩</span> Se déconnecter
+    </button>
+  </div>
   <!-- Modal ajouter un sentier -->
   <div id="add-trail-modal">
     <div class="atm-box">
@@ -1067,7 +1115,42 @@ async function logout(){
   toast('Déconnectée');
 }
 function showUserMenu(){
-  if(confirm('Se déconnecter de Cairn ?')) logout();
+  const menu = document.getElementById('user-menu');
+  const pill = document.querySelector('.user-pill');
+  if(!menu||!pill) return;
+  if(menu.classList.contains('open')){ closeUserMenu(); return; }
+  // Positionner sous le pill
+  const r = pill.getBoundingClientRect();
+  menu.style.top  = (r.bottom + 6) + 'px';
+  menu.style.right = (window.innerWidth - r.right) + 'px';
+  menu.classList.add('open');
+  // Mettre à jour les infos user
+  if(currentUser){
+    const email = currentUser.email||'';
+    document.getElementById('um-name').textContent = email.split('@')[0];
+    document.getElementById('um-email').textContent = email;
+  }
+  setTimeout(()=>document.addEventListener('click', closeOnClickOutside, {once:true}), 50);
+}
+
+function closeOnClickOutside(e){
+  const menu=document.getElementById('user-menu');
+  if(menu && !menu.contains(e.target)) closeUserMenu();
+}
+
+function closeUserMenu(){
+  const menu=document.getElementById('user-menu');
+  if(menu) menu.classList.remove('open');
+}
+
+function doLogout(){
+  closeUserMenu();
+  logout();
+}
+
+function openSettings(){
+  closeUserMenu();
+  toast('Paramètres — bientôt disponible');
 }
 function updateUserUI(user){
   const email=user.email||'';
@@ -1178,24 +1261,33 @@ function openGeneralMap(){
     lines.forEach(l=>mapObj.removeLayer(l));lines=[];
     poiMarkers.forEach(m=>mapObj.removeLayer(m));poiMarkers=[];
     if(posMarker){mapObj.removeLayer(posMarker);posMarker=null;}
-    // Afficher UNIQUEMENT les segments validés (pas les tracés complets)
+    // Afficher les segments validés sur chaque GR
     const bounds=[];
     let totalKmAll=0, totalSegAll=0;
     Object.keys(TRAILS).forEach(t=>{
       const rr=ld('ref_'+t), dd=ld('done_'+t);
       if(!rr||!rr.length) return;
       const doneSet=new Set(dd||[]);
-      if(!doneSet.size) return; // rien de validé sur ce GR
       const n=Math.ceil(rr.length/SEG);
+      // Tracé gris clair pour les segments non faits
       for(let s=0;s<n;s++){
-        if(!doneSet.has(s)) continue; // SEULEMENT les segments faits
+        if(doneSet.has(s)) continue;
+        const seg=rr.slice(s*SEG,Math.min(s*SEG+SEG+1,rr.length));
+        if(seg.length<2) continue;
+        lines.push(L.polyline(seg,{color:'#C8C2B8',weight:2,opacity:.4}).addTo(mapObj));
+        seg.forEach(p=>bounds.push(p));
+      }
+      // Tracé vert pour les segments faits
+      for(let s=0;s<n;s++){
+        if(!doneSet.has(s)) continue;
         const seg=rr.slice(s*SEG,Math.min(s*SEG+SEG+1,rr.length));
         if(seg.length<2) continue;
         lines.push(L.polyline(seg,{color:'#4a6050',weight:4.5,opacity:.88}).addTo(mapObj));
-        seg.forEach(p=>bounds.push(p));
       }
-      totalKmAll+=Math.round(totalKm(rr)*doneSet.size/Math.max(1,n));
-      totalSegAll+=doneSet.size;
+      if(doneSet.size>0){
+        totalKmAll+=Math.round(totalKm(rr)*doneSet.size/Math.max(1,n));
+        totalSegAll+=doneSet.size;
+      }
     });
     if(bounds.length>1) mapObj.fitBounds(L.latLngBounds(bounds),{padding:[40,40]});
     else mapObj.setView([46.5,2.3],6);
@@ -1232,14 +1324,14 @@ function renderHistoryAll(){
     el.innerHTML='<div class="hist-empty">Aucune sortie enregistrée.<br>Connectez Strava pour importer vos activités.</div>';
     return;
   }
-  el.innerHTML=all.slice(0,50).map(h=>`
-    <div class="hist-item">
+  el.innerHTML=all.slice(0,50).map((h,i)=>`
+    <div class="hist-item" style="cursor:pointer" onclick="openPhotoPanelFromJournal(${h.segIdx||i},'${(h.date||'').replace(/'/g,'')}','${(h.name||'').replace(/'/g,'').replace(/"/g,'')}')">
       <div class="hist-dot ${h.source||'gpx'}"></div>
       <div class="hist-body">
         <div class="hist-name">${h.trailName?'<span style="color:var(--accent);font-size:9px;letter-spacing:.1em;text-transform:uppercase;margin-right:6px">'+h.trailName+'</span>':''}${h.name||''}</div>
         <div class="hist-meta">${h.date||''}${h.km?' · '+h.km+' km':''}</div>
       </div>
-      <div style="display:flex;align-items:center;gap:4px;flex-shrink:0">
+      <div style="display:flex;align-items:center;gap:4px;flex-shrink:0" onclick="event.stopPropagation()">
         ${h.newSegs>0?'<div class="hist-tag">+'+h.newSegs+'</div>':''}
         <button onclick="deleteGeneralActivity(${h.id||0},this.dataset.sid)" data-sid="${h.stravaId||''}" title="Supprimer" style="background:none;border:none;cursor:pointer;color:#C8C2B8;font-size:14px;padding:2px 4px">×</button>
       </div>
@@ -1878,11 +1970,22 @@ function updateStravaUI(){
 async function stravaFetchActivities(afterTimestamp=null){
   const token=await stravaGetValidToken();
   if(!token) return [];
-  let url='https://www.strava.com/api/v3/athlete/activities?per_page=50';
-  if(afterTimestamp) url+=`&after=${afterTimestamp}`;
-  const res=await fetch(url,{headers:{Authorization:'Bearer '+token}});
-  if(!res.ok) return [];
-  return await res.json();
+  const all=[];
+  let page=1;
+  while(true){
+    let url=`https://www.strava.com/api/v3/athlete/activities?per_page=200&page=${page}`;
+    if(afterTimestamp && afterTimestamp>0) url+=`&after=${afterTimestamp}`;
+    const res=await fetch(url,{headers:{Authorization:'Bearer '+token}});
+    if(!res.ok) break;
+    const batch=await res.json();
+    if(!batch||!batch.length) break;
+    all.push(...batch);
+    if(batch.length<200) break; // dernière page
+    page++;
+    // Sécurité : max 10 pages (2000 activités)
+    if(page>10) break;
+  }
+  return all;
 }
 
 /* ── Fetch GPS stream for one activity ── */
@@ -1906,7 +2009,7 @@ async function stravaSyncCurrentTrail(){
 
   // Chercher depuis la dernière sync (ou 90 jours)
   const lastSync=ld('strava_last_sync_'+trail)||null;
-  const after=lastSync || Math.floor((Date.now()-365*24*60*60*1000)/1000); // 1 an
+  const after=lastSync || 0; // Depuis le début (toutes les activités)
 
   try{
     const activities=await stravaFetchActivities(after);
