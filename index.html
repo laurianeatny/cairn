@@ -102,14 +102,14 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;o
 
 /* ━━━━━━━━━━━━ LIBRARY ━━━━━━━━━━━━ */
 #library{flex-direction:column;overflow:hidden;background-color:var(--paper);background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.65' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23p)'/%3E%3C/svg%3E");background-size:256px 256px}
-.lib-top{padding:56px 56px 0;display:flex;align-items:flex-end;justify-content:space-between;flex-shrink:0;gap:24px;flex-wrap:wrap}
-@media(max-width:640px){.lib-top{padding:36px 24px 0}}
+
+@media(max-width:640px){}
 .lib-left{}
-.lib-wordmark{font-family:var(--serif);font-size:clamp(52px,8vw,96px);font-weight:700;color:var(--ink);letter-spacing:-.03em;line-height:.88;margin-bottom:12px}
-.lib-desc{font-family:var(--serif);font-size:clamp(15px,1.6vw,18px);font-weight:400;font-style:italic;color:var(--ink-mid);line-height:1.5;letter-spacing:.01em}
-.lib-stats-right{display:flex;gap:36px;padding-bottom:6px;flex-shrink:0;align-items:flex-end}
-.lib-stat-v{font-family:var(--serif);font-size:36px;font-weight:500;color:var(--ink);letter-spacing:-.02em;line-height:1}
-.lib-stat-l{font-family:var(--sans);font-size:10px;font-weight:400;letter-spacing:.16em;text-transform:uppercase;color:var(--stone);margin-top:4px}
+
+
+
+
+
 /* user pill */
 .user-pill{display:flex;align-items:center;gap:8px;padding:7px 12px 7px 9px;border:1px solid var(--ghost);background:var(--white);cursor:pointer;font-family:var(--sans);font-size:10px;font-weight:400;color:var(--stone);letter-spacing:.06em;transition:all .15s;align-self:flex-start;margin-top:8px}
 .user-pill:hover{border-color:var(--stone);color:var(--ink)}
@@ -117,17 +117,17 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;o
 .sync-dot{width:5px;height:5px;border-radius:50%;background:var(--ghost);flex-shrink:0;margin-left:2px}
 .sync-dot.ok{background:var(--gr-green)}
 .sync-dot.syncing{background:var(--stone);animation:breathe .8s ease-in-out infinite}
-.lib-rule{width:calc(100% - 112px);height:1px;background:var(--ghost);margin:32px 56px 0;flex-shrink:0}
-@media(max-width:640px){.lib-rule{width:calc(100% - 48px);margin:24px 24px 0}}
-.lib-map-wrap{margin:28px 56px 0;height:240px;border:1px solid var(--ghost);overflow:hidden;flex-shrink:0;position:relative}
-@media(max-width:640px){.lib-map-wrap{margin:20px 24px 0;height:180px}}
-#lib-map{width:100%;height:100%}
-.lib-map-label{position:absolute;top:12px;left:12px;z-index:500;font-family:var(--sans);font-size:9px;font-weight:400;letter-spacing:.22em;text-transform:uppercase;color:var(--ink);background:rgba(246,243,236,.92);padding:5px 10px;border:1px solid var(--ghost);pointer-events:none}
+
+@media(max-width:640px){}
+
+@media(max-width:640px){}
+
+
 /* Section label — ligne droite retirée */
-.lib-section-label{padding:36px 56px 20px;font-family:var(--sans);font-size:10px;font-weight:500;letter-spacing:.24em;text-transform:uppercase;color:var(--ink-mid);flex-shrink:0}
-@media(max-width:640px){.lib-section-label{padding:28px 24px 16px}}
-.gr-list{padding:0 56px 20px;display:flex;flex-direction:column;flex-shrink:0}
-@media(max-width:640px){.gr-list{padding:0 24px 16px}}
+
+@media(max-width:640px){}
+
+@media(max-width:640px){}
 .gr-row{display:grid;grid-template-columns:64px 1fr auto;align-items:center;gap:24px;padding:20px 0;border-bottom:1px solid var(--ghost);cursor:pointer;transition:background .2s}
 .gr-row:first-child{border-top:1px solid var(--ghost)}
 .gr-row:hover .gr-row-name{color:var(--accent)}
@@ -148,9 +148,9 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;o
 .gr-row.loaded .gr-status-dot{background:var(--gr-green)}
 .gr-arrow{font-family:var(--serif);font-size:20px;font-weight:300;color:var(--ghost)}
 .gr-row.loaded .gr-arrow{color:var(--stone)}
-.lib-footer{padding:20px 56px 56px;font-family:var(--sans);font-size:12px;font-weight:400;color:var(--stone);line-height:2.2;flex-shrink:0}
-@media(max-width:640px){.lib-footer{padding:16px 24px 48px}}
-.lib-footer a{color:var(--ink);text-decoration:none;border-bottom:1px solid var(--ghost)}
+
+@media(max-width:640px){}
+
 
 /* ━━━━━━━━━━━━ MAP SCREEN ━━━━━━━━━━━━ */
 #mapscreen{flex-direction:row}
@@ -336,34 +336,740 @@ input[type=file]{display:none}
 .leaflet-control-zoom a{color:var(--ink)!important;background:rgba(246,243,236,.95)!important;font-family:var(--sans)!important;border-bottom-color:var(--ghost)!important}
 
 /* ━━ LAYOUT 1/3 - 2/3 ━━ */
-#lib-inner{
-  display:flex;
-  flex:1;
+
+
+
+#lib-col-map 
+@media(max-width:800px){
+  
+  
+  
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   LIBRARY — Atlas personnel
+━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.screen.active#library{
+  flex-direction:row;
+  overflow:hidden;
   height:100%;
-  min-height:400px;
+}
+
+/* ── Sidebar cachée — plein écran carte ── */
+#atlas-sidebar{
+  display:none;
+}
+#atlas-logo{
+  padding:0 28px 32px;
+  border-bottom:1px solid var(--ghost);
+  margin-bottom:8px;
+}
+#atlas-logo-word{
+  font-family:var(--serif);
+  font-size:28px;font-weight:700;
+  color:var(--ink);letter-spacing:-.03em;line-height:.9;
+  margin-bottom:4px;
+}
+#atlas-logo-sub{
+  font-family:var(--serif);
+  font-size:11px;font-style:italic;font-weight:300;
+  color:var(--stone);
+}
+.atlas-nav{
+  padding:16px 0;
+  flex-shrink:0;
+}
+.atlas-nav-item{
+  display:flex;align-items:center;gap:12px;
+  padding:10px 28px;
+  font-family:var(--sans);font-size:12px;font-weight:400;
+  color:var(--stone);letter-spacing:.02em;
+  cursor:pointer;transition:all .15s;
+  border:none;background:none;width:100%;text-align:left;
+}
+.atlas-nav-item:hover{color:var(--ink);background:rgba(43,42,40,.04)}
+.atlas-nav-item.on{color:var(--ink);font-weight:500}
+.atlas-nav-icon{
+  width:16px;height:16px;opacity:.5;flex-shrink:0;
+}
+.atlas-nav-item.on .atlas-nav-icon{opacity:1}
+.atlas-nav-sep{height:1px;background:var(--ghost);margin:8px 28px}
+
+/* Stats discrètes dans la sidebar */
+.atlas-stats{
+  margin-top:auto;
+  padding:24px 28px 0;
+  border-top:1px solid var(--ghost);
+}
+.atlas-stat{
+  display:flex;justify-content:space-between;align-items:baseline;
+  padding:5px 0;
+}
+.atlas-stat-v{
+  font-family:var(--serif);font-size:20px;font-weight:500;
+  color:var(--ink);letter-spacing:-.02em;
+}
+.atlas-stat-l{
+  font-family:var(--sans);font-size:9px;font-weight:300;
+  color:var(--stone);letter-spacing:.1em;text-transform:uppercase;
+}
+
+/* User pill en bas */
+.atlas-user{
+  padding:20px 28px 0;
+  display:flex;align-items:center;
+}
+
+/* ── Zone centrale — plein écran ── */
+#atlas-main{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  min-width:0;
   overflow:hidden;
+  position:relative;
 }
-#lib-col-list{
-  flex:0 0 33%;
-  width:33%;
-  overflow-y:auto;
-  -webkit-overflow-scrolling:touch;
-  border-right:1px solid var(--ghost);
+
+/* Grande carte — plein écran */
+#atlas-map-wrap{
+  flex:1;
+  position:relative;
+  min-height:0;
 }
-#lib-col-map{
-  flex:0 0 67%;
-  width:67%;
-  overflow:hidden;
-}
-#lib-col-map #lib-map{
+#lib-map{
+  position:absolute;
+  inset:0;
   width:100%;
   height:100%;
 }
-@media(max-width:800px){
-  #lib-inner{flex-direction:column}
-  #lib-col-list{flex:none;width:100%;border-right:none;border-bottom:1px solid var(--ghost);max-height:50vh}
-  #lib-col-map{flex:none;width:100%;height:280px}
+
+/* Panel exploration caché */
+#atlas-explore{
+  display:none;
 }
+
+/* Overlay CAIRN — titre haut gauche */
+#lib-title-overlay{
+  position:absolute;
+  top:18px;left:22px;
+  z-index:500;
+  pointer-events:none;
+  font-family:var(--serif);
+  font-size:clamp(42px,6vw,64px);font-weight:700;
+  color:var(--ink);letter-spacing:-.04em;line-height:1;
+  text-shadow:0 2px 8px rgba(247,243,235,.75);
+}
+
+/* Bouton hamburger haut droite */
+#lib-menu-btn{
+  position:absolute;
+  top:22px;right:22px;
+  z-index:500;
+  width:36px;height:36px;
+  background:none;
+  border:none;
+  cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;
+  padding:0;
+}
+#lib-menu-btn span{
+  display:block;width:22px;height:2.5px;
+  background:var(--ink);border-radius:2px;
+  box-shadow:0 1px 3px rgba(247,243,235,.8);
+}
+
+/* Km parcourus — bas droite */
+#lib-km-overlay{
+  position:absolute;
+  bottom:28px;right:20px;
+  z-index:500;
+  display:flex;flex-direction:column;align-items:flex-end;
+  pointer-events:none;
+}
+#lib-km-value{
+  font-family:var(--serif);
+  font-size:clamp(28px,4vw,42px);
+  font-weight:600;
+  color:var(--gr-red);
+  letter-spacing:-.03em;
+  line-height:1;
+  text-shadow:0 1px 6px rgba(247,243,235,.6);
+}
+#lib-km-label{
+  font-family:var(--sans);
+  font-size:9px;font-weight:500;
+  letter-spacing:.18em;text-transform:uppercase;
+  color:var(--gr-red);
+  opacity:.85;
+  margin-top:3px;
+}
+
+/* Sélecteur de fond dans le drawer */
+.lib-drawer-layers{
+  padding:14px 22px 6px;
+  border-top:1px solid var(--ghost);
+  flex-shrink:0;
+}
+.lib-drawer-layers-title{
+  font-family:var(--sans);font-size:9px;font-weight:500;
+  letter-spacing:.18em;text-transform:uppercase;
+  color:var(--stone);margin-bottom:10px;
+}
+.lib-layer-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:6px;
+}
+.lib-layer-btn{
+  display:flex;flex-direction:column;gap:2px;
+  padding:8px 10px;
+  border:1px solid var(--ghost);
+  background:none;cursor:pointer;
+  font-family:var(--sans);text-align:left;
+  transition:border-color .15s,background .15s;
+  position:relative;
+}
+.lib-layer-btn:hover{border-color:var(--stone);background:rgba(43,42,40,.03)}
+.lib-layer-btn.active{border-color:var(--ink);background:rgba(43,42,40,.05)}
+.lib-layer-btn.active::after{
+  content:'';position:absolute;top:6px;right:6px;
+  width:5px;height:5px;border-radius:50%;
+  background:var(--ink);
+}
+.lib-layer-name{
+  font-size:10px;font-weight:400;color:var(--ink);line-height:1.2;
+}
+.lib-layer-lock{
+  font-size:8px;color:var(--stone);letter-spacing:.05em;
+}
+.lib-layer-btn.locked{opacity:.5;cursor:not-allowed}
+.lib-layer-btn.locked:hover{border-color:var(--ghost);background:none}
+#lib-menu-drawer{
+  position:absolute;
+  top:0;right:0;bottom:0;
+  width:260px;
+  z-index:600;
+  background:rgba(247,243,235,.97);
+  backdrop-filter:blur(16px);
+  border-left:1px solid var(--ghost);
+  box-shadow:-4px 0 24px rgba(43,42,40,.10);
+  display:flex;flex-direction:column;
+  transform:translateX(100%);
+  transition:transform .35s var(--ease);
+  overflow-y:auto;
+}
+#lib-menu-drawer.open{transform:translateX(0)}
+.lib-drawer-head{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:20px 22px 16px;
+  border-bottom:1px solid var(--ghost);
+  flex-shrink:0;
+}
+.lib-drawer-title{
+  font-family:var(--serif);font-size:20px;font-weight:700;
+  color:var(--ink);letter-spacing:-.02em;
+}
+.lib-drawer-close{
+  background:none;border:none;cursor:pointer;
+  font-size:20px;color:var(--stone);
+  padding:0;line-height:1;
+  transition:color .15s;
+}
+.lib-drawer-close:hover{color:var(--ink)}
+.lib-drawer-nav{padding:12px 0;flex-shrink:0}
+.lib-drawer-nav button{
+  display:flex;align-items:center;gap:12px;
+  padding:11px 22px;
+  font-family:var(--sans);font-size:12px;font-weight:400;
+  color:var(--stone);letter-spacing:.02em;
+  cursor:pointer;transition:all .15s;
+  border:none;background:none;width:100%;text-align:left;
+}
+.lib-drawer-nav button:hover{color:var(--ink);background:rgba(43,42,40,.04)}
+.lib-drawer-nav button svg{width:16px;height:16px;opacity:.5;flex-shrink:0}
+.lib-drawer-nav button:hover svg{opacity:.8}
+.lib-drawer-sep{height:1px;background:var(--ghost);margin:6px 22px}
+.lib-drawer-foot{
+  padding:12px 22px 20px;
+  display:flex;
+  justify-content:flex-end;
+  border-top:1px solid var(--ghost);
+  flex-shrink:0;
+}
+.user-pill-small{
+  display:flex;align-items:center;gap:7px;
+  background:none;border:1px solid var(--ghost);
+  padding:5px 10px 5px 6px;
+  cursor:pointer;transition:border-color .15s;
+  font-family:var(--sans);
+}
+.user-pill-small:hover{border-color:var(--stone)}
+.user-avatar-small{
+  width:18px;height:18px;
+  background:var(--mist);border:1px solid var(--ghost);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--serif);font-size:10px;font-weight:600;color:var(--ink);
+  flex-shrink:0;
+}
+#user-email-short-drawer{
+  font-size:10px;color:var(--stone);letter-spacing:.02em;
+}
+
+/* Strava discret — masqué sur la vue générale */
+#atlas-strava{
+  display:none;
+}
+
+/* Mobile */
+@media(max-width:800px){
+  .screen.active#library{flex-direction:column}
+  #atlas-map-wrap{min-height:0;flex:1}
+  #lib-km-value{font-size:26px}
+}
+
+/* ━━━━━━━━━━━━ SOUS-ÉCRANS (Sentiers, Paramètres…) ━━━━━━━━━━━━ */
+.screen.active#sentiers,
+.screen.active#parametres{
+  flex-direction:column;
+  background:var(--paper);
+  overflow:hidden;
+}
+.subscreen-wrap{
+  display:flex;flex-direction:column;
+  height:100%;overflow:hidden;
+}
+.subscreen-head{
+  display:flex;align-items:center;gap:12px;
+  padding:20px 24px 16px;
+  border-bottom:1px solid var(--ghost);
+  flex-shrink:0;
+  background:var(--paper);
+}
+.subscreen-back{
+  width:32px;height:32px;
+  display:flex;align-items:center;justify-content:center;
+  background:none;border:none;cursor:pointer;
+  color:var(--stone);transition:color .15s;flex-shrink:0;
+}
+.subscreen-back:hover{color:var(--ink)}
+.subscreen-back svg{width:18px;height:18px}
+.subscreen-title{
+  font-family:var(--serif);font-size:22px;font-weight:600;
+  color:var(--ink);letter-spacing:-.02em;flex:1;
+}
+.subscreen-action{
+  display:flex;align-items:center;gap:6px;
+  background:none;border:1px solid var(--ghost);
+  padding:6px 12px;
+  font-family:var(--sans);font-size:10px;font-weight:400;
+  color:var(--stone);letter-spacing:.05em;
+  cursor:pointer;transition:all .15s;
+}
+.subscreen-action:hover{border-color:var(--stone);color:var(--ink)}
+.subscreen-action svg{width:12px;height:12px}
+
+/* ── Page Sentiers ── */
+.sentiers-body{
+  flex:1;overflow-y:auto;
+  padding:28px 24px 40px;
+}
+.sentiers-empty{
+  font-family:var(--serif);font-size:16px;font-style:italic;
+  color:var(--stone);text-align:center;margin-top:60px;line-height:1.8;
+}
+.sentiers-section-label{
+  font-family:var(--sans);font-size:9px;font-weight:500;
+  letter-spacing:.2em;text-transform:uppercase;
+  color:var(--stone);margin-bottom:14px;
+}
+.sentiers-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+  gap:14px;
+  margin-bottom:32px;
+}
+.sentier-card{
+  border:1px solid var(--ghost);
+  background:var(--white);
+  padding:18px 18px 14px;
+  cursor:pointer;
+  transition:border-color .18s,transform .12s,box-shadow .18s;
+  position:relative;
+  display:flex;flex-direction:column;gap:10px;
+}
+.sentier-card:hover{
+  border-color:var(--stone);
+  transform:translateY(-2px);
+  box-shadow:0 4px 16px rgba(43,42,40,.08);
+}
+.sentier-card-num{
+  font-family:var(--sans);font-size:9px;font-weight:500;
+  letter-spacing:.15em;text-transform:uppercase;
+  color:var(--stone);
+}
+.sentier-card-name{
+  font-family:var(--serif);font-size:17px;font-weight:500;
+  color:var(--ink);line-height:1.25;
+}
+.sentier-card-sub{
+  font-family:var(--sans);font-size:10px;font-weight:300;
+  color:var(--stone);line-height:1.4;
+}
+.sentier-card-bar{
+  height:2px;background:var(--ghost);border-radius:1px;overflow:hidden;
+}
+.sentier-card-fill{
+  height:100%;background:var(--gr-red);border-radius:1px;
+  transition:width .8s var(--ease);
+}
+.sentier-card-foot{
+  display:flex;justify-content:space-between;align-items:center;
+}
+.sentier-card-pct{
+  font-family:var(--sans);font-size:10px;font-weight:300;color:var(--stone);
+}
+.sentier-card-km{
+  font-family:var(--serif);font-size:13px;font-weight:400;color:var(--ink);
+}
+.sentier-card-badge{
+  position:absolute;top:12px;right:12px;
+  width:7px;height:7px;border-radius:50%;
+  background:var(--gr-green);
+}
+
+/* ── Page Paramètres ── */
+.params-body{
+  flex:1;overflow-y:auto;
+  padding:24px 24px 48px;
+  display:flex;flex-direction:column;gap:24px;
+}
+.params-section{}
+.params-section-label{
+  font-family:var(--sans);font-size:9px;font-weight:500;
+  letter-spacing:.2em;text-transform:uppercase;
+  color:var(--stone);margin-bottom:8px;
+}
+.params-card{
+  border:1px solid var(--ghost);
+  background:var(--white);
+  overflow:hidden;
+}
+.params-row{
+  display:flex;align-items:center;gap:14px;
+  padding:14px 16px;
+}
+.params-row-info{flex:1;min-width:0}
+.params-row-name{
+  font-family:var(--sans);font-size:12px;font-weight:400;
+  color:var(--ink);
+}
+.params-row-sub{
+  font-family:var(--sans);font-size:10px;font-weight:300;
+  color:var(--stone);margin-top:1px;
+}
+.params-btn-ghost{
+  background:none;border:1px solid var(--ghost);
+  padding:5px 10px;
+  font-family:var(--sans);font-size:9px;font-weight:400;
+  letter-spacing:.08em;text-transform:uppercase;
+  color:var(--stone);cursor:pointer;
+  transition:all .15s;flex-shrink:0;
+}
+.params-btn-ghost:hover{border-color:var(--stone);color:var(--ink)}
+.params-btn-primary{
+  background:var(--ink);border:1px solid var(--ink);
+  padding:5px 12px;
+  font-family:var(--sans);font-size:9px;font-weight:400;
+  letter-spacing:.08em;text-transform:uppercase;
+  color:var(--paper);cursor:pointer;
+  transition:opacity .15s;flex-shrink:0;
+}
+.params-btn-primary:hover{opacity:.8}
+.params-toggle-group{
+  display:flex;border:1px solid var(--ghost);flex-shrink:0;
+}
+.params-toggle{
+  padding:4px 10px;
+  font-family:var(--sans);font-size:10px;font-weight:300;
+  color:var(--stone);background:none;border:none;cursor:pointer;
+  transition:all .15s;
+}
+.params-toggle+.params-toggle{border-left:1px solid var(--ghost)}
+.params-toggle.active{background:var(--ink);color:var(--paper)}
+.params-select{
+  font-family:var(--sans);font-size:11px;
+  color:var(--ink);border:1px solid var(--ghost);
+  background:none;padding:4px 8px;cursor:pointer;
+  flex-shrink:0;
+}
+
+/* Bouton + Nouveau tracé (bas gauche carte) */
+#lib-add-btn{
+  position:absolute;
+  bottom:28px;left:20px;
+  z-index:500;
+  display:flex;align-items:center;gap:9px;
+  background:none;
+  border:none;
+  padding:0;
+  font-family:var(--sans);font-size:11px;font-weight:400;
+  letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink);cursor:pointer;
+}
+#lib-add-btn svg{
+  width:14px;height:14px;flex-shrink:0;
+  stroke:var(--ink);
+  filter:drop-shadow(0 1px 2px rgba(247,243,235,.8));
+}
+#lib-add-btn span{
+  text-shadow:0 1px 3px rgba(247,243,235,.85);
+}
+/* ━━━━━━━━━━━━ SYSTÈME DE VALIDATION ━━━━━━━━━━━━ */
+
+/* Pastille sur le hamburger */
+#lib-menu-btn .notif-dot{
+  position:absolute;
+  top:0px;right:-1px;
+  width:8px;height:8px;border-radius:50%;
+  background:var(--gr-red);
+  border:1.5px solid var(--paper);
+  display:none;
+}
+#lib-menu-btn{ position:absolute;top:22px;right:22px;z-index:500; }
+
+/* ── Modale "activités en attente" ── */
+#pending-modal{
+  position:fixed;inset:0;z-index:1200;
+  display:none;align-items:flex-end;justify-content:center;
+  background:rgba(43,42,40,.45);
+  backdrop-filter:blur(4px);
+  padding-bottom:0;
+}
+#pending-modal.open{ display:flex; }
+#pending-modal-box{
+  width:100%;max-width:520px;
+  background:var(--paper);
+  border-top:1px solid var(--ghost);
+  max-height:80vh;
+  display:flex;flex-direction:column;
+  animation:slideUp .35s var(--ease);
+}
+@keyframes slideUp{from{transform:translateY(60px);opacity:0}to{transform:translateY(0);opacity:1}}
+.pending-modal-head{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:20px 22px 14px;
+  border-bottom:1px solid var(--ghost);
+  flex-shrink:0;
+}
+.pending-modal-title{
+  font-family:var(--serif);font-size:20px;font-weight:600;
+  color:var(--ink);letter-spacing:-.02em;
+}
+.pending-modal-count{
+  font-family:var(--sans);font-size:9px;font-weight:500;
+  letter-spacing:.15em;text-transform:uppercase;
+  color:var(--gr-red);margin-top:2px;
+}
+.pending-modal-close{
+  background:none;border:none;cursor:pointer;
+  font-size:20px;color:var(--stone);padding:0;line-height:1;
+}
+.pending-modal-close:hover{color:var(--ink)}
+.pending-list{
+  flex:1;overflow-y:auto;
+}
+.pending-item{
+  display:flex;align-items:center;gap:14px;
+  padding:14px 22px;
+  border-bottom:1px solid var(--ghost);
+  cursor:default;
+}
+.pending-item-source{
+  width:32px;height:32px;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--mist);border:1px solid var(--ghost);
+  flex-shrink:0;
+}
+.pending-item-info{ flex:1;min-width:0; }
+.pending-item-title{
+  font-family:var(--serif);font-size:15px;font-weight:500;
+  color:var(--ink);line-height:1.2;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.pending-item-meta{
+  font-family:var(--sans);font-size:10px;font-weight:300;
+  color:var(--stone);margin-top:2px;
+  display:flex;gap:10px;
+}
+.pending-item-meta span::before{content:'·';margin-right:5px;opacity:.4}
+.pending-item-meta span:first-child::before{content:none}
+.pending-item-btn{
+  background:none;border:1px solid var(--ghost);
+  padding:6px 14px;
+  font-family:var(--sans);font-size:9px;font-weight:400;
+  letter-spacing:.1em;text-transform:uppercase;
+  color:var(--ink);cursor:pointer;
+  transition:border-color .15s;flex-shrink:0;
+}
+.pending-item-btn:hover{border-color:var(--stone)}
+.pending-modal-footer{
+  padding:14px 22px;
+  border-top:1px solid var(--ghost);
+  flex-shrink:0;
+  display:flex;justify-content:flex-end;
+}
+.pending-skip{
+  background:none;border:none;
+  font-family:var(--sans);font-size:10px;font-weight:300;
+  color:var(--stone);cursor:pointer;letter-spacing:.05em;
+  text-decoration:underline;text-underline-offset:3px;
+}
+
+/* ── Modale de validation ── */
+#validate-modal{
+  position:fixed;inset:0;z-index:1300;
+  display:none;flex-direction:column;
+  background:var(--paper);
+}
+#validate-modal.open{ display:flex; }
+.val-head{
+  display:flex;align-items:center;gap:14px;
+  padding:16px 20px;
+  border-bottom:1px solid var(--ghost);
+  flex-shrink:0;
+  background:var(--paper);
+  z-index:10;
+}
+.val-back{
+  background:none;border:none;cursor:pointer;
+  color:var(--stone);padding:0;
+  display:flex;align-items:center;
+  transition:color .15s;
+}
+.val-back:hover{color:var(--ink)}
+.val-back svg{width:18px;height:18px}
+.val-head-title{
+  flex:1;
+  font-family:var(--serif);font-size:18px;font-weight:600;
+  color:var(--ink);letter-spacing:-.02em;
+}
+.val-source-badge{
+  font-family:var(--sans);font-size:8px;font-weight:500;
+  letter-spacing:.15em;text-transform:uppercase;
+  color:var(--stone);border:1px solid var(--ghost);
+  padding:3px 7px;
+}
+.val-body{
+  flex:1;display:flex;flex-direction:column;
+  overflow:hidden;
+}
+/* Carte */
+#val-map-wrap{
+  flex:0 0 42%;
+  position:relative;
+  min-height:200px;
+}
+#val-map{
+  position:absolute;inset:0;
+  width:100%;height:100%;
+}
+.val-map-stats{
+  position:absolute;bottom:12px;left:12px;
+  display:flex;gap:8px;z-index:400;
+}
+.val-map-stat{
+  background:rgba(247,243,235,.92);
+  backdrop-filter:blur(6px);
+  border:1px solid var(--ghost);
+  padding:5px 10px;
+  font-family:var(--sans);
+}
+.val-map-stat-v{
+  font-family:var(--serif);font-size:16px;font-weight:500;
+  color:var(--ink);line-height:1;
+}
+.val-map-stat-l{
+  font-size:8px;font-weight:300;color:var(--stone);
+  letter-spacing:.1em;text-transform:uppercase;margin-top:1px;
+}
+/* Formulaire */
+.val-form{
+  flex:1;overflow-y:auto;
+  padding:20px 22px 32px;
+  display:flex;flex-direction:column;gap:16px;
+}
+.val-field{ display:flex;flex-direction:column;gap:5px; }
+.val-label{
+  font-family:var(--sans);font-size:9px;font-weight:500;
+  letter-spacing:.18em;text-transform:uppercase;color:var(--stone);
+}
+.val-input{
+  font-family:var(--serif);font-size:15px;
+  color:var(--ink);border:none;border-bottom:1px solid var(--ghost);
+  background:none;padding:4px 0 6px;outline:none;width:100%;
+  transition:border-color .2s;
+}
+.val-input:focus{border-color:var(--stone)}
+.val-textarea{
+  font-family:var(--serif);font-size:14px;font-weight:300;
+  color:var(--ink);border:1px solid var(--ghost);
+  background:none;padding:10px 12px;outline:none;width:100%;
+  resize:none;height:80px;line-height:1.6;
+  transition:border-color .2s;box-sizing:border-box;
+}
+.val-textarea:focus{border-color:var(--stone)}
+.val-textarea::placeholder{color:var(--stone);opacity:.6}
+/* Sélecteur GR */
+.val-gr-selector{
+  display:flex;flex-wrap:wrap;gap:6px;
+}
+.val-gr-chip{
+  font-family:var(--sans);font-size:9px;font-weight:400;
+  letter-spacing:.08em;
+  border:1px solid var(--ghost);
+  padding:4px 10px;cursor:pointer;
+  color:var(--stone);background:none;
+  transition:all .15s;
+}
+.val-gr-chip:hover{border-color:var(--stone);color:var(--ink)}
+.val-gr-chip.active{
+  background:var(--ink);border-color:var(--ink);color:var(--paper);
+}
+/* Photos */
+.val-photos{
+  display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;
+}
+.val-photo{
+  width:72px;height:72px;flex-shrink:0;
+  border:2px solid transparent;cursor:pointer;
+  object-fit:cover;transition:border-color .15s;
+}
+.val-photo.cover{ border-color:var(--ink); }
+.val-photo-empty{
+  font-family:var(--sans);font-size:10px;font-weight:300;
+  color:var(--stone);font-style:italic;
+}
+/* Bouton valider */
+.val-footer{
+  padding:16px 22px 24px;
+  border-top:1px solid var(--ghost);
+  flex-shrink:0;background:var(--paper);
+}
+.val-submit{
+  width:100%;
+  background:var(--ink);color:var(--paper);
+  border:none;padding:14px;
+  font-family:var(--sans);font-size:11px;font-weight:400;
+  letter-spacing:.2em;text-transform:uppercase;
+  cursor:pointer;transition:opacity .15s;
+}
+.val-submit:hover{opacity:.85}
+.val-submit:disabled{opacity:.35;cursor:not-allowed}
+
+/* GR auto-détecté */
+.val-gr-detected{
+  font-family:var(--sans);font-size:10px;
+  color:var(--stone);margin-top:4px;
+}
+.val-gr-detected strong{color:var(--ink)}
 </style>
 </head>
 <body>
@@ -496,26 +1202,26 @@ input[type=file]{display:none}
 
 <!-- ━━━━━━━━━━━━━━━━━━ LIBRARY ━━━━━━━━━━━━━━━━━━ -->
 <div id="library" class="screen">
-  <div class="lib-top">
-    <div class="lib-left">
-      <div class="lib-wordmark">CAIRN</div>
-      <div class="lib-desc">Atlas des souvenirs</div>
+
+  <!-- Sidebar cachée — données utilisées par le JS -->
+  <div id="atlas-sidebar" style="display:none">
+    <div id="atlas-logo">
+      <div id="atlas-logo-word">CAIRN</div>
+      <div id="atlas-logo-sub">Atlas des souvenirs</div>
     </div>
-    <div class="lib-stats-right">
-      <div class="lib-stat">
-        <div class="lib-stat-v" id="total-km">0</div>
-        <div class="lib-stat-l">km parcourus</div>
-      </div>
-      <div class="lib-stat">
-        <div class="lib-stat-v" id="total-gr">0</div>
-        <div class="lib-stat-l">sentiers</div>
-      </div>
-      <div class="lib-stat">
-        <div class="lib-stat-v" id="total-sorties">0</div>
-        <div class="lib-stat-l">sorties</div>
-      </div>
-      <!-- User pill -->
-      <button class="user-pill" onclick="showUserMenu()">
+    <nav class="atlas-nav">
+      <button class="atlas-nav-item on" onclick=""></button>
+      <button class="atlas-nav-item" onclick="showExplorePanel()"></button>
+      <button class="atlas-nav-item" onclick=""></button>
+      <button class="atlas-nav-item" onclick="openAddTrailModal()"></button>
+    </nav>
+    <div class="atlas-stats">
+      <div class="atlas-stat"><div class="atlas-stat-v" id="total-km">0</div><div class="atlas-stat-l">km parcourus</div></div>
+      <div class="atlas-stat"><div class="atlas-stat-v" id="total-sorties">0</div><div class="atlas-stat-l">sorties</div></div>
+      <div class="atlas-stat"><div class="atlas-stat-v" id="total-gr">0</div><div class="atlas-stat-l">sentiers</div></div>
+    </div>
+    <div class="atlas-user">
+      <button class="user-pill" onclick="showUserMenu()" style="margin-top:16px">
         <div class="user-avatar" id="user-avatar">?</div>
         <span id="user-email-short">—</span>
         <span class="sync-dot" id="sync-dot"></span>
@@ -523,21 +1229,90 @@ input[type=file]{display:none}
     </div>
   </div>
 
-  <div class="lib-rule"></div>
+  <!-- ══ ZONE CENTRALE — Plein écran ══ -->
+  <div id="atlas-main">
 
-  <!-- SPLIT : liste 1/3 + carte 2/3 -->
-  <div id="lib-inner">
+    <!-- Grande carte plein écran -->
+    <div id="atlas-map-wrap">
+      <div id="lib-map"></div>
 
-    <!-- Colonne liste -->
-    <div id="lib-col-list">
-      <div class="lib-section-label">Sentiers</div>
-      <div class="gr-list" id="gr-list-container"></div>
+      <!-- Titre CAIRN haut gauche -->
+      <div id="lib-title-overlay">CAIRN</div>
+
+      <!-- Hamburger haut droite -->
+      <button id="lib-menu-btn" onclick="toggleLibDrawer()" aria-label="Menu">
+        <span></span><span></span><span></span>
+        <span class="notif-dot" id="hamburger-notif-dot"></span>
+      </button>
+
+      <!-- Km parcourus bas droite -->
+      <div id="lib-km-overlay">
+        <div id="lib-km-value">0 km</div>
+        <div id="lib-km-label">parcourus</div>
+      </div>
+
+      <!-- Bouton ajouter tracé bas gauche -->
+      <button id="lib-add-btn" onclick="openAddTrailModal()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        <span>Nouveau tracé</span>
+      </button>
+
+      <!-- Strava discret -->
+      <div id="atlas-strava" id="strava-band">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="#FC4C02"><path d="M15.387 17.944l-2.089-4.116h-3.065L15.387 24l5.15-10.172h-3.066m-7.008-5.599l2.836 5.599h4.172L10.463 0l-7 13.828h4.169"/></svg>
+        <span id="strava-status-text" style="color:var(--stone)">Strava</span>
+        <button id="strava-action-btn" onclick="stravaAction()" style="font-family:var(--sans);font-size:9px;letter-spacing:.12em;text-transform:uppercase;padding:4px 8px;border:1px solid var(--ghost);background:none;color:var(--ink);cursor:pointer">Connecter</button>
+      </div>
+
+      <!-- Drawer menu -->
+      <div id="lib-menu-drawer">
+        <div class="lib-drawer-head">
+          <div class="lib-drawer-title">CAIRN</div>
+          <button class="lib-drawer-close" onclick="toggleLibDrawer()">×</button>
+        </div>
+        <nav class="lib-drawer-nav">
+          <button onclick="toggleLibDrawer()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="1"/><path d="M3 9h18M9 21V9"/></svg>
+            Atlas
+          </button>
+          <button onclick="toggleLibDrawer();showScreen('sentiers');renderSentiersPage()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+            GR
+          </button>
+          <button onclick="toggleLibDrawer()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>
+            Journal
+          </button>
+          <button onclick="toggleLibDrawer()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14h7v7H3z"/></svg>
+            Archives
+          </button>
+          <button onclick="toggleLibDrawer();showScreen('parametres');initParamPage()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            Paramètres
+          </button>
+          <div class="lib-drawer-sep"></div>
+          <button onclick="toggleLibDrawer();openAddTrailModal()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Nouveau tracé
+          </button>
+        </nav>
+        <div class="lib-drawer-foot">
+          <button class="user-pill-small" onclick="showUserMenu();toggleLibDrawer()">
+            <div class="user-avatar-small" id="user-avatar-drawer">?</div>
+            <span id="user-email-short-drawer">—</span>
+            <span class="sync-dot" id="sync-dot-drawer"></span>
+          </button>
+        </div>
+      </div>
     </div>
 
-    <!-- Colonne carte -->
-    <div id="lib-col-map">
-      <div class="lib-map-label">Le grand chemin</div>
-      <div id="lib-map"></div>
+    <!-- Panel exploration caché -->
+    <div id="atlas-explore" style="display:none">
+      <div class="atlas-explore-title">Continuer l'exploration</div>
+      <div class="atlas-gr-cards" id="atlas-gr-cards">
+        <div class="atlas-gr-empty">Ajoutez un sentier pour commencer votre atlas.</div>
+      </div>
     </div>
 
   </div>
@@ -568,8 +1343,7 @@ input[type=file]{display:none}
         </div>
         <div style="margin-top:18px;padding-top:14px;border-top:1px solid var(--ghost)">
           <div class="atm-label" style="margin-bottom:10px">Ou importez votre propre fichier GPX</div>
-          <label style="display:block;padding:12px 14px;border:1px dashed var(--ghost);text-align:center;cursor:pointer;font-family:var(--sans);font-size:11px;font-weight:300;color:var(--stone)" 
-                 for="fi-custom-gpx">
+          <label style="display:block;padding:12px 14px;border:1px dashed var(--ghost);text-align:center;cursor:pointer;font-family:var(--sans);font-size:11px;font-weight:300;color:var(--stone)" for="fi-custom-gpx">
             + Charger un fichier GPX personnalisé
           </label>
           <input type="file" id="fi-custom-gpx" accept=".gpx" onchange="loadCustomGPX(this)" style="display:none">
@@ -577,22 +1351,129 @@ input[type=file]{display:none}
       </div>
     </div>
   </div>
+</div>
 
-  <div class="lib-footer">
-    Tracés GPX · <a href="https://www.visorando.com" target="_blank">visorando.com</a> · <a href="https://www.openrunner.com" target="_blank">openrunner.com</a> · <a href="https://www.ffrandonnee.fr" target="_blank">ffrandonnee.fr</a><br>
-    Strava : activité → ··· → Exporter le fichier GPX
-  </div>
 
-  <!-- Strava connect band -->
-  <div id="strava-band" style="margin:0 56px 48px;border:1px solid var(--ghost);padding:18px 22px;display:flex;align-items:center;gap:18px;flex-shrink:0">
-    <svg width="28" height="28" viewBox="0 0 24 24" fill="#FC4C02"><path d="M15.387 17.944l-2.089-4.116h-3.065L15.387 24l5.15-10.172h-3.066m-7.008-5.599l2.836 5.599h4.172L10.463 0l-7 13.828h4.169"/></svg>
-    <div style="flex:1">
-      <div id="strava-status-text" style="font-family:var(--sans);font-size:13px;font-weight:500;color:var(--ink)">Connecter Strava</div>
-      <div id="strava-status-sub" style="font-family:var(--sans);font-size:11px;font-weight:300;color:var(--stone);margin-top:2px">Importez vos activités automatiquement</div>
+<!-- ━━━━━━━━━━━━━━━━━━ SENTIERS ━━━━━━━━━━━━━━━━━━ -->
+<div id="sentiers" class="screen">
+  <div class="subscreen-wrap">
+    <div class="subscreen-head">
+      <button class="subscreen-back" onclick="showScreen('library');refreshLibrary();waitAndInitLibMap()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+      </button>
+      <div class="subscreen-title">Sentiers</div>
+      <button class="subscreen-action" onclick="openAddTrailModal()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Ajouter
+      </button>
     </div>
-    <button id="strava-action-btn" onclick="stravaAction()" style="font-family:var(--sans);font-size:10px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;padding:9px 16px;border:1px solid var(--ghost);background:var(--white);color:var(--ink);cursor:pointer;transition:all .18s;white-space:nowrap">
-      Connecter
-    </button>
+    <div class="sentiers-body" id="sentiers-body">
+      <!-- rempli par renderSentiersPage() -->
+    </div>
+  </div>
+</div>
+
+<!-- ━━━━━━━━━━━━━━━━━━ PARAMÈTRES ━━━━━━━━━━━━━━━━━━ -->
+<div id="parametres" class="screen">
+  <div class="subscreen-wrap">
+    <div class="subscreen-head">
+      <button class="subscreen-back" onclick="showScreen('library');refreshLibrary();waitAndInitLibMap()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+      </button>
+      <div class="subscreen-title">Paramètres</div>
+    </div>
+    <div class="params-body">
+
+      <!-- ── Compte ── -->
+      <div class="params-section">
+        <div class="params-section-label">Compte</div>
+        <div class="params-card">
+          <div class="params-row">
+            <div class="params-row-info">
+              <div class="params-row-name">Identifiant</div>
+              <div class="params-row-sub" id="param-email">—</div>
+            </div>
+            <button class="params-btn-ghost" onclick="if(confirm('Se déconnecter ?')) signOut()">Déconnexion</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Strava ── -->
+      <div class="params-section">
+        <div class="params-section-label">Intégrations</div>
+        <div class="params-card">
+          <div class="params-row">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="#FC4C02" style="flex-shrink:0"><path d="M15.387 17.944l-2.089-4.116h-3.065L15.387 24l5.15-10.172h-3.066m-7.008-5.599l2.836 5.599h4.172L10.463 0l-7 13.828h4.169"/></svg>
+            <div class="params-row-info">
+              <div class="params-row-name" id="strava-status-text">Strava</div>
+              <div class="params-row-sub" id="strava-status-sub">Importez vos activités automatiquement</div>
+            </div>
+            <button class="params-btn-ghost" id="strava-action-btn" onclick="stravaAction()">Connecter</button>
+          </div>
+          <div class="params-row" id="btn-strava-sync" style="display:none;border-top:1px solid var(--ghost)">
+            <div class="params-row-info">
+              <div class="params-row-name">Synchroniser</div>
+              <div class="params-row-sub">Importer vos dernières sorties</div>
+            </div>
+            <button class="params-btn-primary" onclick="stravaSync()">Sync</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Préférences d'affichage ── -->
+      <div class="params-section">
+        <div class="params-section-label">Affichage</div>
+        <div class="params-card">
+          <div class="params-row">
+            <div class="params-row-info">
+              <div class="params-row-name">Unités de distance</div>
+              <div class="params-row-sub">Kilomètres ou miles</div>
+            </div>
+            <div class="params-toggle-group">
+              <button class="params-toggle active" id="unit-km" onclick="setPref('unit','km')">km</button>
+              <button class="params-toggle" id="unit-mi" onclick="setPref('unit','mi')">mi</button>
+            </div>
+          </div>
+          <div class="params-row" style="border-top:1px solid var(--ghost)">
+            <div class="params-row-info">
+              <div class="params-row-name">Affichage de l'élévation</div>
+              <div class="params-row-sub">Profil altimétrique sur la carte</div>
+            </div>
+            <div class="params-toggle-group">
+              <button class="params-toggle active" id="elev-on" onclick="setPref('elev','on')">Oui</button>
+              <button class="params-toggle" id="elev-off" onclick="setPref('elev','off')">Non</button>
+            </div>
+          </div>
+          <div class="params-row" style="border-top:1px solid var(--ghost)">
+            <div class="params-row-info">
+              <div class="params-row-name">Segments par défaut</div>
+              <div class="params-row-sub">Longueur des étapes (km)</div>
+            </div>
+            <select class="params-select" onchange="setPref('seg',this.value)">
+              <option value="10">10 km</option>
+              <option value="15" selected>15 km</option>
+              <option value="20">20 km</option>
+              <option value="25">25 km</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── À propos ── -->
+      <div class="params-section">
+        <div class="params-section-label">À propos</div>
+        <div class="params-card">
+          <div class="params-row">
+            <div class="params-row-info">
+              <div class="params-row-name">Cairn</div>
+              <div class="params-row-sub">Atlas des sentiers GR de France</div>
+            </div>
+            <div style="font-family:var(--sans);font-size:10px;color:var(--stone)">v0.1</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
   </div>
 </div>
 
@@ -800,13 +1681,21 @@ const STRAVA_SCOPE         = 'activity:read_all';
 /* =======================================
    CONFIG
 ======================================= */
-/* Base URL pour les GPX — fonctionne en local ET sur GitHub Pages */
+/* ─── URL de base pour les fichiers GPX ───────────────────────────────
+   Modifiez GPX_REPO_URL si votre repo GitHub Pages a un sous-chemin.
+   Exemple : 'https://monpseudo.github.io/cairn/'
+   Laisser vide ('') = chemin relatif (fonctionne si servi par un serveur).
+──────────────────────────────────────────────────────────────────── */
+const GPX_REPO_URL = '';
+
 const GPX_BASE = (()=>{
+  if(GPX_REPO_URL) return GPX_REPO_URL.replace(/\/?$/,'/');
+  const proto = window.location.protocol;
+  // Ouverture locale (file://) → impossible de fetch des fichiers relatifs
+  // On le signale proprement dans l'UI
+  if(proto === 'file:') return '__local__';
   const p = window.location.pathname;
-  // Sur GitHub Pages : /nom-repo/ ou /
-  // On veut l'URL du dossier contenant index.html
-  const base = window.location.origin + p.substring(0, p.lastIndexOf('/')+1);
-  return base;
+  return window.location.origin + p.substring(0, p.lastIndexOf('/')+1);
 })();
 
 /* =======================================
@@ -927,16 +1816,25 @@ function buildTrailsFromActive(){
     TRAILS.custom = {num:'—',name:'Sentier libre',sub:'Votre propre tracé GPX',label:'—',title:'Sentier libre',center:[46.5,2.3],zoom:6,gpxUrl:null};
   }
 }
+/* ── Clés API fonds de carte (laisser vide si non obtenue) ── */
+const MAP_KEYS = {
+  stadia:      '',   // client.stadiamaps.com
+  jawg:        '',   // jawg.io
+  thunderforest: '', // thunderforest.com
+};
 const LAYERS = {
-  topo:     {url:'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', attr:'© OpenStreetMap © CartoDB'},
-  outdoor:  {url:'https://tile.waymarkedtrails.org/hiking/{z}/{x}/{y}.png',                  attr:'© waymarkedtrails.org'},
-  satellite:{url:'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', attr:'© Esri'},
+  positron:   { label:'Positron',        free:true,  url:'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',                                                                               attr:'© OpenStreetMap © CartoDB' },
+  esritopo:   { label:'Topo',            free:true,  url:'https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',                                               attr:'© Esri' },
+  jawg:       { label:'Jawg Light',      free:false, key:'jawg',        url:'https://tile.jawg.io/jawg-light/{z}/{x}/{y}.png?access-token={key}',                                                        attr:'© Jawg © OpenStreetMap' },
+  toner:      { label:'Toner Lite',      free:false, key:'stadia',      url:'https://tiles.stadiamaps.com/tiles/stamen_toner_lite/{z}/{x}/{y}{r}.png?api_key={key}',                                     attr:'© Stadia © Stamen © OpenStreetMap' },
+  landscape:  { label:'Landscape',       free:false, key:'thunderforest',url:'https://{s}.tile.thunderforest.com/landscape/{z}/{x}/{y}.png?apikey={key}',                                               attr:'© Thunderforest © OpenStreetMap' },
+  dark:       { label:'Smooth Dark',     free:false, key:'stadia',      url:'https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png?api_key={key}',                                  attr:'© Stadia © OpenStreetMap' },
 };
 const SEG=15, THRESH=35;
 let trail=null, refPts=[], refEle=[], done=new Set(),
     lines=[], poiMarkers=[],
     tracking=false, wid=null, posMarker=null,
-    mapObj=null, libMapObj=null, tileLayer=null, currentLayer='topo';
+    mapObj=null, libMapObj=null, tileLayer=null, currentLayer='esritopo';
 let isGeneralMode = false;
 
 /* =======================================
@@ -1056,6 +1954,11 @@ function updateUserUI(user){
   const email=user.email||'';
   document.getElementById('user-avatar').textContent=email.charAt(0).toUpperCase();
   document.getElementById('user-email-short').textContent=email.split('@')[0];
+  // Drawer
+  const da=document.getElementById('user-avatar-drawer');
+  const de=document.getElementById('user-email-short-drawer');
+  if(da) da.textContent=email.charAt(0).toUpperCase();
+  if(de) de.textContent=email.split('@')[0];
 }
 
 /* Auth state listener */
@@ -1137,6 +2040,116 @@ function goLibrary(){
   showScreen('library');
   refreshLibrary();
   waitAndInitLibMap();
+  updateNotifDot();
+  // Vérifier activités en attente (avec délai pour laisser la carte s'initialiser)
+  setTimeout(checkPendingOnLaunch, 800);
+}
+/* ━━━━━━━━━━━━ PAGE SENTIERS ━━━━━━━━━━━━ */
+function renderSentiersPage(){
+  buildTrailsFromActive();
+  const body=document.getElementById('sentiers-body');
+  if(!body) return;
+  const active=Object.keys(TRAILS).filter(k=>k!=='custom');
+  if(active.length===0){
+    body.innerHTML=`<div class="sentiers-empty">Aucun sentier ajouté.<br>Commencez par ajouter un GR à votre atlas.</div>`;
+    return;
+  }
+  // stats globales
+  let totalKmAll=0;
+  const cards=active.map(key=>{
+    const info=TRAILS[key];
+    const hist=ld('hist_'+key)||[];
+    const donePts=ld('done_'+key)||[];
+    const ptsArr=ld('pts_'+key)||[];
+    // km parcourus
+    let kmDone=0;
+    if(ptsArr.length>0 && donePts.length>0){
+      const segs=Math.ceil(ptsArr.length/SEG);
+      const doneSet=new Set(donePts);
+      let doneCount=0;
+      for(let i=0;i<segs;i++) if(doneSet.has(i)) doneCount++;
+      const totalKmTrail=ptsArr.length>1?totalKm(ptsArr):0;
+      kmDone=Math.round(totalKmTrail*(doneCount/segs));
+    }
+    totalKmAll+=kmDone;
+    const pct=ptsArr.length>0&&donePts.length>0?Math.min(100,Math.round((new Set(donePts).size/Math.ceil(ptsArr.length/SEG))*100)):0;
+    const active_dot=pct>0?'<div class="sentier-card-badge"></div>':'';
+    return `<div class="sentier-card" onclick="goTrail('${key}')">
+      ${active_dot}
+      <div class="sentier-card-num">${info.num}</div>
+      <div class="sentier-card-name">${info.name}</div>
+      <div class="sentier-card-sub">${info.sub||''}</div>
+      <div class="sentier-card-bar"><div class="sentier-card-fill" style="width:${pct}%"></div></div>
+      <div class="sentier-card-foot">
+        <div class="sentier-card-pct">${pct}% parcouru</div>
+        <div class="sentier-card-km">${kmDone > 0 ? kmDone+' km' : '—'}</div>
+      </div>
+    </div>`;
+  }).join('');
+  body.innerHTML=`
+    <div class="sentiers-section-label">Mes sentiers — ${active.length} GR</div>
+    <div class="sentiers-grid">${cards}</div>`;
+}
+
+/* ━━━━━━━━━━━━ PAGE PARAMÈTRES ━━━━━━━━━━━━ */
+function initParamPage(){
+  // Email
+  const emailEl=document.getElementById('param-email');
+  if(emailEl){
+    const u=supabase?.auth?.getUser?.();
+    const email=document.getElementById('user-email-short')?.textContent||'—';
+    emailEl.textContent=email;
+  }
+  // Strava
+  updateStravaUI();
+  // Prefs
+  const prefs=ld('prefs')||{};
+  if(prefs.unit==='mi'){
+    document.getElementById('unit-km')?.classList.remove('active');
+    document.getElementById('unit-mi')?.classList.add('active');
+  }
+  if(prefs.elev==='off'){
+    document.getElementById('elev-on')?.classList.remove('active');
+    document.getElementById('elev-off')?.classList.add('active');
+  }
+  const segSel=document.querySelector('.params-select');
+  if(segSel && prefs.seg) segSel.value=prefs.seg;
+}
+function setPref(key,val){
+  const prefs=ld('prefs')||{};
+  prefs[key]=val;
+  sv('prefs',prefs);
+  // update toggles UI
+  if(key==='unit'){
+    document.getElementById('unit-km')?.classList.toggle('active',val==='km');
+    document.getElementById('unit-mi')?.classList.toggle('active',val==='mi');
+  }
+  if(key==='elev'){
+    document.getElementById('elev-on')?.classList.toggle('active',val==='on');
+    document.getElementById('elev-off')?.classList.toggle('active',val==='off');
+  }
+}
+
+function toggleLibDrawer(){
+  const d=document.getElementById('lib-menu-drawer');
+  if(!d) return;
+  const opening=!d.classList.contains('open');
+  d.classList.toggle('open');
+  if(opening){
+    // Déverrouiller les fonds dont on a la clé
+    document.querySelectorAll('.lib-layer-btn').forEach(b=>{
+      const name=b.dataset.layer;
+      if(!name) return;
+      const layer=LAYERS[name];
+      if(!layer) return;
+      const hasKey=layer.free||(layer.key&&MAP_KEYS[layer.key]);
+      if(hasKey){
+        b.classList.remove('locked');
+        if(!b.getAttribute('onclick')) b.setAttribute('onclick',`setLayer('${name}')`);
+      }
+      b.classList.toggle('active', name===currentLayer);
+    });
+  }
 }
 function toggleSidebar(){ document.getElementById('sidebar').classList.toggle('open'); }
 
@@ -1250,11 +2263,10 @@ function deleteGeneralActivity(id, stravaId){
 ======================================= */
 
 function waitAndInitLibMap(){
-  // Attendre que lib-col-map ait une vraie taille
   let tries = 0;
   function tryInit(){
-    const el = document.getElementById('lib-col-map');
-    if(el && el.offsetWidth > 0){
+    const el = document.getElementById('atlas-map-wrap');
+    if(el && el.offsetWidth > 0 && el.offsetHeight > 0){
       initLibMap();
     } else if(tries < 20){
       tries++;
@@ -1266,18 +2278,19 @@ function waitAndInitLibMap(){
 
 function initLibMap(){
   // Forcer une hauteur en pixels sur le conteneur
-  const col = document.getElementById('lib-col-map');
+  const wrap = document.getElementById('atlas-map-wrap');
   const mapEl = document.getElementById('lib-map');
-  if(col && mapEl){
-    const h = Math.max(400, window.innerHeight - 200);
-    mapEl.style.height = h + 'px';
+  if(wrap && mapEl){
     mapEl.style.width = '100%';
+    mapEl.style.height = '100%';
   }
   if(libMapObj){
     libMapObj.invalidateSize();
     drawLibMap();
     return;
   }
+  // Fond fixe : CartoDB Positron
+  currentLayer='positron';
   libMapObj=L.map('lib-map',{
     zoomControl:false,
     attributionControl:false,
@@ -1286,7 +2299,8 @@ function initLibMap(){
     touchZoom:false,
     doubleClickZoom:false
   });
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{
+  const {url:libUrl}=getLayerUrl(currentLayer);
+  L.tileLayer(libUrl,{
     maxZoom:14,
     attribution:''
   }).addTo(libMapObj);
@@ -1355,20 +2369,44 @@ function totalKm(pts){let d=0;for(let i=1;i<pts.length;i++)d+=dist(pts[i-1],pts[
 /* =======================================
    MAP
 ======================================= */
+function getLayerUrl(name){
+  const l=LAYERS[name];
+  if(!l) return null;
+  let url=l.url;
+  if(!l.free && l.key){
+    const k=MAP_KEYS[l.key]||'';
+    url=url.replace('{key}',k);
+  }
+  return {url,attr:l.attr};
+}
 function ensureMap(){
   if(mapObj) return;
   mapObj=L.map('map',{zoomControl:true});
-  const l=LAYERS[currentLayer];
-  tileLayer=L.tileLayer(l.url,{maxZoom:19,attribution:l.attr}).addTo(mapObj);
+  const {url,attr}=getLayerUrl(currentLayer);
+  tileLayer=L.tileLayer(url,{maxZoom:19,attribution:attr}).addTo(mapObj);
 }
 function setLayer(name){
   currentLayer=name;
-  if(!mapObj) return;
-  if(tileLayer) mapObj.removeLayer(tileLayer);
-  const l=LAYERS[name];
-  tileLayer=L.tileLayer(l.url,{maxZoom:19,attribution:l.attr}).addTo(mapObj);
-  document.querySelectorAll('.mcb[id^="lb-"]').forEach(b=>b.classList.remove('on'));
-  document.getElementById('lb-'+name).classList.add('on');
+  sv('currentLayer',name);
+  // Carte de randonnée
+  if(mapObj){
+    if(tileLayer) mapObj.removeLayer(tileLayer);
+    const {url,attr}=getLayerUrl(name);
+    tileLayer=L.tileLayer(url,{maxZoom:19,attribution:attr}).addTo(mapObj);
+    document.querySelectorAll('.mcb[id^="lb-"]').forEach(b=>b.classList.remove('on'));
+    const btn=document.getElementById('lb-'+name);
+    if(btn) btn.classList.add('on');
+  }
+  // Carte générale lib
+  if(libMapObj){
+    libMapObj.eachLayer(l=>{if(l instanceof L.TileLayer) libMapObj.removeLayer(l);});
+    const {url,attr}=getLayerUrl(name);
+    L.tileLayer(url,{maxZoom:14,attribution:''}).addTo(libMapObj);
+  }
+  // Mettre à jour le sélecteur du drawer
+  document.querySelectorAll('.lib-layer-btn').forEach(b=>{
+    b.classList.toggle('active', b.dataset.layer===name);
+  });
 }
 function draw(animate=false){
   lines.forEach(l=>mapObj.removeLayer(l));
@@ -1516,6 +2554,16 @@ function refreshLibrary(){
   document.getElementById('total-km').textContent=kAll;
   document.getElementById('total-gr').textContent=gAll;
   document.getElementById('total-sorties').textContent=sAll;
+  // Overlay km rouge
+  const kmOverlay=document.getElementById('lib-km-value');
+  if(kmOverlay) kmOverlay.textContent=kAll+' km';
+  // Drawer
+  const dkm=document.getElementById('drawer-total-km');
+  const dgr=document.getElementById('drawer-total-gr');
+  const dso=document.getElementById('drawer-total-sorties');
+  if(dkm) dkm.textContent=kAll;
+  if(dgr) dgr.textContent=gAll;
+  if(dso) dso.textContent=sAll;
   // carte générale
   const pctEl=document.getElementById('pct-general');
   const dotEl=document.getElementById('dot-general');
@@ -2193,6 +3241,7 @@ if('serviceWorker' in navigator){
     await stravaHandleCallback();
   }
   updateStravaUI();
+  updateNotifDot();
 })();
 
 /* =======================================
@@ -2247,7 +3296,11 @@ async function onATMSelect(){
   if(prev) prev.classList.add('show');
   if(btn) btn.disabled=true;
   if(cat.gpxUrl){
-    // Afficher l'URL tentée pour debug
+    if(GPX_BASE === '__local__'){
+      st.className='atm-prev-status err';
+      st.textContent='Ouvrez l\'appli via un serveur (GitHub Pages ou Live Server) pour charger les tracés GPX.';
+      return;
+    }
     st.className='atm-prev-status loading';
     st.textContent='Vérification : '+cat.gpxUrl;
     try{
@@ -2259,11 +3312,11 @@ async function onATMSelect(){
         if(btn) btn.disabled=false;
       }else{
         st.className='atm-prev-status err';
-        st.textContent='Erreur '+res.status+' — URL: '+cat.gpxUrl;
+        st.textContent='Fichier GPX introuvable ('+res.status+'). Vérifiez que le fichier gpx/'+cat.key+'.gpx existe dans le repo.';
       }
     }catch(e){
       st.className='atm-prev-status err';
-      st.textContent='Erreur réseau — '+cat.gpxUrl;
+      st.textContent='Erreur réseau — vérifiez que les fichiers GPX sont bien dans /gpx/ du repo.';
     }
   }
 }
@@ -2387,6 +3440,491 @@ function drawGeneralActivities(){
   if(bounds.length>1) mapObj.fitBounds(L.latLngBounds(bounds),{padding:[40,40]});
 }
 
+/* ═══════════════════════════════════════════════════════════════
+   SYSTÈME DE SYNCHRONISATION & VALIDATION
+   Architecture multi-source : Strava, Garmin, Komoot, GPX manuel
+═══════════════════════════════════════════════════════════════ */
+
+/* ── Registre des sources ── */
+const SYNC_SOURCES = {
+  strava: {
+    id: 'strava', label: 'Strava', color: '#FC4C02',
+    icon: `<svg width="14" height="14" viewBox="0 0 24 24" fill="#FC4C02"><path d="M15.387 17.944l-2.089-4.116h-3.065L15.387 24l5.15-10.172h-3.066m-7.008-5.599l2.836 5.599h4.172L10.463 0l-7 13.828h4.169"/></svg>`,
+    isConnected: () => stravaIsConnected(),
+    sync: syncFromStrava,
+  },
+  garmin: {
+    id: 'garmin', label: 'Garmin', color: '#007CC3',
+    icon: `<svg width="14" height="14" viewBox="0 0 24 24" fill="#007CC3"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2" stroke="white" stroke-width="1.5" fill="none"/></svg>`,
+    isConnected: () => false, // À implémenter
+    sync: async () => [],
+  },
+  komoot: {
+    id: 'komoot', label: 'Komoot', color: '#6AB04C',
+    icon: `<svg width="14" height="14" viewBox="0 0 24 24" fill="#6AB04C"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>`,
+    isConnected: () => false, // À implémenter
+    sync: async () => [],
+  },
+  gpx: {
+    id: 'gpx', label: 'GPX', color: '#9B9388',
+    icon: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9B9388" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>`,
+    isConnected: () => true,
+    sync: async () => [],
+  },
+};
+
+/* ── Clé localStorage pour les activités en attente ── */
+const PENDING_KEY = 'cairn_pending_activities';
+
+function getPendingActivities(){ return ld(PENDING_KEY) || []; }
+function savePendingActivities(list){ sv(PENDING_KEY, list); }
+
+function addPendingActivity(act){
+  const list = getPendingActivities();
+  if(list.some(a => a.id === act.id)) return; // déjà en attente
+  list.unshift(act);
+  savePendingActivities(list);
+  updateNotifDot();
+}
+
+function removePendingActivity(id){
+  const list = getPendingActivities().filter(a => a.id !== id);
+  savePendingActivities(list);
+  updateNotifDot();
+}
+
+function updateNotifDot(){
+  const count = getPendingActivities().length;
+  const dot = document.getElementById('hamburger-notif-dot');
+  if(dot) dot.style.display = count > 0 ? 'block' : 'none';
+}
+
+/* ── Sync Strava → pending ── */
+async function syncFromStrava(){
+  if(!stravaIsConnected()) return [];
+  const newItems = [];
+  const lastSync = ld('cairn_last_sync_strava') || Math.floor((Date.now() - 90*24*60*60*1000)/1000);
+  const activities = await stravaFetchActivities(lastSync);
+  const walkTypes = ['Hike','Walk','BackcountrySki','NordicSki','Snowshoe','TrailRun'];
+  const relevant = activities.filter(a => walkTypes.includes(a.type));
+
+  for(const act of relevant){
+    const alreadyValidated = (ld('cairn_validated')||[]).some(v => v.sourceId === String(act.id));
+    if(alreadyValidated) continue;
+
+    // Récupérer le stream GPS
+    const pts = await stravaFetchStream(act.id);
+
+    // Récupérer les photos
+    let photos = [];
+    try{
+      const token = await stravaGetValidToken();
+      const pr = await fetch(
+        `https://www.strava.com/api/v3/activities/${act.id}/photos?photo_sources=true&size=600`,
+        {headers:{Authorization:'Bearer '+token}}
+      );
+      if(pr.ok) photos = (await pr.json()).map(p => p.urls?.['600'] || p.urls?.['100'] || '').filter(Boolean);
+    }catch(e){}
+
+    const pending = {
+      id: 'strava_' + act.id,
+      sourceId: String(act.id),
+      source: 'strava',
+      title: act.name || 'Randonnée',
+      date: act.start_date_local?.split('T')[0] || '',
+      km: Math.round((act.distance||0)/100)/10,
+      ele: Math.round(act.total_elevation_gain||0),
+      duration: act.moving_time || 0,
+      pts: pts || [],
+      photos,
+      detectedGR: pts && pts.length > 2 ? autoDetectGR(pts) : null,
+    };
+    addPendingActivity(pending);
+    newItems.push(pending);
+  }
+
+  sv('cairn_last_sync_strava', Math.floor(Date.now()/1000));
+  return newItems;
+}
+
+/* ── Auto-détection du GR le plus proche ── */
+function autoDetectGR(actPts){
+  if(!actPts || actPts.length < 2) return null;
+  let best = null, bestScore = 0;
+  Object.entries(TRAILS).forEach(([key, info]) => {
+    const refPtsData = ld('pts_'+key) || ld('ref_'+key);
+    if(!refPtsData || refPtsData.length < 2) return;
+    // Echantillonner pour la perf : comparer 20 points de l'activité
+    const step = Math.max(1, Math.floor(actPts.length / 20));
+    let matches = 0;
+    for(let i = 0; i < actPts.length; i += step){
+      const p = actPts[i];
+      const close = refPtsData.some(r => dist([p[0],p[1]], r) < 150);
+      if(close) matches++;
+    }
+    const score = matches / Math.ceil(actPts.length / step);
+    if(score > bestScore && score > 0.3){ bestScore = score; best = key; }
+  });
+  return best;
+}
+
+/* ── Lancement de la sync globale ── */
+async function runAutoSync(){
+  for(const src of Object.values(SYNC_SOURCES)){
+    if(src.isConnected()) await src.sync();
+  }
+  updateNotifDot();
+}
+
+/* ── Vérifier au lancement si activités en attente ── */
+function checkPendingOnLaunch(){
+  // Sync si sources connectées
+  runAutoSync().then(() => {
+    const pending = getPendingActivities();
+    if(pending.length > 0) openPendingModal();
+  });
+}
+
+/* ─────────────────────────────────────────────────
+   MODALE ACTIVITÉS EN ATTENTE
+───────────────────────────────────────────────── */
+function openPendingModal(){
+  const list = getPendingActivities();
+  if(!list.length) return;
+
+  const countEl = document.getElementById('pending-modal-count');
+  if(countEl) countEl.textContent = list.length + ' activité' + (list.length>1?'s':'') + ' à valider';
+
+  const listEl = document.getElementById('pending-list');
+  if(!listEl) return;
+
+  listEl.innerHTML = list.map(act => {
+    const src = SYNC_SOURCES[act.source] || SYNC_SOURCES.gpx;
+    const dateStr = act.date ? formatDateFR(act.date) : '—';
+    return `<div class="pending-item">
+      <div class="pending-item-source">${src.icon}</div>
+      <div class="pending-item-info">
+        <div class="pending-item-title">${esc(act.title)}</div>
+        <div class="pending-item-meta">
+          <span>${dateStr}</span>
+          ${act.km ? `<span>${act.km} km</span>` : ''}
+          ${act.ele ? `<span>+${act.ele} m</span>` : ''}
+          ${act.detectedGR && TRAILS[act.detectedGR] ? `<span>${TRAILS[act.detectedGR].num}</span>` : ''}
+        </div>
+      </div>
+      <button class="pending-item-btn" onclick="openValidateModal('${act.id}')">Voir</button>
+    </div>`;
+  }).join('');
+
+  document.getElementById('pending-modal').classList.add('open');
+}
+
+function closePendingModal(){
+  document.getElementById('pending-modal').classList.remove('open');
+}
+
+function esc(str){ return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function formatDateFR(dateStr){
+  if(!dateStr) return '—';
+  try{
+    const [y,m,d] = dateStr.split('-');
+    const months = ['jan','fév','mar','avr','mai','juin','juil','août','sep','oct','nov','déc'];
+    return `${parseInt(d)} ${months[parseInt(m)-1]} ${y}`;
+  }catch(e){ return dateStr; }
+}
+
+/* ─────────────────────────────────────────────────
+   MODALE DE VALIDATION
+───────────────────────────────────────────────── */
+let valCurrentId = null;
+let valMapObj = null;
+let valSelectedGR = null;
+let valCoverPhoto = null;
+
+function openValidateModal(actId){
+  const act = getPendingActivities().find(a => a.id === actId);
+  if(!act) return;
+
+  valCurrentId = actId;
+  valSelectedGR = act.detectedGR || null;
+  valCoverPhoto = act.photos?.[0] || null;
+
+  // Remplir le header
+  const src = SYNC_SOURCES[act.source] || SYNC_SOURCES.gpx;
+  document.getElementById('val-title').textContent = act.title || 'Randonnée';
+  document.getElementById('val-source-badge').textContent = src.label;
+
+  // Stats carte
+  document.getElementById('val-stat-km').textContent = act.km || '—';
+  document.getElementById('val-stat-ele').textContent = act.ele ? '+'+act.ele : '—';
+  document.getElementById('val-stat-date').textContent = act.date ? formatDateFR(act.date) : '—';
+
+  // Formulaire
+  document.getElementById('val-input-title').value = act.title || '';
+  document.getElementById('val-input-note').value = '';
+
+  // GR selector — actifs uniquement
+  const grSel = document.getElementById('val-gr-selector');
+  const activeTrails = ld('active_trails') || [];
+  if(grSel){
+    if(activeTrails.length === 0){
+      grSel.innerHTML = `<span style="font-family:var(--sans);font-size:10px;color:var(--stone);font-style:italic">Aucun GR dans votre atlas</span>`;
+    } else {
+      grSel.innerHTML = activeTrails.map(key => {
+        const info = TRAILS[key];
+        if(!info) return '';
+        const active = valSelectedGR === key;
+        return `<button class="val-gr-chip ${active?'active':''}" data-gr="${key}" onclick="toggleValGR('${key}')">${info.num}</button>`;
+      }).join('');
+    }
+  }
+
+  // GR auto-détecté
+  const detectedEl = document.getElementById('val-gr-detected');
+  if(detectedEl){
+    if(act.detectedGR && TRAILS[act.detectedGR]){
+      detectedEl.innerHTML = `Détecté automatiquement : <strong>${TRAILS[act.detectedGR].num} — ${TRAILS[act.detectedGR].name}</strong>`;
+    } else {
+      detectedEl.textContent = '';
+    }
+  }
+
+  // Photos
+  const photosEl = document.getElementById('val-photos');
+  const photosField = document.getElementById('val-photos-field');
+  if(photosEl){
+    if(act.photos && act.photos.length > 0){
+      photosField.style.display = '';
+      photosEl.innerHTML = act.photos.map((url, i) => {
+        const isCover = url === valCoverPhoto;
+        return `<img class="val-photo ${isCover?'cover':''}" src="${esc(url)}" onclick="selectCoverPhoto('${esc(url)}')" title="Définir comme couverture">`;
+      }).join('');
+    } else {
+      photosField.style.display = 'none';
+    }
+  }
+
+  // Fermer pending, ouvrir validate
+  closePendingModal();
+  document.getElementById('validate-modal').classList.add('open');
+
+  // Initialiser la carte après rendu
+  setTimeout(() => initValMap(act), 120);
+}
+
+function closeValidateModal(){
+  document.getElementById('validate-modal').classList.remove('open');
+  if(valMapObj){ valMapObj.remove(); valMapObj = null; }
+  // Rouvrir la modale pending si encore des éléments
+  if(getPendingActivities().length > 0) openPendingModal();
+}
+
+function initValMap(act){
+  if(valMapObj){ valMapObj.remove(); valMapObj = null; }
+  const el = document.getElementById('val-map');
+  if(!el) return;
+
+  valMapObj = L.map('val-map', {zoomControl: false, attributionControl: false});
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {maxZoom:18}).addTo(valMapObj);
+
+  if(act.pts && act.pts.length > 1){
+    const latlngs = act.pts.map(p => [p[0], p[1]]);
+    L.polyline(latlngs, {color:'var(--gr-red)', weight:3, opacity:.85}).addTo(valMapObj);
+    valMapObj.fitBounds(L.latLngBounds(latlngs), {padding:[24,24]});
+  } else {
+    valMapObj.setView([46.5, 2.3], 5);
+  }
+}
+
+function toggleValGR(key){
+  valSelectedGR = valSelectedGR === key ? null : key;
+  document.querySelectorAll('.val-gr-chip').forEach(b => {
+    b.classList.toggle('active', b.dataset.gr === valSelectedGR);
+  });
+}
+
+function selectCoverPhoto(url){
+  valCoverPhoto = url;
+  document.querySelectorAll('.val-photo').forEach(img => {
+    img.classList.toggle('cover', img.src === url);
+  });
+}
+
+/* ── Valider et intégrer dans l'atlas ── */
+async function submitValidation(){
+  const act = getPendingActivities().find(a => a.id === valCurrentId);
+  if(!act) return;
+
+  const title = document.getElementById('val-input-title').value.trim() || act.title;
+  const note  = document.getElementById('val-input-note').value.trim();
+  const grKey = valSelectedGR;
+  const cover = valCoverPhoto;
+  const btn   = document.getElementById('val-submit-btn');
+  btn.disabled = true;
+  btn.textContent = 'Intégration…';
+
+  // Construire l'entrée validée
+  const entry = {
+    id: 'validated_' + Date.now(),
+    sourceId: act.sourceId,
+    source: act.source,
+    title,
+    note,
+    date: act.date,
+    km: act.km,
+    ele: act.ele,
+    pts: act.pts,
+    cover,
+    photos: act.photos || [],
+    grKey,
+    validatedAt: new Date().toISOString(),
+  };
+
+  // 1. Sauvegarder dans le journal validé
+  const validated = ld('cairn_validated') || [];
+  validated.unshift(entry);
+  sv('cairn_validated', validated);
+
+  // 2. Si associé à un GR — mettre à jour la progression
+  if(grKey && act.pts && act.pts.length > 1){
+    const refPtsData = ld('pts_'+grKey) || ld('ref_'+grKey);
+    if(refPtsData && refPtsData.length > 1){
+      const doneSet = new Set(ld('done_'+grKey) || []);
+      matchPts(act.pts, refPtsData, doneSet);
+      sv('done_'+grKey, [...doneSet]);
+
+      // Ajouter à l'historique du GR
+      const hist = ld('hist_'+grKey) || [];
+      hist.unshift({
+        date: act.date,
+        title,
+        source: act.source,
+        sourceId: act.sourceId,
+        km: act.km,
+        note,
+        cover,
+      });
+      sv('hist_'+grKey, hist);
+    }
+  }
+
+  // 3. Retirer des pending
+  removePendingActivity(valCurrentId);
+
+  // 4. Toast + fermer
+  toast('✓ ' + title + ' ajouté à l\'atlas');
+  btn.disabled = false;
+  btn.textContent = 'Valider cette marche';
+
+  document.getElementById('validate-modal').classList.remove('open');
+  if(valMapObj){ valMapObj.remove(); valMapObj = null; }
+
+  // Rafraîchir la carte générale
+  refreshLibrary();
+  if(typeof waitAndInitLibMap === 'function') waitAndInitLibMap();
+
+  // Si encore des pending, rouvrir la modale
+  setTimeout(() => {
+    if(getPendingActivities().length > 0) openPendingModal();
+  }, 400);
+}
+
+/* ── GPX manuel → pending ── */
+function addGPXtoPending(pts, ele, title, dateStr){
+  const act = {
+    id: 'gpx_' + Date.now(),
+    sourceId: 'gpx_' + Date.now(),
+    source: 'gpx',
+    title: title || 'Randonnée GPX',
+    date: dateStr || new Date().toISOString().split('T')[0],
+    km: Math.round(totalKm(pts) * 10) / 10,
+    ele: ele && ele.length > 1 ? Math.round(Math.max(...ele) - Math.min(...ele)) : 0,
+    pts,
+    photos: [],
+    detectedGR: autoDetectGR(pts),
+  };
+  addPendingActivity(act);
+  toast('Marche détectée — à valider dans CAIRN');
+  if(document.querySelector('.screen.active#library')) openPendingModal();
+}
+
 </script>
+
+<!-- ━━━━━━━━━━━━ MODALE ACTIVITÉS EN ATTENTE ━━━━━━━━━━━━ -->
+<div id="pending-modal">
+  <div id="pending-modal-box">
+    <div class="pending-modal-head">
+      <div>
+        <div class="pending-modal-title">Nouvelles marches détectées</div>
+        <div class="pending-modal-count" id="pending-modal-count"></div>
+      </div>
+      <button class="pending-modal-close" onclick="closePendingModal()">×</button>
+    </div>
+    <div class="pending-list" id="pending-list"></div>
+    <div class="pending-modal-footer">
+      <button class="pending-skip" onclick="closePendingModal()">Plus tard</button>
+    </div>
+  </div>
+</div>
+
+<!-- ━━━━━━━━━━━━ MODALE DE VALIDATION ━━━━━━━━━━━━ -->
+<div id="validate-modal">
+  <div class="val-head">
+    <button class="val-back" onclick="closeValidateModal()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+    </button>
+    <div class="val-head-title" id="val-title">—</div>
+    <div class="val-source-badge" id="val-source-badge">—</div>
+  </div>
+  <div class="val-body">
+    <div id="val-map-wrap">
+      <div id="val-map"></div>
+      <div class="val-map-stats">
+        <div class="val-map-stat">
+          <div class="val-map-stat-v" id="val-stat-km">—</div>
+          <div class="val-map-stat-l">km</div>
+        </div>
+        <div class="val-map-stat">
+          <div class="val-map-stat-v" id="val-stat-ele">—</div>
+          <div class="val-map-stat-l">D+</div>
+        </div>
+        <div class="val-map-stat">
+          <div class="val-map-stat-v" id="val-stat-date">—</div>
+          <div class="val-map-stat-l">date</div>
+        </div>
+      </div>
+    </div>
+    <div class="val-form">
+      <!-- Titre -->
+      <div class="val-field">
+        <div class="val-label">Titre</div>
+        <input class="val-input" id="val-input-title" type="text" placeholder="Nom de cette marche…">
+      </div>
+      <!-- Note personnelle -->
+      <div class="val-field">
+        <div class="val-label">Note personnelle</div>
+        <textarea class="val-textarea" id="val-input-note" placeholder="Un souvenir, une impression, une anecdote…"></textarea>
+      </div>
+      <!-- Associer à un GR -->
+      <div class="val-field">
+        <div class="val-label">Associer à un GR</div>
+        <div class="val-gr-selector" id="val-gr-selector"></div>
+        <div class="val-gr-detected" id="val-gr-detected"></div>
+      </div>
+      <!-- Photos -->
+      <div class="val-field" id="val-photos-field">
+        <div class="val-label">Photo de couverture</div>
+        <div class="val-photos" id="val-photos"></div>
+      </div>
+    </div>
+  </div>
+  <div class="val-footer">
+    <button class="val-submit" id="val-submit-btn" onclick="submitValidation()">
+      Valider cette marche
+    </button>
+  </div>
+</div>
+
 </body>
 </html>
