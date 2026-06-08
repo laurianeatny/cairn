@@ -3648,42 +3648,6 @@ async function syncFromStrava(){
   sv('cairn_last_sync_strava', Math.floor(Date.now()/1000));
   return newItems;
 }
-    if(alreadyValidated) continue;
-
-    // Récupérer le stream GPS
-    const pts = await stravaFetchStream(act.id);
-
-    // Récupérer les photos
-    let photos = [];
-    try{
-      const token = await stravaGetValidToken();
-      const pr = await fetch(
-        `https://www.strava.com/api/v3/activities/${act.id}/photos?photo_sources=true&size=600`,
-        {headers:{Authorization:'Bearer '+token}}
-      );
-      if(pr.ok) photos = (await pr.json()).map(p => p.urls?.['600'] || p.urls?.['100'] || '').filter(Boolean);
-    }catch(e){}
-
-    const pending = {
-      id: 'strava_' + act.id,
-      sourceId: String(act.id),
-      source: 'strava',
-      title: act.name || 'Randonnée',
-      date: act.start_date_local?.split('T')[0] || '',
-      km: Math.round((act.distance||0)/100)/10,
-      ele: Math.round(act.total_elevation_gain||0),
-      duration: act.moving_time || 0,
-      pts: pts || [],
-      photos,
-      detectedGR: pts && pts.length > 2 ? autoDetectGR(pts) : null,
-    };
-    addPendingActivity(pending);
-    newItems.push(pending);
-  }
-
-  sv('cairn_last_sync_strava', Math.floor(Date.now()/1000));
-  return newItems;
-}
 
 /* ── Auto-détection du GR le plus proche ── */
 function autoDetectGR(actPts){
