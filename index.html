@@ -1420,7 +1420,10 @@ input[type=file]{display:none}
           <div class="params-row" id="strava-diag-row" style="display:none;border-top:1px solid var(--ghost);flex-direction:column;align-items:flex-start;gap:8px">
             <div class="params-row-name" style="font-size:10px">Diagnostic</div>
             <div id="strava-diag-text" style="font-family:var(--sans);font-size:10px;font-weight:300;color:var(--stone);line-height:1.6;word-break:break-all"></div>
-            <button class="params-btn-ghost" onclick="runStravaDiag()">Tester la connexion</button>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <button class="params-btn-ghost" onclick="runStravaDiag()">Tester la connexion</button>
+              <button class="params-btn-ghost" onclick="forceStravaResync()" style="color:var(--gr-red);border-color:var(--gr-red)">Forcer la resync</button>
+            </div>
           </div>
         </div>
       </div>
@@ -2991,6 +2994,22 @@ async function runStravaDiag(){
   diagEl.innerHTML = log.join('<br>');
 }
 
+/* ── Forcer resync complète (efface le timestamp) ── */
+async function forceStravaResync(){
+  const diagEl = document.getElementById('strava-diag-text');
+  if(diagEl) diagEl.textContent = '⏳ Resync en cours sur 1 an…';
+  // Effacer le timestamp pour forcer un scan complet
+  localStorage.removeItem('cairn_last_sync_strava');
+  const newItems = await syncFromStrava();
+  const msg = newItems.length > 0
+    ? `✓ ${newItems.length} nouvelle${newItems.length>1?'s':''} marche${newItems.length>1?'s':''} ajoutée${newItems.length>1?'s':''} à valider`
+    : '✓ Aucune nouvelle activité trouvée (vérifiez que vos sorties sont typées Marche ou Randonnée sur Strava)';
+  if(diagEl) diagEl.textContent = msg;
+  if(newItems.length > 0){
+    setTimeout(() => openPendingModal(), 500);
+  }
+}
+
 /* ── Sync manuel depuis Paramètres ── */
 async function stravaSync(){
   const btn = document.getElementById('btn-strava-sync')?.querySelector('button');
@@ -3576,13 +3595,59 @@ function updateNotifDot(){
 async function syncFromStrava(){
   if(!stravaIsConnected()) return [];
   const newItems = [];
-  const lastSync = ld('cairn_last_sync_strava') || Math.floor((Date.now() - 90*24*60*60*1000)/1000);
-  const activities = await stravaFetchActivities(lastSync);
-  const walkTypes = ['Hike','Walk','BackcountrySki','NordicSki','Snowshoe','TrailRun'];
+
+  // Toujours chercher sur 1 an pour ne rien rater
+  const oneYearAgo = Math.floor((Date.now() - 365*24*60*60*1000)/1000);
+  const lastSync = ld('cairn_last_sync_strava');
+  // Si jamais synchro ou si lastSync plus vieux que 1 an → 1 an
+  const after = (!lastSync || lastSync < oneYearAgo) ? oneYearAgo : lastSync;
+
+  const activities = await stravaFetchActivities(after);
+  const walkTypes = ['Hike','Walk','BackcountrySki','NordicSki','Snowshoe','TrailRun','Workout'];
   const relevant = activities.filter(a => walkTypes.includes(a.type));
 
   for(const act of relevant){
+    // Déjà validée ?
     const alreadyValidated = (ld('cairn_validated')||[]).some(v => v.sourceId === String(act.id));
+    if(alreadyValidated) continue;
+    // Déjà en attente ?
+    const alreadyPending = getPendingActivities().some(p => p.sourceId === String(act.id));
+    if(alreadyPending) continue;
+
+    // Récupérer le stream GPS
+    const pts = await stravaFetchStream(act.id);
+
+    // Récupérer les photos
+    let photos = [];
+    try{
+      const token = await stravaGetValidToken();
+      const pr = await fetch(
+        `https://www.strava.com/api/v3/activities/${act.id}/photos?photo_sources=true&size=600`,
+        {headers:{Authorization:'Bearer '+token}}
+      );
+      if(pr.ok) photos = (await pr.json()).map(p => p.urls?.['600'] || p.urls?.['100'] || '').filter(Boolean);
+    }catch(e){}
+
+    const pending = {
+      id: 'strava_' + act.id,
+      sourceId: String(act.id),
+      source: 'strava',
+      title: act.name || 'Randonnée',
+      date: act.start_date_local?.split('T')[0] || '',
+      km: Math.round((act.distance||0)/100)/10,
+      ele: Math.round(act.total_elevation_gain||0),
+      duration: act.moving_time || 0,
+      pts: pts || [],
+      photos,
+      detectedGR: pts && pts.length > 2 ? autoDetectGR(pts) : null,
+    };
+    addPendingActivity(pending);
+    newItems.push(pending);
+  }
+
+  sv('cairn_last_sync_strava', Math.floor(Date.now()/1000));
+  return newItems;
+}
     if(alreadyValidated) continue;
 
     // Récupérer le stream GPS
