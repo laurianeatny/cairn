@@ -1417,6 +1417,11 @@ input[type=file]{display:none}
             </div>
             <button class="params-btn-primary" onclick="stravaSync()">Sync</button>
           </div>
+          <div class="params-row" id="strava-diag-row" style="display:none;border-top:1px solid var(--ghost);flex-direction:column;align-items:flex-start;gap:8px">
+            <div class="params-row-name" style="font-size:10px">Diagnostic</div>
+            <div id="strava-diag-text" style="font-family:var(--sans);font-size:10px;font-weight:300;color:var(--stone);line-height:1.6;word-break:break-all"></div>
+            <button class="params-btn-ghost" onclick="runStravaDiag()">Tester la connexion</button>
+          </div>
         </div>
       </div>
 
@@ -2916,20 +2921,88 @@ function updateStravaUI(){
   const txt=document.getElementById('strava-status-text');
   const sub=document.getElementById('strava-status-sub');
   const syncBtn=document.getElementById('btn-strava-sync');
+  const diagRow=document.getElementById('strava-diag-row');
   if(connected && tokens?.athlete){
-    txt.textContent=tokens.athlete.firstname+' '+tokens.athlete.lastname;
-    sub.textContent='Compte Strava connecté · synchronisation disponible';
-    btn.textContent='Déconnecter';
-    btn.style.borderColor='var(--gr-red)';
-    btn.style.color='var(--gr-red)';
+    if(txt) txt.textContent=tokens.athlete.firstname+' '+tokens.athlete.lastname;
+    if(sub) sub.textContent='Compte Strava connecté · synchronisation disponible';
+    if(btn){ btn.textContent='Déconnecter'; btn.style.borderColor='var(--gr-red)'; btn.style.color='var(--gr-red)'; }
     if(syncBtn) syncBtn.style.display='flex';
+    if(diagRow) diagRow.style.display='flex';
   }else{
-    txt.textContent='Connecter Strava';
-    sub.textContent='Importez vos activités automatiquement';
-    btn.textContent='Connecter';
-    btn.style.borderColor='var(--ghost)';
-    btn.style.color='var(--ink)';
+    if(txt) txt.textContent='Connecter Strava';
+    if(sub) sub.textContent='Importez vos activités automatiquement';
+    if(btn){ btn.textContent='Connecter'; btn.style.borderColor='var(--ghost)'; btn.style.color='var(--ink)'; }
     if(syncBtn) syncBtn.style.display='none';
+    if(diagRow) diagRow.style.display='none';
+  }
+}
+
+/* ── Diagnostic Strava ── */
+async function runStravaDiag(){
+  const diagEl = document.getElementById('strava-diag-text');
+  if(!diagEl) return;
+  diagEl.textContent = '⏳ Test en cours…';
+
+  const tokens = stravaGetTokens();
+  if(!tokens){ diagEl.textContent = '❌ Aucun token en mémoire — reconnectez Strava.'; return; }
+
+  const now = Math.floor(Date.now()/1000);
+  const expireIn = tokens.expires_at - now;
+  let log = [];
+  log.push(`Token expire dans : ${expireIn > 0 ? Math.round(expireIn/60)+' min' : '⚠️ EXPIRÉ'}`);
+
+  // Test refresh si expiré
+  if(expireIn < 60){
+    log.push('Tentative de refresh…');
+    const newToken = await stravaGetValidToken();
+    if(newToken){ log.push('✓ Refresh OK'); }
+    else { log.push('❌ Refresh échoué — reconnectez Strava.'); diagEl.innerHTML = log.join('<br>'); return; }
+  }
+
+  // Test appel API
+  log.push('Test appel API Strava…');
+  try{
+    const token = await stravaGetValidToken();
+    const res = await fetch('https://www.strava.com/api/v3/athlete', {headers:{Authorization:'Bearer '+token}});
+    const data = await res.json();
+    if(data.id){
+      log.push(`✓ API OK — Athlète : ${data.firstname} ${data.lastname} (id: ${data.id})`);
+    } else {
+      log.push('❌ API retourne : '+JSON.stringify(data).substring(0,120));
+    }
+  }catch(e){ log.push('❌ Erreur réseau : '+e.message); }
+
+  // Test liste activités
+  log.push('Test récupération activités…');
+  try{
+    const token = await stravaGetValidToken();
+    const after = Math.floor((Date.now() - 90*24*60*60*1000)/1000);
+    const res = await fetch(`https://www.strava.com/api/v3/athlete/activities?per_page=5&after=${after}`, {headers:{Authorization:'Bearer '+token}});
+    const acts = await res.json();
+    if(Array.isArray(acts)){
+      const walks = acts.filter(a=>['Hike','Walk','TrailRun','BackcountrySki','Snowshoe'].includes(a.type));
+      log.push(`✓ ${acts.length} activités récentes — ${walks.length} marche(s)/rando(s)`);
+      walks.forEach(a => log.push(`  · ${a.name} — ${a.start_date_local?.split('T')[0]} — ${Math.round(a.distance/100)/10} km`));
+    } else {
+      log.push('❌ Réponse inattendue : '+JSON.stringify(acts).substring(0,120));
+    }
+  }catch(e){ log.push('❌ Erreur : '+e.message); }
+
+  diagEl.innerHTML = log.join('<br>');
+}
+
+/* ── Sync manuel depuis Paramètres ── */
+async function stravaSync(){
+  const btn = document.getElementById('btn-strava-sync')?.querySelector('button');
+  if(btn){ btn.textContent='…'; btn.disabled=true; }
+  toast('Synchronisation Strava…');
+  const newItems = await syncFromStrava();
+  if(btn){ btn.textContent='Sync'; btn.disabled=false; }
+  if(newItems.length > 0){
+    toast(newItems.length+' nouvelle'+(newItems.length>1?'s':'')+' marche'+(newItems.length>1?'s':'')+' détectée'+(newItems.length>1?'s':''));
+    openPendingModal();
+  } else {
+    toast('Aucune nouvelle activité');
   }
 }
 
