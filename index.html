@@ -801,7 +801,24 @@ input[type=file]{display:none}
   flex-shrink:0;
 }
 
-/* Bouton + Nouveau tracé (bas gauche carte) */
+/* Toggle toutes les marches — à gauche du km overlay */
+#lib-toggle-walks{
+  position:absolute;
+  bottom:72px;right:20px;
+  z-index:500;
+  width:32px;height:32px;
+  background:none;border:none;
+  cursor:pointer;padding:0;
+  display:flex;align-items:center;justify-content:center;
+}
+#lib-toggle-walks svg{
+  width:18px;height:18px;
+  stroke:var(--stone);
+  filter:drop-shadow(0 1px 2px rgba(247,243,235,.8));
+  transition:stroke .2s;
+}
+#lib-toggle-walks.active svg{ stroke:var(--ink); }
+#lib-toggle-walks:hover svg{ stroke:var(--ink); }
 #lib-add-btn{
   position:absolute;
   bottom:28px;left:20px;
@@ -1250,6 +1267,11 @@ input[type=file]{display:none}
         <div id="lib-km-value">0 km</div>
         <div id="lib-km-label">parcourus</div>
       </div>
+
+      <!-- Toggle toutes les marches -->
+      <button id="lib-toggle-walks" class="active" onclick="toggleAllWalks()" title="Afficher / masquer toutes les marches">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 12c3-6 6-9 9-9s6 3 9 9-6 9-9 9-6-3-9-9z"/><circle cx="12" cy="12" r="3"/></svg>
+      </button>
 
       <!-- Bouton ajouter tracé bas gauche -->
       <button id="lib-add-btn" onclick="openAddTrailModal()">
@@ -2138,6 +2160,12 @@ function setPref(key,val){
   }
 }
 
+function toggleAllWalks(){
+  const current = ld('lib_show_all_walks') !== false;
+  sv('lib_show_all_walks', !current);
+  drawLibMap();
+}
+
 function toggleLibDrawer(){
   const d=document.getElementById('lib-menu-drawer');
   if(!d) return;
@@ -2319,20 +2347,38 @@ function drawLibMap(){
   if(!libMapObj) return;
   libMapObj.eachLayer(l=>{if(l instanceof L.Polyline) libMapObj.removeLayer(l);});
   const bounds=[];
+  const showAll = ld('lib_show_all_walks') !== false; // true par défaut
+
+  // ── Segments GR parcourus (vert) ──
   Object.keys(TRAILS).forEach(t=>{
-    const rr=ld('ref_'+t),dd=ld('done_'+t);
+    const rr=ld('ref_'+t)||ld('pts_'+t),dd=ld('done_'+t);
     if(!rr||!rr.length) return;
     const doneSet=new Set(dd||[]);
     const n=Math.ceil(rr.length/SEG);
     for(let s=0;s<n;s++){
-      if(!doneSet.has(s)) continue; // seulement les segments validés
+      if(!doneSet.has(s)) continue;
       const seg=rr.slice(s*SEG,Math.min(s*SEG+SEG+1,rr.length));
       if(seg.length<2) continue;
-      L.polyline(seg,{color:'#4a6050',weight:2.5,opacity:.85}).addTo(libMapObj);
+      L.polyline(seg,{color:'var(--gr-green)',weight:2.5,opacity:.85}).addTo(libMapObj);
       seg.forEach(p=>bounds.push(p));
     }
   });
+
+  // ── Marches validées (rouge vermillon) ──
+  if(showAll){
+    const validated = ld('cairn_validated')||[];
+    validated.forEach(entry=>{
+      if(!entry.pts||entry.pts.length<2) return;
+      const latlngs = entry.pts.map(p=>[p[0],p[1]]);
+      L.polyline(latlngs,{color:'var(--gr-red)',weight:2,opacity:.7}).addTo(libMapObj);
+      latlngs.forEach(p=>bounds.push(p));
+    });
+  }
+
   if(bounds.length>1) libMapObj.fitBounds(L.latLngBounds(bounds),{padding:[16,16]});
+  // Mettre à jour le bouton toggle
+  const btn = document.getElementById('lib-toggle-walks');
+  if(btn) btn.classList.toggle('active', showAll);
 }
 
 /* =======================================
