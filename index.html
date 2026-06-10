@@ -2196,43 +2196,43 @@ function renderJournalPage(){
   const body = document.getElementById('journal-body');
   if(!body) return;
 
-  // ── Agréger toutes les sources ──
   const seen = new Set();
   const all = [];
 
-  // 1. Activités validées via le système de validation
+  function normId(entry){
+    const raw = entry.sourceId || entry.stravaId || entry.id || '';
+    return String(raw).replace(/^strava_/,'').trim();
+  }
+
+  // 1. Activités validées (nouveau système)
   (ld('cairn_validated')||[]).forEach(v => {
-    const uid = v.sourceId || v.id;
-    if(!seen.has(uid)){ seen.add(uid); all.push({
-      uid, title: v.title, date: v.date,
-      km: v.km, ele: v.ele, source: v.source,
-      grKey: v.grKey, note: v.note, cover: v.cover,
-      origin: 'validated',
-    }); }
+    const uid = normId(v);
+    if(!uid || seen.has(uid)) return;
+    seen.add(uid);
+    all.push({ uid, title:v.title, date:v.date, km:v.km, ele:v.ele,
+      source:v.source, grKey:v.grKey, note:v.note, cover:v.cover });
   });
 
-  // 2. Historiques des GR (anciennes activités pré-système validation)
+  // 2. Historiques des GR (ancien système)
   Object.keys(TRAILS).forEach(t => {
     (ld('hist_'+t)||[]).forEach(h => {
-      const uid = h.stravaId || h.id || h.date+h.name;
-      if(!seen.has(uid)){ seen.add(uid); all.push({
-        uid, title: h.name||h.title||'Randonnée', date: h.date,
-        km: h.km, ele: h.ele, source: h.source||'strava',
-        grKey: t, note: h.note, cover: h.cover,
-        origin: 'hist',
-      }); }
+      const uid = normId(h);
+      if(!uid || seen.has(uid)) return;
+      seen.add(uid);
+      all.push({ uid, title:h.name||h.title||'Randonnée', date:h.date,
+        km:h.km, ele:h.ele, source:h.source||'strava',
+        grKey:t, note:h.note||null, cover:h.cover||null });
     });
   });
 
-  // 3. hist_general
+  // 3. hist_general (ancien système)
   (ld('hist_general')||[]).forEach(h => {
-    const uid = h.stravaId || h.id;
-    if(!seen.has(uid)){ seen.add(uid); all.push({
-      uid, title: h.name||'Randonnée', date: h.date,
-      km: h.km, ele: null, source: h.source||'strava',
-      grKey: null, note: null, cover: null,
-      origin: 'general',
-    }); }
+    const uid = normId(h);
+    if(!uid || seen.has(uid)) return;
+    seen.add(uid);
+    all.push({ uid, title:h.name||'Randonnée', date:h.date,
+      km:h.km, ele:null, source:h.source||'strava',
+      grKey:null, note:null, cover:null });
   });
 
   if(!all.length){
@@ -2240,46 +2240,32 @@ function renderJournalPage(){
     return;
   }
 
-  // ── Trier par date décroissante ──
-  all.sort((a,b) => {
-    const da = a.date||'0000-00-00', db = b.date||'0000-00-00';
-    return db.localeCompare(da);
-  });
+  all.sort((a,b) => (b.date||'').localeCompare(a.date||''));
 
-  // ── Grouper par mois ──
   const months = {};
   const monthNames = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
   const dayNames = ['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'];
   all.forEach(entry => {
-    const d = entry.date || '0000-00-00';
-    const [y,m] = d.split('-');
-    const key = y && m ? `${y}-${m}` : 'Autre';
-    const label = y && m ? `${monthNames[parseInt(m)-1]} ${y}` : 'Non daté';
-    if(!months[key]) months[key] = {label, entries:[]};
+    const [y,m] = (entry.date||'').split('-');
+    const key = y&&m ? `${y}-${m}` : '0000-00';
+    const label = y&&m ? `${monthNames[parseInt(m)-1]} ${y}` : 'Non daté';
+    if(!months[key]) months[key]={label,entries:[]};
     months[key].entries.push(entry);
   });
 
-  const src = SYNC_SOURCES || {};
-  const sourceIcon = s => {
-    if(src[s]) return src[s].icon;
-    return `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16h12V8z"/></svg>`;
-  };
+  const srcReg = typeof SYNC_SOURCES !== 'undefined' ? SYNC_SOURCES : {};
+  const sourceIcon = s => srcReg[s]?.icon ||
+    `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16h12V8z"/></svg>`;
 
   let html = '';
   Object.values(months).forEach(({label, entries}) => {
     html += `<div class="journal-month">${label} · ${entries.length} sortie${entries.length>1?'s':''}</div>`;
     entries.forEach(e => {
       let day='—', weekday='';
-      if(e.date && e.date !== '0000-00-00'){
-        try{
-          const dt = new Date(e.date+'T12:00:00');
-          day = dt.getDate();
-          weekday = dayNames[dt.getDay()];
-        }catch(_){}
-      }
-      const grLabel = e.grKey && TRAILS[e.grKey] ? `<div class="journal-entry-gr">${TRAILS[e.grKey].num}</div>` : '';
-      const noteHtml = e.note ? `<div class="journal-entry-note">${esc(e.note)}</div>` : '';
-      const coverHtml = e.cover ? `<img class="journal-cover" src="${esc(e.cover)}" loading="lazy">` : '';
+      if(e.date){ try{ const dt=new Date(e.date+'T12:00:00'); day=dt.getDate(); weekday=dayNames[dt.getDay()]; }catch(_){} }
+      const grLabel = e.grKey&&TRAILS[e.grKey] ? `<div class="journal-entry-gr">${TRAILS[e.grKey].num}</div>` : '';
+      const noteHtml = e.note ? `<div class="journal-entry-note">${String(e.note).replace(/&/g,'&amp;').replace(/</g,'&lt;')}</div>` : '';
+      const coverHtml = e.cover ? `<img class="journal-cover" src="${e.cover}" loading="lazy">` : '';
       html += `<div class="journal-entry">
         <div class="journal-entry-date">
           <div class="journal-entry-day">${day}</div>
@@ -2287,20 +2273,18 @@ function renderJournalPage(){
         </div>
         <div class="journal-entry-divider"></div>
         <div class="journal-entry-info">
-          <div class="journal-entry-title">${esc(e.title)}</div>
+          <div class="journal-entry-title">${String(e.title||'').replace(/&/g,'&amp;').replace(/</g,'&lt;')}</div>
           <div class="journal-entry-meta">
-            ${e.km ? `<span>${e.km} km</span>` : ''}
-            ${e.ele ? `<span>+${e.ele} m</span>` : ''}
+            ${e.km?`<span>${e.km} km</span>`:''}
+            ${e.ele?`<span>+${e.ele} m</span>`:''}
           </div>
-          ${grLabel}
-          ${noteHtml}
+          ${grLabel}${noteHtml}
         </div>
         ${coverHtml}
         <div class="journal-entry-source">${sourceIcon(e.source)}</div>
       </div>`;
     });
   });
-
   body.innerHTML = html;
 }
 
@@ -3305,11 +3289,24 @@ async function stravaSync(){
 async function stravaFetchActivities(afterTimestamp=null){
   const token=await stravaGetValidToken();
   if(!token) return [];
-  let url='https://www.strava.com/api/v3/athlete/activities?per_page=50';
-  if(afterTimestamp) url+=`&after=${afterTimestamp}`;
-  const res=await fetch(url,{headers:{Authorization:'Bearer '+token}});
-  if(!res.ok) return [];
-  return await res.json();
+  const all=[];
+  let page=1;
+  while(true){
+    let url=`https://www.strava.com/api/v3/athlete/activities?per_page=100&page=${page}`;
+    if(afterTimestamp) url+=`&after=${afterTimestamp}`;
+    try{
+      const res=await fetch(url,{headers:{Authorization:'Bearer '+token}});
+      if(!res.ok) break;
+      const batch=await res.json();
+      if(!Array.isArray(batch)||batch.length===0) break;
+      all.push(...batch);
+      if(batch.length<100) break; // dernière page
+      page++;
+      // Pause courte pour respecter le rate limit Strava
+      await new Promise(r=>setTimeout(r,200));
+    }catch(e){ break; }
+  }
+  return all;
 }
 
 /* ── Fetch GPS stream for one activity ── */
