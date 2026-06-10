@@ -735,7 +735,84 @@ input[type=file]{display:none}
   background:var(--gr-green);
 }
 
-/* ── Page Paramètres ── */
+/* ── Page Journal ── */
+.screen.active#journal{
+  flex-direction:column;
+  background:var(--paper);
+  overflow:hidden;
+}
+.journal-body{
+  flex:1;overflow-y:auto;
+  padding:0 0 48px;
+}
+.journal-empty{
+  font-family:var(--serif);font-size:16px;font-style:italic;
+  color:var(--stone);text-align:center;margin-top:60px;line-height:1.8;
+  padding:0 24px;
+}
+.journal-month{
+  padding:20px 24px 8px;
+  font-family:var(--sans);font-size:9px;font-weight:500;
+  letter-spacing:.2em;text-transform:uppercase;
+  color:var(--stone);
+  position:sticky;top:0;
+  background:var(--paper);
+  border-bottom:1px solid var(--ghost);
+  z-index:2;
+}
+.journal-entry{
+  display:flex;align-items:flex-start;gap:14px;
+  padding:16px 24px;
+  border-bottom:1px solid var(--ghost);
+  cursor:pointer;
+  transition:background .12s;
+}
+.journal-entry:hover{ background:rgba(43,42,40,.03); }
+.journal-entry-date{
+  flex-shrink:0;width:36px;
+  text-align:center;
+}
+.journal-entry-day{
+  font-family:var(--serif);font-size:22px;font-weight:500;
+  color:var(--ink);line-height:1;
+}
+.journal-entry-weekday{
+  font-family:var(--sans);font-size:8px;font-weight:300;
+  color:var(--stone);letter-spacing:.08em;text-transform:uppercase;
+  margin-top:2px;
+}
+.journal-entry-divider{
+  width:1px;background:var(--ghost);flex-shrink:0;align-self:stretch;margin:2px 0;
+}
+.journal-entry-info{ flex:1;min-width:0; }
+.journal-entry-title{
+  font-family:var(--serif);font-size:15px;font-weight:500;
+  color:var(--ink);line-height:1.3;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.journal-entry-meta{
+  font-family:var(--sans);font-size:10px;font-weight:300;
+  color:var(--stone);margin-top:3px;
+  display:flex;gap:10px;flex-wrap:wrap;
+}
+.journal-entry-gr{
+  font-family:var(--sans);font-size:8px;font-weight:500;
+  letter-spacing:.12em;text-transform:uppercase;
+  color:var(--gr-red);margin-top:4px;
+}
+.journal-entry-note{
+  font-family:var(--serif);font-size:12px;font-weight:300;font-style:italic;
+  color:var(--stone);margin-top:4px;line-height:1.5;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.journal-entry-source{
+  flex-shrink:0;opacity:.4;
+  display:flex;align-items:center;
+}
+.journal-cover{
+  width:52px;height:52px;flex-shrink:0;
+  object-fit:cover;border:1px solid var(--ghost);
+}
 .params-body{
   flex:1;overflow-y:auto;
   padding:24px 24px 48px;
@@ -801,7 +878,26 @@ input[type=file]{display:none}
   flex-shrink:0;
 }
 
-/* Toggle toutes les marches — à gauche du km overlay */
+/* Zoom controls carte générale */
+#lib-zoom-ctrl{
+  position:absolute;
+  bottom:110px;right:20px;
+  z-index:500;
+  display:flex;flex-direction:column;
+  border:none;
+}
+#lib-zoom-ctrl button{
+  width:32px;height:32px;
+  background:none;border:none;
+  font-family:var(--sans);font-size:18px;font-weight:300;
+  color:var(--ink);cursor:pointer;
+  line-height:1;
+  text-shadow:0 1px 3px rgba(247,243,235,.85);
+  transition:opacity .15s;
+}
+#lib-zoom-ctrl button:hover{opacity:.6}
+
+/* Toggle toutes les marches */
 #lib-toggle-walks{
   position:absolute;
   bottom:72px;right:20px;
@@ -1273,6 +1369,12 @@ input[type=file]{display:none}
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 12c3-6 6-9 9-9s6 3 9 9-6 9-9 9-6-3-9-9z"/><circle cx="12" cy="12" r="3"/></svg>
       </button>
 
+      <!-- Zoom controls -->
+      <div id="lib-zoom-ctrl">
+        <button onclick="libMapObj.zoomIn()">+</button>
+        <button onclick="libMapObj.zoomOut()">−</button>
+      </div>
+
       <!-- Bouton ajouter tracé bas gauche -->
       <button id="lib-add-btn" onclick="openAddTrailModal()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
@@ -1301,7 +1403,7 @@ input[type=file]{display:none}
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
             GR
           </button>
-          <button onclick="toggleLibDrawer()">
+          <button onclick="toggleLibDrawer();showScreen('journal');renderJournalPage()">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>
             Journal
           </button>
@@ -1375,6 +1477,21 @@ input[type=file]{display:none}
   </div>
 </div>
 
+
+<!-- ━━━━━━━━━━━━━━━━━━ JOURNAL ━━━━━━━━━━━━━━━━━━ -->
+<div id="journal" class="screen">
+  <div class="subscreen-wrap">
+    <div class="subscreen-head">
+      <button class="subscreen-back" onclick="showScreen('library');refreshLibrary();waitAndInitLibMap()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+      </button>
+      <div class="subscreen-title">Journal</div>
+    </div>
+    <div class="journal-body" id="journal-body">
+      <!-- rempli par renderJournalPage() -->
+    </div>
+  </div>
+</div>
 
 <!-- ━━━━━━━━━━━━━━━━━━ SENTIERS ━━━━━━━━━━━━━━━━━━ -->
 <div id="sentiers" class="screen">
@@ -2074,6 +2191,119 @@ function goLibrary(){
   // Vérifier activités en attente (avec délai pour laisser la carte s'initialiser)
   setTimeout(checkPendingOnLaunch, 800);
 }
+/* ━━━━━━━━━━━━ PAGE JOURNAL ━━━━━━━━━━━━ */
+function renderJournalPage(){
+  const body = document.getElementById('journal-body');
+  if(!body) return;
+
+  // ── Agréger toutes les sources ──
+  const seen = new Set();
+  const all = [];
+
+  // 1. Activités validées via le système de validation
+  (ld('cairn_validated')||[]).forEach(v => {
+    const uid = v.sourceId || v.id;
+    if(!seen.has(uid)){ seen.add(uid); all.push({
+      uid, title: v.title, date: v.date,
+      km: v.km, ele: v.ele, source: v.source,
+      grKey: v.grKey, note: v.note, cover: v.cover,
+      origin: 'validated',
+    }); }
+  });
+
+  // 2. Historiques des GR (anciennes activités pré-système validation)
+  Object.keys(TRAILS).forEach(t => {
+    (ld('hist_'+t)||[]).forEach(h => {
+      const uid = h.stravaId || h.id || h.date+h.name;
+      if(!seen.has(uid)){ seen.add(uid); all.push({
+        uid, title: h.name||h.title||'Randonnée', date: h.date,
+        km: h.km, ele: h.ele, source: h.source||'strava',
+        grKey: t, note: h.note, cover: h.cover,
+        origin: 'hist',
+      }); }
+    });
+  });
+
+  // 3. hist_general
+  (ld('hist_general')||[]).forEach(h => {
+    const uid = h.stravaId || h.id;
+    if(!seen.has(uid)){ seen.add(uid); all.push({
+      uid, title: h.name||'Randonnée', date: h.date,
+      km: h.km, ele: null, source: h.source||'strava',
+      grKey: null, note: null, cover: null,
+      origin: 'general',
+    }); }
+  });
+
+  if(!all.length){
+    body.innerHTML = `<div class="journal-empty">Aucune activité enregistrée.<br>Validez vos marches pour les voir apparaître ici.</div>`;
+    return;
+  }
+
+  // ── Trier par date décroissante ──
+  all.sort((a,b) => {
+    const da = a.date||'0000-00-00', db = b.date||'0000-00-00';
+    return db.localeCompare(da);
+  });
+
+  // ── Grouper par mois ──
+  const months = {};
+  const monthNames = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
+  const dayNames = ['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'];
+  all.forEach(entry => {
+    const d = entry.date || '0000-00-00';
+    const [y,m] = d.split('-');
+    const key = y && m ? `${y}-${m}` : 'Autre';
+    const label = y && m ? `${monthNames[parseInt(m)-1]} ${y}` : 'Non daté';
+    if(!months[key]) months[key] = {label, entries:[]};
+    months[key].entries.push(entry);
+  });
+
+  const src = SYNC_SOURCES || {};
+  const sourceIcon = s => {
+    if(src[s]) return src[s].icon;
+    return `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16h12V8z"/></svg>`;
+  };
+
+  let html = '';
+  Object.values(months).forEach(({label, entries}) => {
+    html += `<div class="journal-month">${label} · ${entries.length} sortie${entries.length>1?'s':''}</div>`;
+    entries.forEach(e => {
+      let day='—', weekday='';
+      if(e.date && e.date !== '0000-00-00'){
+        try{
+          const dt = new Date(e.date+'T12:00:00');
+          day = dt.getDate();
+          weekday = dayNames[dt.getDay()];
+        }catch(_){}
+      }
+      const grLabel = e.grKey && TRAILS[e.grKey] ? `<div class="journal-entry-gr">${TRAILS[e.grKey].num}</div>` : '';
+      const noteHtml = e.note ? `<div class="journal-entry-note">${esc(e.note)}</div>` : '';
+      const coverHtml = e.cover ? `<img class="journal-cover" src="${esc(e.cover)}" loading="lazy">` : '';
+      html += `<div class="journal-entry">
+        <div class="journal-entry-date">
+          <div class="journal-entry-day">${day}</div>
+          <div class="journal-entry-weekday">${weekday}</div>
+        </div>
+        <div class="journal-entry-divider"></div>
+        <div class="journal-entry-info">
+          <div class="journal-entry-title">${esc(e.title)}</div>
+          <div class="journal-entry-meta">
+            ${e.km ? `<span>${e.km} km</span>` : ''}
+            ${e.ele ? `<span>+${e.ele} m</span>` : ''}
+          </div>
+          ${grLabel}
+          ${noteHtml}
+        </div>
+        ${coverHtml}
+        <div class="journal-entry-source">${sourceIcon(e.source)}</div>
+      </div>`;
+    });
+  });
+
+  body.innerHTML = html;
+}
+
 /* ━━━━━━━━━━━━ PAGE SENTIERS ━━━━━━━━━━━━ */
 function renderSentiersPage(){
   buildTrailsFromActive();
@@ -2330,10 +2560,10 @@ function initLibMap(){
   libMapObj=L.map('lib-map',{
     zoomControl:false,
     attributionControl:false,
-    dragging:false,
-    scrollWheelZoom:false,
-    touchZoom:false,
-    doubleClickZoom:false
+    dragging:true,
+    scrollWheelZoom:true,
+    touchZoom:true,
+    doubleClickZoom:true
   });
   const {url:libUrl}=getLayerUrl(currentLayer);
   L.tileLayer(libUrl,{
