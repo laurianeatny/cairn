@@ -1965,12 +1965,19 @@ function buildTrailsFromActive(){
 }
 /* ── Clés API fonds de carte (laisser vide si non obtenue) ── */
 const MAP_KEYS = {
+carto: 'cb1_4gxf_1_b3fcb95ff2d94467a17a1124',
   stadia:      '',   // client.stadiamaps.com
   jawg:        '',   // jawg.io
   thunderforest: '', // thunderforest.com
 };
 const LAYERS = {
-  positron:   { label:'Positron',        free:true,  url:'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',                                                                               attr:'© OpenStreetMap © CartoDB' },
+positron: {
+  label: 'Positron',
+  free: false,
+  key: 'carto',
+  url: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png?key={key}',
+  attr: '© OpenStreetMap contributors © CARTO'
+},                                                                            attr:'© OpenStreetMap © CartoDB' },
   esritopo:   { label:'Topo',            free:true,  url:'https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',                                               attr:'© Esri' },
   jawg:       { label:'Jawg Light',      free:false, key:'jawg',        url:'https://tile.jawg.io/jawg-light/{z}/{x}/{y}.png?access-token={key}',                                                        attr:'© Jawg © OpenStreetMap' },
   toner:      { label:'Toner Lite',      free:false, key:'stadia',      url:'https://tiles.stadiamaps.com/tiles/stamen_toner_lite/{z}/{x}/{y}{r}.png?api_key={key}',                                     attr:'© Stadia © Stamen © OpenStreetMap' },
