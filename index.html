@@ -2451,6 +2451,13 @@ function openGeneralMap(){
       totalKmAll+=Math.round(totalKm(rr)*doneSet.size/Math.max(1,n));
       totalSegAll+=doneSet.size;
     });
+    // Ajouter les activités GPX importées directement depuis la vue générale.
+    const generalTracks=ld('gpx_tracks_general')||[];
+    generalTracks.forEach(t=>{
+      if(!Array.isArray(t.pts)||t.pts.length<2) return;
+      t.pts.forEach(p=>bounds.push(p));
+    });
+    drawImportedActivities();
     if(bounds.length>1) mapObj.fitBounds(L.latLngBounds(bounds),{padding:[40,40]});
     else mapObj.setView([46.5,2.3],6);
     document.getElementById('s-km').textContent=totalKmAll;
@@ -2628,10 +2635,12 @@ function parseGPX(txt){
 }
 
 function drawImportedActivities(){
-  if(!mapObj||!trail) return;
+  if(!mapObj) return;
   activityLines.forEach(l=>{if(mapObj.hasLayer(l))mapObj.removeLayer(l);});
   activityLines=[];
-  const tracks=ld('gpx_tracks_'+trail)||[];
+  // En vue générale, les activités GPX sont stockées sous la clé "general".
+  const key=trail||'general';
+  const tracks=ld('gpx_tracks_'+key)||[];
   tracks.forEach(t=>{
     if(!Array.isArray(t.pts)||t.pts.length<2) return;
     const line=L.polyline(t.pts,{color:'#3D7188',weight:4,opacity:.95,dashArray:'7 5',lineCap:'round',lineJoin:'round'}).addTo(mapObj);
@@ -2975,40 +2984,60 @@ async function loadRef(inp){
 async function loadActivities(inp){
   const files=Array.from(inp.files||[]);
   if(!files.length)return;
-  if(!trail){toast('Ouvrez un sentier avant d’importer une activité');inp.value='';return;}
+
+  // L'import fonctionne aussi depuis la vue générale, sans ouvrir un GR.
+  const key=trail||'general';
+  const isTrailImport=!!trail;
   showLoading(true,'Analyse des activités GPX');
   let count=0;
-  const hist=ld('hist_'+trail)||[];
-  const tracks=ld('gpx_tracks_'+trail)||[];
+  const hist=ld('hist_'+key)||[];
+  const tracks=ld('gpx_tracks_'+key)||[];
   let boundsPts=[];
   try{
     for(const f of files){
       const {pts,ele}=parseGPX(await f.text());
       if(pts.length<2){console.warn('GPX sans points exploitables :',f.name);continue;}
       const name=f.name.replace(/\.gpx$/i,'').replace(/_/g,' ');
-      // On conserve une version allégée des points pour réafficher le tracé après rechargement.
       const reduced=downsample(pts,ele,20).pts;
       const id=Date.now()+count;
       tracks.push({id,name,pts:reduced});
       boundsPts.push(...reduced);
+
       const prev=done.size;
-      if(refPts.length) matchPts(pts,refPts,done);
-      hist.unshift({id,name,date:new Date().toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'}),
-        source:'gpx',km:Math.round(totalKm(pts)*10)/10,newSegs:refPts.length?done.size-prev:0});
+      if(isTrailImport&&refPts.length) matchPts(pts,refPts,done);
+      hist.unshift({
+        id,name,
+        date:new Date().toISOString().slice(0,10),
+        source:'gpx',
+        km:Math.round(totalKm(pts)*10)/10,
+        newSegs:isTrailImport&&refPts.length?done.size-prev:0
+      });
       count++;
     }
-    if(!count){toast('Aucun point GPS trouvé. Vérifiez que le fichier contient un tracé GPX.');return;}
-    // Conserver au plus 30 tracés pour limiter le stockage local.
-    sv('gpx_tracks_'+trail,tracks.slice(-30));
-    sv('hist_'+trail,hist);sv('done_'+trail,[...done]);
-    if(refPts.length){draw();updateStats();await cloudSaveProgress(trail);}
-    drawImportedActivities();renderHistory();
-    if(boundsPts.length)mapObj.fitBounds(L.latLngBounds(boundsPts),{padding:[24,24]});
-    if(mapObj)mapObj.invalidateSize();
-    await cloudSaveHistory(trail);
+    if(!count){
+      toast('Aucun point GPS trouvé. Vérifiez que le fichier contient un tracé GPX.');
+      return;
+    }
+    // Garder les 30 derniers tracés pour limiter le stockage local.
+    sv('gpx_tracks_'+key,tracks.slice(-30));
+    sv('hist_'+key,hist);
+    if(isTrailImport){
+      sv('done_'+key,[...done]);
+      if(refPts.length){draw();updateStats();await cloudSaveProgress(key);}
+    }
+    drawImportedActivities();
+    if(isGeneralMode) renderHistoryAll(); else renderHistory();
+    if(boundsPts.length) mapObj.fitBounds(L.latLngBounds(boundsPts),{padding:[24,24]});
+    if(mapObj) mapObj.invalidateSize();
+    if(isTrailImport) await cloudSaveHistory(key);
     toast(count+' activité'+(count>1?'s':'')+' importée'+(count>1?'s':'')+' et affichée'+(count>1?'s':'')+' sur la carte');
-  }catch(e){console.error('Import GPX',e);toast('Erreur pendant l’import GPX : '+e.message);}
-  finally{showLoading(false);inp.value='';}
+  }catch(e){
+    console.error('Import GPX',e);
+    toast('Erreur pendant l’import GPX : '+e.message);
+  }finally{
+    showLoading(false);
+    inp.value='';
+  }
 }
 /* =======================================
    HISTORY
