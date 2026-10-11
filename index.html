@@ -1986,7 +1986,7 @@ positron: {
 };
 const SEG=15, THRESH=35;
 let trail=null, refPts=[], refEle=[], done=new Set(),
-    lines=[], poiMarkers=[],
+    lines=[], poiMarkers=[], activityLines=[],
     tracking=false, wid=null, posMarker=null,
     mapObj=null, libMapObj=null, tileLayer=null, currentLayer='esritopo';
 let isGeneralMode = false;
@@ -2429,6 +2429,7 @@ function openGeneralMap(){
   setTimeout(()=>{
     ensureMap(); mapObj.invalidateSize();
     lines.forEach(l=>mapObj.removeLayer(l));lines=[];
+    activityLines.forEach(l=>{if(mapObj.hasLayer(l))mapObj.removeLayer(l);});activityLines=[];
     poiMarkers.forEach(m=>mapObj.removeLayer(m));poiMarkers=[];
     if(posMarker){mapObj.removeLayer(posMarker);posMarker=null;}
     // Afficher UNIQUEMENT les segments validés (pas les tracés complets)
@@ -2606,19 +2607,37 @@ function drawLibMap(){
    GPX
 ======================================= */
 function parseGPX(txt){
-  const doc=new DOMParser().parseFromString(txt,'text/xml');
+  // Les fichiers GPX Strava utilisent souvent un namespace XML : on lit le nom local.
+  const doc=new DOMParser().parseFromString(txt,'application/xml');
+  if(doc.querySelector('parsererror')) return {pts:[],ele:[],pois:[]};
+  const all=Array.from(doc.getElementsByTagName('*'));
+  const local=n=>n.localName||n.nodeName.split(':').pop();
+  const childText=(node,name)=>Array.from(node.children||[]).find(n=>local(n)===name)?.textContent||'';
   const pts=[],ele=[],pois=[];
-  doc.querySelectorAll('trkpt,rtept').forEach(n=>{
+  all.filter(n=>['trkpt','rtept'].includes(local(n))).forEach(n=>{
     const la=parseFloat(n.getAttribute('lat')),lo=parseFloat(n.getAttribute('lon'));
-    const el=parseFloat(n.querySelector('ele')?.textContent||'NaN');
-    if(!isNaN(la)&&!isNaN(lo)){pts.push([la,lo]);ele.push(isNaN(el)?null:el);}
+    const el=parseFloat(childText(n,'ele')||'NaN');
+    if(Number.isFinite(la)&&Number.isFinite(lo)){pts.push([la,lo]);ele.push(Number.isFinite(el)?el:null);}
   });
-  doc.querySelectorAll('wpt').forEach(n=>{
+  all.filter(n=>local(n)==='wpt').forEach(n=>{
     const la=parseFloat(n.getAttribute('lat')),lo=parseFloat(n.getAttribute('lon'));
-    const name=n.querySelector('name')?.textContent||'';
-    if(!isNaN(la)&&!isNaN(lo)) pois.push({latlng:[la,lo],name});
+    const name=childText(n,'name');
+    if(Number.isFinite(la)&&Number.isFinite(lo)) pois.push({latlng:[la,lo],name});
   });
   return{pts,ele,pois};
+}
+
+function drawImportedActivities(){
+  if(!mapObj||!trail) return;
+  activityLines.forEach(l=>{if(mapObj.hasLayer(l))mapObj.removeLayer(l);});
+  activityLines=[];
+  const tracks=ld('gpx_tracks_'+trail)||[];
+  tracks.forEach(t=>{
+    if(!Array.isArray(t.pts)||t.pts.length<2) return;
+    const line=L.polyline(t.pts,{color:'#3D7188',weight:4,opacity:.95,dashArray:'7 5',lineCap:'round',lineJoin:'round'}).addTo(mapObj);
+    line.bindTooltip(t.name||'Activité GPX',{sticky:true});
+    activityLines.push(line);
+  });
 }
 function dist(a,b){
   const R=6371000,dL=(b[0]-a[0])*Math.PI/180,dG=(b[1]-a[1])*Math.PI/180,
@@ -2906,6 +2925,7 @@ function openTrail(t){
   setTimeout(()=>{
     ensureMap(); mapObj.invalidateSize();
     lines.forEach(l=>mapObj.removeLayer(l));lines=[];
+    activityLines.forEach(l=>{if(mapObj.hasLayer(l))mapObj.removeLayer(l);});activityLines=[];
     poiMarkers.forEach(m=>mapObj.removeLayer(m));poiMarkers=[];
     if(posMarker){mapObj.removeLayer(posMarker);posMarker=null;}
     const rr=ld('ref_'+t),dd=ld('done_'+t),re=ld('ele_'+t)||[];
@@ -2914,13 +2934,16 @@ function openTrail(t){
       refPts=rr;refEle=re;done=new Set(dd||[]);
       const pois=ld('poi_'+t)||[];
       draw(true); // animation progressive à l'ouverture
-      drawPOIs(pois);drawAltitude(refEle);updateStats();renderHistory();
-      mapObj.fitBounds(L.latLngBounds(rr));
+      drawPOIs(pois);drawAltitude(refEle);updateStats();renderHistory();drawImportedActivities();
+      const savedGpxPts=(ld('gpx_tracks_'+t)||[]).flatMap(x=>Array.isArray(x.pts)?x.pts:[]);
+      mapObj.fitBounds(L.latLngBounds(rr.concat(savedGpxPts)));
       document.getElementById('load-overlay').style.display='none';
     }else{
       refPts=[];refEle=[];done=new Set();
-      updateStats();renderHistory();
-      mapObj.setView(info.center,info.zoom);
+      updateStats();renderHistory();drawImportedActivities();
+      const savedGpxPts=(ld('gpx_tracks_'+t)||[]).flatMap(x=>Array.isArray(x.pts)?x.pts:[]);
+      if(savedGpxPts.length) mapObj.fitBounds(L.latLngBounds(savedGpxPts),{padding:[24,24]});
+      else mapObj.setView(info.center,info.zoom);
       document.getElementById('load-overlay').style.display='flex';
     }
   },50);
@@ -2950,26 +2973,43 @@ async function loadRef(inp){
    LOAD ACTIVITIES
 ======================================= */
 async function loadActivities(inp){
-  if(!refPts.length){toast('Chargez d\'abord le tracé de référence');inp.value='';return;}
-  showLoading(true,'Analyse des activités');
-  let count=0;const hist=ld('hist_'+trail)||[];
-  for(const f of inp.files){
-    const{pts}=parseGPX(await f.text());
-    if(!pts.length) continue;
-    const prev=done.size;
-    matchPts(pts,refPts,done);
-    hist.unshift({id:Date.now()+count,name:f.name.replace('.gpx','').replace(/_/g,' '),
-      date:new Date().toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'}),
-      source:'gpx',km:Math.round(totalKm(pts)),newSegs:done.size-prev});
-    count++;
-  }
-  sv('done_'+trail,[...done]);sv('hist_'+trail,hist);
-  draw();updateStats();renderHistory();showLoading(false);inp.value='';
-  await cloudSaveProgress(trail);
-  await cloudSaveHistory(trail);
-  toast(count+' activité'+(count>1?'s':'')+' importée'+(count>1?'s':''));
+  const files=Array.from(inp.files||[]);
+  if(!files.length)return;
+  if(!trail){toast('Ouvrez un sentier avant d’importer une activité');inp.value='';return;}
+  showLoading(true,'Analyse des activités GPX');
+  let count=0;
+  const hist=ld('hist_'+trail)||[];
+  const tracks=ld('gpx_tracks_'+trail)||[];
+  let boundsPts=[];
+  try{
+    for(const f of files){
+      const {pts,ele}=parseGPX(await f.text());
+      if(pts.length<2){console.warn('GPX sans points exploitables :',f.name);continue;}
+      const name=f.name.replace(/\.gpx$/i,'').replace(/_/g,' ');
+      // On conserve une version allégée des points pour réafficher le tracé après rechargement.
+      const reduced=downsample(pts,ele,20).pts;
+      const id=Date.now()+count;
+      tracks.push({id,name,pts:reduced});
+      boundsPts.push(...reduced);
+      const prev=done.size;
+      if(refPts.length) matchPts(pts,refPts,done);
+      hist.unshift({id,name,date:new Date().toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'}),
+        source:'gpx',km:Math.round(totalKm(pts)*10)/10,newSegs:refPts.length?done.size-prev:0});
+      count++;
+    }
+    if(!count){toast('Aucun point GPS trouvé. Vérifiez que le fichier contient un tracé GPX.');return;}
+    // Conserver au plus 30 tracés pour limiter le stockage local.
+    sv('gpx_tracks_'+trail,tracks.slice(-30));
+    sv('hist_'+trail,hist);sv('done_'+trail,[...done]);
+    if(refPts.length){draw();updateStats();await cloudSaveProgress(trail);}
+    drawImportedActivities();renderHistory();
+    if(boundsPts.length)mapObj.fitBounds(L.latLngBounds(boundsPts),{padding:[24,24]});
+    if(mapObj)mapObj.invalidateSize();
+    await cloudSaveHistory(trail);
+    toast(count+' activité'+(count>1?'s':'')+' importée'+(count>1?'s':'')+' et affichée'+(count>1?'s':'')+' sur la carte');
+  }catch(e){console.error('Import GPX',e);toast('Erreur pendant l’import GPX : '+e.message);}
+  finally{showLoading(false);inp.value='';}
 }
-
 /* =======================================
    HISTORY
 ======================================= */
