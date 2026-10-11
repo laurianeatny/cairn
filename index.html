@@ -1977,7 +1977,7 @@ positron: {
   key: 'carto',
   url: 'https://{s}.basemaps.cartocdn.com/rastertiles/light_all/{z}/{x}/{y}{r}.png?key={key}',
   attr: '© OpenStreetMap contributors © CARTO'
-},                                                                            attr:'© OpenStreetMap © CartoDB' },
+},
   esritopo:   { label:'Topo',            free:true,  url:'https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',                                               attr:'© Esri' },
   jawg:       { label:'Jawg Light',      free:false, key:'jawg',        url:'https://tile.jawg.io/jawg-light/{z}/{x}/{y}.png?access-token={key}',                                                        attr:'© Jawg © OpenStreetMap' },
   toner:      { label:'Toner Lite',      free:false, key:'stadia',      url:'https://tiles.stadiamaps.com/tiles/stamen_toner_lite/{z}/{x}/{y}{r}.png?api_key={key}',                                     attr:'© Stadia © Stamen © OpenStreetMap' },
@@ -4107,8 +4107,9 @@ function initValMap(act){
   const el = document.getElementById('val-map');
   if(!el) return;
 
-  valMapObj = L.map('val-map', {zoomControl: false, attributionControl: false});
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {maxZoom:18}).addTo(valMapObj);
+  valMapObj = L.map('val-map', {zoomControl: false});
+  const {url: valMapUrl, attr: valMapAttr} = getLayerUrl('positron');
+  L.tileLayer(valMapUrl, {maxZoom:18, attribution: valMapAttr}).addTo(valMapObj);
 
   if(act.pts && act.pts.length > 1){
     const latlngs = act.pts.map(p => [p[0], p[1]]);
