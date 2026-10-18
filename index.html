@@ -1796,6 +1796,9 @@ input[type=file]{display:none}
 <input type="file" id="fi-activity"    accept=".gpx" multiple onchange="loadActivities(this)">
 
 <script>
+/* ── Clé localStorage pour les activités en attente ── */
+const PENDING_KEY = 'cairn_pending_activities';
+
 /* =======================================
    SUPABASE
 ======================================= */
@@ -3922,9 +3925,6 @@ const SYNC_SOURCES = {
     sync: async () => [],
   },
 };
-
-/* ── Clé localStorage pour les activités en attente ── */
-const PENDING_KEY = 'cairn_pending_activities';
 
 function getPendingActivities(){ return ld(PENDING_KEY) || []; }
 function savePendingActivities(list){ sv(PENDING_KEY, list); }
