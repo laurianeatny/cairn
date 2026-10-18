@@ -3027,8 +3027,17 @@ async function loadActivities(inp){
     }
     drawImportedActivities();
     if(isGeneralMode) renderHistoryAll(); else renderHistory();
-    if(boundsPts.length) mapObj.fitBounds(L.latLngBounds(boundsPts),{padding:[24,24]});
-    if(mapObj) mapObj.invalidateSize();
+    // Recalculer la taille de la carte avant de zoomer, puis attendre la fin
+    // du rendu avant d'appliquer les limites du tracé importé.
+    if(mapObj) mapObj.invalidateSize({pan:false});
+    if(boundsPts.length && mapObj){
+      const importedBounds=L.latLngBounds(boundsPts);
+      requestAnimationFrame(()=>{
+        if(!mapObj) return;
+        mapObj.invalidateSize({pan:false});
+        mapObj.fitBounds(importedBounds,{padding:[32,32],maxZoom:15,animate:false});
+      });
+    }
     if(isTrailImport) await cloudSaveHistory(key);
     toast(count+' activité'+(count>1?'s':'')+' importée'+(count>1?'s':'')+' et affichée'+(count>1?'s':'')+' sur la carte');
   }catch(e){
