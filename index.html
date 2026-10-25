@@ -2596,19 +2596,27 @@ function drawLibMap(){
     }
   });
 
-  // ── Tracé personnalisé importé (rouge vermillon) ──
-  // loadCustomGPX() enregistre le parcours dans ref_custom. Il doit être
-  // dessiné explicitement ici : custom n'est pas un GR du catalogue.
-  const customPts = ld('ref_custom') || [];
-  if(Array.isArray(customPts) && customPts.length > 1){
-    const customLatLngs = customPts.map(p=>[Number(p[0]),Number(p[1])])
+  // ── Tracés GPX personnalisés importés (rouge vermillon) ──
+  // Chaque import est conservé dans cairn_custom_tracks, au lieu d'écraser
+  // une unique clé ref_custom.
+  const customTracks = ld('cairn_custom_tracks') || [];
+  customTracks.forEach(track => {
+    const pts = Array.isArray(track.pts) ? track.pts : [];
+    if(pts.length < 2) return;
+    const latlngs = pts.map(p=>[Number(p[0]),Number(p[1])])
       .filter(p=>Number.isFinite(p[0]) && Number.isFinite(p[1]));
-    if(customLatLngs.length > 1){
-      L.polyline(customLatLngs,{color:'#D94B36',weight:3,opacity:.95,lineCap:'round',lineJoin:'round'})
-        .bindTooltip('Tracé personnalisé',{sticky:true})
-        .addTo(libMapObj);
-      customLatLngs.forEach(p=>bounds.push(p));
-    }
+    if(latlngs.length < 2) return;
+    L.polyline(latlngs,{color:'#D94B36',weight:3,opacity:.95,lineCap:'round',lineJoin:'round'})
+      .bindTooltip(track.title || 'Tracé personnalisé',{sticky:true})
+      .addTo(libMapObj);
+    latlngs.forEach(p=>bounds.push(p));
+  });
+  // Compatibilité avec les imports personnalisés plus anciens.
+  const legacyCustomPts = ld('ref_custom') || [];
+  if(!customTracks.length && Array.isArray(legacyCustomPts) && legacyCustomPts.length > 1){
+    L.polyline(legacyCustomPts,{color:'#D94B36',weight:3,opacity:.95,lineCap:'round',lineJoin:'round'})
+      .bindTooltip('Tracé personnalisé',{sticky:true}).addTo(libMapObj);
+    legacyCustomPts.forEach(p=>bounds.push(p));
   }
 
   // ── Marches validées (rouge vermillon) ──
@@ -3846,19 +3854,36 @@ async function confirmAddTrail(){
 async function loadCustomGPX(inp){
   const f=inp.files[0]; if(!f) return;
   closeAddTrailModal();
-  const active=ld('active_trails')||[];
-  if(!active.includes('custom')) active.push('custom');
-  sv('active_trails',active);
   showLoading(true,'Chargement du tracé personnalisé…');
-  const txt=await f.text();
-  const{pts,ele,pois}=parseGPX(txt);
-  if(pts.length>5){
+  try{
+    const txt=await f.text();
+    const {pts,ele,pois}=parseGPX(txt);
+    if(pts.length<=5){
+      toast('Aucun tracé GPS exploitable trouvé dans ce fichier.');
+      return;
+    }
     const ds=downsample(pts,ele,18);
+    const title=(f.name||'Randonnée GPX').replace(/\\.gpx$/i,'').replace(/[_-]+/g,' ').trim() || 'Randonnée GPX';
+    const id='gpx_'+Date.now()+'_'+Math.random().toString(36).slice(2,8);
+    const km=Math.round(totalKm(ds.pts)*100)/100;
+    const tracks=ld('cairn_custom_tracks')||[];
+    tracks.unshift({id,title,pts:ds.pts,ele:ds.ele,pois,km,date:new Date().toISOString().slice(0,10),source:'gpx',importedAt:new Date().toISOString()});
+    sv('cairn_custom_tracks',tracks);
+    // Ajouter également l'activité au journal CAIRN.
+    const validated=ld('cairn_validated')||[];
+    validated.unshift({id,sourceId:id,source:'gpx',title,date:new Date().toISOString().slice(0,10),km,ele:null,pts:ds.pts,cover:null,photos:[],grKey:null,note:'Import GPX'});
+    sv('cairn_validated',validated);
+    // Compatibilité avec le reste du site et les anciennes fonctions.
     sv('ref_custom',ds.pts); sv('done_custom',[]); sv('ele_custom',ds.ele); sv('poi_custom',pois);
-    toast('Tracé personnalisé chargé · '+Math.round(totalKm(ds.pts))+' km');
+    toast('Tracé ajouté au journal · '+km+' km');
+  }catch(e){
+    console.error('Erreur import GPX personnalisé',e);
+    toast('Erreur pendant la lecture du fichier GPX.');
+  }finally{
+    showLoading(false); inp.value='';
+    refreshLibrary(); waitAndInitLibMap();
+    if(typeof renderJournalPage==='function') renderJournalPage();
   }
-  showLoading(false); inp.value='';
-  refreshLibrary(); waitAndInitLibMap();
 }
 
 /* =======================================
