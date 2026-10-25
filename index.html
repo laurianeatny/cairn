@@ -2637,19 +2637,25 @@ function parseGPX(txt){
   return{pts,ele,pois};
 }
 
-function drawImportedActivities(){
-  if(!mapObj) return;
+function drawImportedActivities(tracksOverride){
+  if(!mapObj){
+    console.warn('Affichage GPX impossible : la carte Leaflet n’est pas initialisée.');
+    return 0;
+  }
   activityLines.forEach(l=>{if(mapObj.hasLayer(l))mapObj.removeLayer(l);});
   activityLines=[];
   // En vue générale, les activités GPX sont stockées sous la clé "general".
   const key=trail||'general';
-  const tracks=ld('gpx_tracks_'+key)||[];
+  // Lors d'un import, utiliser directement les données en mémoire : si le stockage
+  // local échoue (quota navigateur), le tracé reste tout de même affichable.
+  const tracks=Array.isArray(tracksOverride)?tracksOverride:(ld('gpx_tracks_'+key)||[]);
   tracks.forEach(t=>{
     if(!Array.isArray(t.pts)||t.pts.length<2) return;
     const line=L.polyline(t.pts,{color:'#3D7188',weight:4,opacity:.95,dashArray:'7 5',lineCap:'round',lineJoin:'round'}).addTo(mapObj);
     line.bindTooltip(t.name||'Activité GPX',{sticky:true});
     activityLines.push(line);
   });
+  return activityLines.length;
 }
 function dist(a,b){
   const R=6371000,dL=(b[0]-a[0])*Math.PI/180,dG=(b[1]-a[1])*Math.PI/180,
@@ -2988,15 +2994,20 @@ async function loadActivities(inp){
   const files=Array.from(inp.files||[]);
   if(!files.length)return;
 
-  // L'import fonctionne aussi depuis la vue générale, sans ouvrir un GR.
+  // S'assurer que l'import se fait sur la carte générale si aucun sentier n'est sélectionné.
   const key=trail||'general';
   const isTrailImport=!!trail;
   showLoading(true,'Analyse des activités GPX');
   let count=0;
   const hist=ld('hist_'+key)||[];
   const tracks=ld('gpx_tracks_'+key)||[];
-  let boundsPts=[];
+  const boundsPts=[];
   try{
+    // La carte doit exister avant d'essayer d'y ajouter les tracés.
+    if(!mapObj){
+      showScreen('mapscreen');
+      ensureMap();
+    }
     for(const f of files){
       const {pts,ele}=parseGPX(await f.text());
       if(pts.length<2){console.warn('GPX sans points exploitables :',f.name);continue;}
@@ -3018,31 +3029,43 @@ async function loadActivities(inp){
       count++;
     }
     if(!count){
-      toast('Aucun point GPS trouvé. Vérifiez que le fichier contient un tracé GPX.');
+      toast('Aucun point GPS exploitable trouvé dans le fichier.');
       return;
     }
-    // Garder les 30 derniers tracés pour limiter le stockage local.
-    sv('gpx_tracks_'+key,tracks.slice(-30));
-    sv('hist_'+key,hist);
+    // Limiter le stockage local, tout en conservant les activités déjà importées.
+    const tracksToSave=tracks.slice(-30);
+    let storageOk=true;
+    try{
+      localStorage.setItem('gpx_tracks_'+key,JSON.stringify(tracksToSave));
+      localStorage.setItem('hist_'+key,JSON.stringify(hist));
+      if(isTrailImport) localStorage.setItem('done_'+key,JSON.stringify([...done]));
+    }catch(storageError){
+      storageOk=false;
+      console.error('Stockage local CAIRN impossible',storageError);
+    }
     if(isTrailImport){
-      sv('done_'+key,[...done]);
       if(refPts.length){draw();updateStats();await cloudSaveProgress(key);}
     }
-    drawImportedActivities();
+    // Dessiner les tracés depuis les données en mémoire, sans dépendre d'une
+    // relecture du localStorage qui peut échouer si le quota est atteint.
+    const drawn=drawImportedActivities(tracksToSave);
     if(isGeneralMode) renderHistoryAll(); else renderHistory();
-    // Recalculer la taille de la carte avant de zoomer, puis attendre la fin
-    // du rendu avant d'appliquer les limites du tracé importé.
     if(mapObj) mapObj.invalidateSize({pan:false});
     if(boundsPts.length && mapObj){
       const importedBounds=L.latLngBounds(boundsPts);
-      requestAnimationFrame(()=>{
+      const zoomToTracks=()=>{
         if(!mapObj) return;
         mapObj.invalidateSize({pan:false});
         mapObj.fitBounds(importedBounds,{padding:[32,32],maxZoom:15,animate:false});
-      });
+      };
+      if(mapObj._loaded) requestAnimationFrame(zoomToTracks);
+      else mapObj.whenReady(()=>requestAnimationFrame(zoomToTracks));
     }
     if(isTrailImport) await cloudSaveHistory(key);
-    toast(count+' activité'+(count>1?'s':'')+' importée'+(count>1?'s':'')+' et affichée'+(count>1?'s':'')+' sur la carte');
+    let message=count+' activité'+(count>1?'s':'')+' importée'+(count>1?'s':'')+'. Tracés affichés : '+drawn+'.';
+    if(!storageOk) message+=' Attention : sauvegarde locale impossible, gardez le fichier GPX.';
+    if(!drawn) message+=' La carte n’a pas pu créer de ligne ; vérifiez la console.';
+    toast(message);
   }catch(e){
     console.error('Import GPX',e);
     toast('Erreur pendant l’import GPX : '+e.message);
@@ -3051,6 +3074,7 @@ async function loadActivities(inp){
     inp.value='';
   }
 }
+
 /* =======================================
    HISTORY
 ======================================= */
