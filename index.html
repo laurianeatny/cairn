@@ -2596,18 +2596,37 @@ function drawLibMap(){
     }
   });
 
+  // ── Tracé personnalisé importé (rouge vermillon) ──
+  // loadCustomGPX() enregistre le parcours dans ref_custom. Il doit être
+  // dessiné explicitement ici : custom n'est pas un GR du catalogue.
+  const customPts = ld('ref_custom') || [];
+  if(Array.isArray(customPts) && customPts.length > 1){
+    const customLatLngs = customPts.map(p=>[Number(p[0]),Number(p[1])])
+      .filter(p=>Number.isFinite(p[0]) && Number.isFinite(p[1]));
+    if(customLatLngs.length > 1){
+      L.polyline(customLatLngs,{color:'#D94B36',weight:3,opacity:.95,lineCap:'round',lineJoin:'round'})
+        .bindTooltip('Tracé personnalisé',{sticky:true})
+        .addTo(libMapObj);
+      customLatLngs.forEach(p=>bounds.push(p));
+    }
+  }
+
   // ── Marches validées (rouge vermillon) ──
   if(showAll){
     const validated = ld('cairn_validated')||[];
     validated.forEach(entry=>{
       if(!entry.pts||entry.pts.length<2) return;
       const latlngs = entry.pts.map(p=>[p[0],p[1]]);
-      L.polyline(latlngs,{color:'var(--gr-red)',weight:2,opacity:.7}).addTo(libMapObj);
+      L.polyline(latlngs,{color:'#D94B36',weight:2,opacity:.7}).addTo(libMapObj);
       latlngs.forEach(p=>bounds.push(p));
     });
   }
 
   if(bounds.length>1) libMapObj.fitBounds(L.latLngBounds(bounds),{padding:[16,16]});
+  else if(customPts.length>1){
+    // Sécurité si le parcours est présent mais qu'aucun autre tracé n'est chargé.
+    libMapObj.fitBounds(L.latLngBounds(customPts),{padding:[16,16]});
+  }
   // Mettre à jour le bouton toggle
   const btn = document.getElementById('lib-toggle-walks');
   if(btn) btn.classList.toggle('active', showAll);
